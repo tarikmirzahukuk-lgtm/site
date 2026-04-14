@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-primary: #1a56db;
+  --color-primary-dark: #1544b0;
+  --color-dark: #111827;
+  --color-gray-text: #6b7280;
+  --color-gray-light: #f3f4f6;
+  --color-gray-border: #e5e7eb;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --max-width-content: 680px;
+  --max-width-content-wide: 780px;
+}
+
+@layer base {
+  body {
+    @apply text-dark antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold text-dark;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-dark transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-white text-dark border border-gray-border px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-light transition-colors;
+  }
+
+  .kategori-etiketi {
+    @apply text-xs font-semibold tracking-wider uppercase text-primary;
+  }
+}
