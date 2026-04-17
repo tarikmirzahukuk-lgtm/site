@@ -44,7 +44,7 @@ export default function MakaleEditoru({ content, onChange }: Props) {
       LinkExtension.configure({ openOnClick: false }),
       Underline,
       Placeholder.configure({
-        placeholder: "Makale iceriginizi buraya yazin...",
+        placeholder: "Makale içeriğinizi buraya yazın...",
       }),
     ],
     content,

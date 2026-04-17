@@ -23,7 +23,7 @@ export default function MakalelerPage() {
   }, [statusFilter]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Bu makaleyi silmek istediginize emin misiniz?")) return;
+    if (!confirm("Bu makaleyi silmek istediğinize emin misiniz?")) return;
     await fetch(`/api/makaleler/${id}`, { method: "DELETE" });
     fetchMakaleler();
   };
@@ -53,8 +53,8 @@ export default function MakalelerPage() {
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
         >
-          <option value="">Tum Durumlar</option>
-          <option value="yayinda">Yayinda</option>
+          <option value="">Tüm Durumlar</option>
+          <option value="yayinda">Yayında</option>
           <option value="taslak">Taslak</option>
         </select>
       </div>
@@ -63,7 +63,7 @@ export default function MakalelerPage() {
           <thead>
             <tr className="border-b border-gray-border text-left">
               <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
-                Baslik
+                Başlık
               </th>
               <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
                 Kategori
@@ -75,7 +75,7 @@ export default function MakalelerPage() {
                 Tarih
               </th>
               <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
-                Islemler
+                İşlemler
               </th>
             </tr>
           </thead>
@@ -106,7 +106,7 @@ export default function MakalelerPage() {
                         : "bg-gray-100 text-gray-text"
                     }`}
                   >
-                    {makale.status === "yayinda" ? "Yayinda" : "Taslak"}
+                    {makale.status === "yayinda" ? "Yayında" : "Taslak"}
                   </span>
                 </td>
                 <td className="px-5 py-3 text-sm text-gray-text">
@@ -118,7 +118,7 @@ export default function MakalelerPage() {
                       href={`/admin/makaleler/${makale._id}`}
                       className="text-xs text-primary hover:underline"
                     >
-                      Duzenle
+                      Düzenle
                     </Link>
                     <button
                       onClick={() => handleDelete(makale._id)}
