@@ -18,6 +18,7 @@ import {
 } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { SITE_URL } from "@/lib/site-config";
+import Image from "next/image";
 import { IMakale, IKullanici, IKategori } from "@/types";
 
 interface Props {
@@ -147,13 +148,14 @@ export default async function MakaleDetay({ params }: Props) {
 
         {/* Meta */}
         <div className="flex items-center gap-4 mt-6 pb-6 border-b border-gray-border">
-          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold overflow-hidden">
+          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold overflow-hidden relative">
             {yazar?.avatar ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={yazar.avatar}
                 alt={yazar.name}
-                className="w-full h-full rounded-full object-cover"
+                fill
+                sizes="40px"
+                className="object-cover"
               />
             ) : (
               yazar?.name?.charAt(0) ?? "?"
@@ -178,11 +180,15 @@ export default async function MakaleDetay({ params }: Props) {
       {/* Cover Image */}
       {makaleObj.coverImage && (
         <div className="max-w-content-wide mx-auto px-6 my-8">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={makaleObj.coverImage}
             alt={makaleObj.title}
-            className="w-full rounded-xl object-cover max-h-96"
+            width={1200}
+            height={384}
+            sizes="(max-width: 768px) 100vw, 780px"
+            className="w-full rounded-xl object-cover"
+            style={{ maxHeight: 384, height: "auto" }}
+            priority
           />
         </div>
       )}
