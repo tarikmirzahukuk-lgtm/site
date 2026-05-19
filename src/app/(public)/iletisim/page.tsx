@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = buildMetadata({
   title: "İletişim",
-};
+  description:
+    "Tarık Mirza ile iletişim — soru, öneri ve iş birliği teklifleri için e-posta ve LinkedIn üzerinden ulaşın.",
+  path: "/iletisim",
+});
 
 export default function IletisimPage() {
   return (
