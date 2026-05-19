@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IKullanici } from "@/types";
+import { IKullanici, ISocials } from "@/types";
+import YazarSosyalForm from "@/components/admin/YazarSosyalForm";
 
 export default function YazarlarPage() {
   const [yazarlar, setYazarlar] = useState<IKullanici[]>([]);
@@ -11,6 +12,7 @@ export default function YazarlarPage() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"admin" | "yazar">("yazar");
   const [bio, setBio] = useState("");
+  const [socials, setSocials] = useState<ISocials>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [listError, setListError] = useState("");
@@ -41,6 +43,7 @@ export default function YazarlarPage() {
     setPassword("");
     setRole("yazar");
     setBio("");
+    setSocials({});
     setError("");
   };
 
@@ -62,7 +65,7 @@ export default function YazarlarPage() {
       const res = await fetch("/api/yazarlar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role, bio }),
+        body: JSON.stringify({ name, email, password, role, bio, socials }),
       });
 
       if (!res.ok) {
@@ -171,6 +174,12 @@ export default function YazarlarPage() {
               className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-text mb-2 uppercase tracking-wide">
+              Sosyal Bağlantılar (opsiyonel — E-A-T sinyali için)
+            </label>
+            <YazarSosyalForm value={socials} onChange={setSocials} />
+          </div>
           {error && <p className="text-red-600 text-sm">{error}</p>}
           <div className="flex gap-2">
             <button
@@ -197,23 +206,14 @@ export default function YazarlarPage() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-border text-left">
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
-                Ad
-              </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
-                E-posta
-              </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
-                Rol
-              </th>
+              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">Ad</th>
+              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">E-posta</th>
+              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">Rol</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-border">
             {yazarlar.map((y) => (
-              <tr
-                key={y._id}
-                className="hover:bg-gray-light transition-colors"
-              >
+              <tr key={y._id} className="hover:bg-gray-light transition-colors">
                 <td className="px-5 py-3 text-sm font-medium">{y.name}</td>
                 <td className="px-5 py-3 text-sm text-gray-text">{y.email}</td>
                 <td className="px-5 py-3">
@@ -231,10 +231,7 @@ export default function YazarlarPage() {
             ))}
             {yazarlar.length === 0 && !listError && (
               <tr>
-                <td
-                  colSpan={3}
-                  className="px-5 py-8 text-center text-sm text-gray-text"
-                >
+                <td colSpan={3} className="px-5 py-8 text-center text-sm text-gray-text">
                   Henüz yazar yok.
                 </td>
               </tr>
