@@ -25,7 +25,7 @@
 - [ ] **Step 1: `@vercel/og` paketini kur**
 
 ```bash
-npm install @vercel/og@^0.6.5
+npm install @vercel/og@^0.6.8
 ```
 
 - [ ] **Step 2: `.env.local.example` dosyası oluştur**
