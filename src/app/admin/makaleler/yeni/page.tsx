@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import MakaleEditoru from "@/components/admin/MakaleEditoru";
 import FaqEditor from "@/components/admin/FaqEditor";
 import { slugify } from "@/lib/utils";
@@ -171,15 +172,17 @@ export default function YeniMakalePage() {
               Kapak Görseli
             </label>
             {coverImage ? (
-              <div className="relative">
-                <img
+              <div className="relative h-32 w-full rounded-md overflow-hidden">
+                <Image
                   src={coverImage}
                   alt="Kapak"
-                  className="w-full h-32 object-cover rounded-md"
+                  fill
+                  sizes="280px"
+                  className="object-cover"
                 />
                 <button
                   onClick={() => setCoverImage("")}
-                  className="absolute top-1 right-1 bg-white rounded-full w-6 h-6 text-xs flex items-center justify-center shadow"
+                  className="absolute top-1 right-1 bg-white rounded-full w-6 h-6 text-xs flex items-center justify-center shadow z-10"
                 >
                   x
                 </button>
