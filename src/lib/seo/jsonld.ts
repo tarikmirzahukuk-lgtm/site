@@ -12,7 +12,10 @@ export function organizationJsonLd(): JsonLd {
     "@type": "Organization",
     name: SITE_CONFIG.fullName,
     url: SITE_URL,
-    logo: `${SITE_URL}/icon.png`,
+    logo: {
+      "@type": "ImageObject",
+      url: `${SITE_URL}/icon.png`,
+    },
   };
 }
 
@@ -101,7 +104,7 @@ export function personJsonLd(yazar: IKullanici): JsonLd {
     name: yazar.name,
     description: yazar.bio || undefined,
     image: yazar.avatar || undefined,
-    url: yazar.slug ? `${SITE_URL}/yazar/${yazar.slug}` : SITE_URL,
+    url: yazar.slug ? `${SITE_URL}/yazar/${yazar.slug}` : undefined,
     jobTitle: SITE_CONFIG.author.jobTitle,
     knowsAbout: SITE_CONFIG.author.knowsAbout,
     ...(sameAs.length > 0 && { sameAs }),

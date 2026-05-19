@@ -49,6 +49,10 @@ const KullaniciSchema = new Schema<IKullaniciDoc>(
 KullaniciSchema.pre("save", async function () {
   if (!this.slug && this.name) {
     const base = slugify(this.name);
+    if (!base) return; // ad slugify sonrası boş ise slug üretme; manuel set beklenir
+
+    // Not: aşağıdaki check-then-set'in TOCTOU ihtimali var (paralel save'lerde aynı slug).
+    // Tek-yazar / az-yazar senaryoda kabul edilebilir; sıkışınca unique index hata fırlatır.
     let candidate = base;
     let i = 2;
     // eslint-disable-next-line @typescript-eslint/no-this-alias
