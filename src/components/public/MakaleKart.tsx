@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { IMakale, IKategori } from "@/types";
 
 export default function MakaleKart({ makale }: { makale: IMakale }) {
@@ -11,11 +12,13 @@ export default function MakaleKart({ makale }: { makale: IMakale }) {
     <Link href={`/makale/${makale.slug}`} className="group">
       <article className="border border-gray-border rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
         {makale.coverImage ? (
-          <div className="h-44 bg-gray-light overflow-hidden">
-            <img
+          <div className="h-44 bg-gray-light overflow-hidden relative">
+            <Image
               src={makale.coverImage}
               alt={makale.title}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
             />
           </div>
         ) : (
