@@ -7,6 +7,7 @@ import YazarSosyalForm from "@/components/admin/YazarSosyalForm";
 export default function YazarlarPage() {
   const [yazarlar, setYazarlar] = useState<IKullanici[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,6 +28,7 @@ export default function YazarlarPage() {
       }
       const data = await res.json();
       setYazarlar(Array.isArray(data) ? data : []);
+      setListError("");
     } catch {
       setListError("Ağ hatası");
       setYazarlar([]);
@@ -38,6 +40,7 @@ export default function YazarlarPage() {
   }, []);
 
   const resetForm = () => {
+    setEditingId(null);
     setName("");
     setEmail("");
     setPassword("");
@@ -47,30 +50,87 @@ export default function YazarlarPage() {
     setError("");
   };
 
+  const handleNew = () => {
+    resetForm();
+    setShowForm(true);
+  };
+
+  const handleEdit = (y: IKullanici) => {
+    setEditingId(y._id);
+    setName(y.name);
+    setEmail(y.email);
+    setPassword(""); // password is never pre-filled
+    setRole(y.role);
+    setBio(y.bio || "");
+    setSocials(y.socials || {});
+    setError("");
+    setShowForm(true);
+  };
+
+  const handleDelete = async (y: IKullanici) => {
+    if (
+      !confirm(
+        `${y.name} adlı yazarı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`
+      )
+    )
+      return;
+    setListError("");
+    try {
+      const res = await fetch(`/api/yazarlar/${y._id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setListError(data.error || "Silinemedi");
+        return;
+      }
+      fetchYazarlar();
+    } catch {
+      setListError("Ağ hatası");
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    if (!name.trim() || !email.trim() || !password) {
-      setError("Ad, e-posta ve şifre zorunludur");
+    if (!name.trim() || !email.trim()) {
+      setError("Ad ve e-posta zorunludur");
       return;
     }
-    if (password.length < 6) {
+    // password zorunlu yalnızca create'de
+    if (!editingId && !password) {
+      setError("Şifre zorunludur");
+      return;
+    }
+    if (password && password.length < 6) {
       setError("Şifre en az 6 karakter olmalı");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await fetch("/api/yazarlar", {
-        method: "POST",
+      const url = editingId ? `/api/yazarlar/${editingId}` : "/api/yazarlar";
+      const method = editingId ? "PUT" : "POST";
+      const body: Record<string, unknown> = {
+        name,
+        email,
+        role,
+        bio,
+        socials,
+      };
+      // password sadece dolu ise gönder (PUT'ta opsiyonel)
+      if (password) body.password = password;
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role, bio, socials }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error || "Yazar oluşturulamadı");
+        setError(
+          data.error || (editingId ? "Güncellenemedi" : "Yazar oluşturulamadı")
+        );
         setLoading(false);
         return;
       }
@@ -89,13 +149,7 @@ export default function YazarlarPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold">Yazarlar</h1>
-        <button
-          onClick={() => {
-            setShowForm(true);
-            setError("");
-          }}
-          className="btn-primary"
-        >
+        <button onClick={handleNew} className="btn-primary">
           Yeni Yazar
         </button>
       </div>
@@ -111,6 +165,16 @@ export default function YazarlarPage() {
           onSubmit={handleSubmit}
           className="bg-white rounded-lg border border-gray-border p-5 space-y-4 mb-6"
         >
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-sm">
+              {editingId ? "Yazarı Düzenle" : "Yeni Yazar"}
+            </h2>
+            {editingId && (
+              <span className="text-xs text-gray-text">
+                Slug değişmez — URL stabil kalır
+              </span>
+            )}
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-text mb-1.5 uppercase tracking-wide">
@@ -138,15 +202,15 @@ export default function YazarlarPage() {
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-text mb-1.5 uppercase tracking-wide">
-                Şifre
+                Şifre {editingId && <span className="text-gray-text normal-case">(boş bırak = değişmez)</span>}
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                minLength={6}
+                minLength={editingId ? undefined : 6}
                 className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-                required
+                required={!editingId}
               />
             </div>
             <div>
@@ -187,7 +251,11 @@ export default function YazarlarPage() {
               disabled={loading}
               className="btn-primary disabled:opacity-50"
             >
-              {loading ? "Kaydediliyor..." : "Oluştur"}
+              {loading
+                ? "Kaydediliyor..."
+                : editingId
+                ? "Güncelle"
+                : "Oluştur"}
             </button>
             <button
               type="button"
@@ -209,6 +277,7 @@ export default function YazarlarPage() {
               <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">Ad</th>
               <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">E-posta</th>
               <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">Rol</th>
+              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">İşlemler</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-border">
@@ -227,11 +296,27 @@ export default function YazarlarPage() {
                     {y.role === "admin" ? "Admin" : "Yazar"}
                   </span>
                 </td>
+                <td className="px-5 py-3">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(y)}
+                      className="text-xs text-primary hover:underline"
+                    >
+                      Düzenle
+                    </button>
+                    <button
+                      onClick={() => handleDelete(y)}
+                      className="text-xs text-red-600 hover:underline"
+                    >
+                      Sil
+                    </button>
+                  </div>
+                </td>
               </tr>
             ))}
             {yazarlar.length === 0 && !listError && (
               <tr>
-                <td colSpan={3} className="px-5 py-8 text-center text-sm text-gray-text">
+                <td colSpan={4} className="px-5 py-8 text-center text-sm text-gray-text">
                   Henüz yazar yok.
                 </td>
               </tr>
