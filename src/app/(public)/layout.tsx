@@ -18,7 +18,7 @@ export default async function PublicLayout({
         href={`${SITE_URL}/rss.xml`}
       />
       <Header />
-      <main>{children}</main>
+      <main id="main-content">{children}</main>
       <Footer />
     </>
   );

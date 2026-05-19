@@ -1,8 +1,6 @@
+/* Fonts loaded via next/font/google in layout.tsx (no render-blocking @import) */
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
-
-/* Google Fonts: Playfair Display (display) + Inter (body) + Cormorant Garamond (italic alt) */
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600;700;800&display=swap");
 
 @theme inline {
   /* Brand colors — premium dark legal aesthetic */
@@ -48,6 +46,15 @@
 }
 
 @layer base {
+  /* Fix 4 — smooth scroll + sticky-header anchor offset */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  section[id] {
+    scroll-margin-top: 80px;
+  }
+
   body {
     background: var(--color-bg);
     color: var(--color-body);
@@ -56,6 +63,35 @@
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Fix 10 — page-load fade-in */
+    animation: page-load 0.4s ease-out;
+  }
+
+  @keyframes page-load {
+    from { opacity: 0.7; }
+    to   { opacity: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body { animation: none; }
+  }
+
+  /* Fix 7 — subtle SVG noise overlay (paper feel) */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.035;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Make sure content sits above the overlay */
+  body > * {
+    position: relative;
+    z-index: 2;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -70,6 +106,43 @@
   ::selection {
     background: var(--color-gold);
     color: #0a0d11;
+  }
+
+  /* Fix 3 — skip-to-content link */
+  .skip-link {
+    position: absolute;
+    top: -100px;
+    left: 16px;
+    z-index: 100;
+    background: var(--color-gold);
+    color: #0a0d11;
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    text-decoration: none;
+    transition: top 0.2s;
+  }
+  .skip-link:focus {
+    top: 16px;
+  }
+
+  /* Fix 3 — global focus-visible for default elements */
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  /* Fix 3 — inputs/textarea focus */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none;
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 2px var(--gold-glow);
   }
 }
 
@@ -168,5 +241,108 @@
     @apply text-xs font-semibold tracking-widest uppercase;
     color: var(--color-gold);
     letter-spacing: 0.22em;
+  }
+
+  /* Fix 2 — CSS-only hover utility classes (replaces onMouseEnter/Leave) */
+  .cta-gold {
+    @apply inline-flex items-center gap-2.5 px-5 py-3 text-xs font-bold uppercase no-underline transition-all;
+    background: var(--color-gold);
+    color: #0a0d11;
+    letter-spacing: 0.16em;
+    border: 0;
+    cursor: pointer;
+  }
+  .cta-gold:hover {
+    background: #e8c452;
+    box-shadow: 0 8px 28px var(--gold-glow);
+    transform: translateY(-1px);
+  }
+  .cta-gold:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+
+  .pill {
+    @apply px-4 py-2 text-xs uppercase font-semibold transition-all cursor-pointer;
+    letter-spacing: 0.14em;
+    border: 1px solid var(--rule-dim);
+    background: transparent;
+    color: var(--color-muted);
+  }
+  .pill:hover {
+    border-color: var(--rule);
+  }
+  .pill:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+  .pill-active {
+    background: var(--color-gold);
+    color: #0a0d11;
+    border-color: var(--color-gold);
+  }
+  .pill-active:hover {
+    border-color: var(--color-gold);
+  }
+
+  .icon-btn {
+    @apply w-10 h-10 flex items-center justify-center text-xs font-semibold no-underline transition-all cursor-pointer;
+    letter-spacing: 0.05em;
+    border: 1px solid var(--rule-dim);
+    color: var(--color-muted);
+  }
+  .icon-btn:hover {
+    border-color: var(--color-gold);
+    color: var(--color-gold);
+  }
+  .icon-btn:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+
+  /* Fix 5 — scroll-triggered reveal */
+  .reveal-hidden {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+  .reveal-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Fix 6 — Hero entry animation */
+  @keyframes hero-enter {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-enter {
+    opacity: 0;
+    animation: hero-enter 0.9s ease-out forwards;
+  }
+  .hero-enter-1 { animation-delay: 0.05s; }
+  .hero-enter-2 { animation-delay: 0.18s; }
+  .hero-enter-3 { animation-delay: 0.32s; }
+  .hero-enter-4 { animation-delay: 0.46s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-enter,
+    .hero-enter-1,
+    .hero-enter-2,
+    .hero-enter-3,
+    .hero-enter-4 {
+      animation: none;
+      opacity: 1;
+    }
+  }
+
+  /* Fix 8 — mobile menu slide-down animation */
+  @keyframes slide-down {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .menu-slide {
+    animation: slide-down 0.22s ease-out;
   }
 }

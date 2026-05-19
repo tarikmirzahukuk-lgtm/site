@@ -34,22 +34,22 @@ export default function Hero() {
     <section className="relative overflow-hidden px-5 md:px-16 pt-16 pb-18 md:pt-[120px] md:pb-[110px]">
       <ColumnBg />
       <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="kicker mb-5 md:mb-[22px]">
+        <div className="kicker mb-5 md:mb-[22px] hero-enter hero-enter-1">
           İstanbul · {year}&apos;ten beri
         </div>
-        <h1 className="display max-w-[920px] m-0" style={{ fontSize: "clamp(40px, 6vw, 78px)" }}>
+        <h1 className="display max-w-[920px] m-0 hero-enter hero-enter-2" style={{ fontSize: "clamp(40px, 6vw, 78px)" }}>
           Ceza Hukukunda{" "}
           <span className="italic-gold">titiz ve içtihat odaklı</span> analiz.
         </h1>
         <p
-          className="mt-6 md:mt-8 max-w-[640px] leading-[1.65] font-normal"
+          className="mt-6 md:mt-8 max-w-[640px] leading-[1.65] font-normal hero-enter hero-enter-3"
           style={{ fontSize: "clamp(16px, 1.5vw, 19px)", color: "var(--color-body)" }}
         >
           Türk ceza hukukunun genel ve özel hükümlerine ilişkin akademik makaleler,
           Yargıtay içtihatlarının değerlendirilmesi ve güncel hukuki tartışmalar.
           Bilgiyi paylaşarak öğrenmek, tartışarak derinleşmek.
         </p>
-        <div className="mt-8 md:mt-11 flex flex-wrap gap-3.5">
+        <div className="mt-8 md:mt-11 flex flex-wrap gap-3.5 hero-enter hero-enter-4">
           <Link href="/#uzmanlik" className="btn-primary">
             İlgi Alanları
             <Icon name="chevron" size={14} color="#0a0d11" />
@@ -60,7 +60,7 @@ export default function Hero() {
         </div>
 
         {/* Reassurance row */}
-        <div className="mt-9 md:mt-14 flex flex-wrap gap-5 md:gap-9 text-[12.5px] tracking-[0.04em]" style={{ color: "var(--color-muted)" }}>
+        <div className="mt-9 md:mt-14 flex flex-wrap gap-5 md:gap-9 text-[12.5px] tracking-[0.04em] hero-enter hero-enter-4" style={{ color: "var(--color-muted)" }}>
           <span className="flex items-center gap-2">
             <Icon name="shield" size={16} color="var(--color-gold)" />
             Akademik referans

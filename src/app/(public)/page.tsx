@@ -6,6 +6,7 @@ import Process from "@/components/public/home/Process";
 import About from "@/components/public/home/About";
 import Urgent from "@/components/public/home/Urgent";
 import Faq from "@/components/public/home/Faq";
+import Reveal from "@/components/public/Reveal";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { SITE_CONFIG } from "@/lib/site-config";
 
@@ -19,12 +20,12 @@ export default function AnaSayfa() {
   return (
     <>
       <Hero />
-      <Trusts />
-      <Areas />
-      <Process />
-      <About />
-      <Urgent />
-      <Faq />
+      <Reveal><Trusts /></Reveal>
+      <Reveal delay={50}><Areas /></Reveal>
+      <Reveal><Process /></Reveal>
+      <Reveal delay={50}><About /></Reveal>
+      <Reveal><Urgent /></Reveal>
+      <Reveal><Faq /></Reveal>
     </>
   );
 }

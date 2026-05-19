@@ -42,8 +42,7 @@ export default function Footer() {
                 <a
                   key={s.t}
                   href={s.href}
-                  className="w-[34px] h-[34px] flex items-center justify-center text-[11px] font-semibold tracking-[0.05em] no-underline transition-colors"
-                  style={{ border: "1px solid var(--rule-dim)", color: "var(--color-muted)" }}
+                  className="icon-btn"
                 >
                   {s.t}
                 </a>

@@ -29,7 +29,7 @@ export default function Faq() {
                   onClick={() => setOpen(isOpen ? null : i)}
                   aria-expanded={isOpen}
                   aria-controls={`faq-panel-${i}`}
-                  className="w-full text-left bg-transparent border-0 cursor-pointer flex justify-between items-center gap-4 py-5 px-5 md:py-6 md:px-7 leading-[1.3]"
+                  className="w-full min-h-[44px] text-left bg-transparent border-0 cursor-pointer flex justify-between items-center gap-4 py-5 px-5 md:py-6 md:px-7 leading-[1.3]"
                   style={{
                     color: "var(--color-ink)",
                     fontFamily: "var(--font-display)",
@@ -38,11 +38,13 @@ export default function Faq() {
                   }}
                 >
                   <span>{f.question}</span>
-                  <Icon
-                    name={isOpen ? "minus" : "plus"}
-                    size={18}
-                    color="var(--color-gold)"
-                  />
+                  <span className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>
+                    <Icon
+                      name={isOpen ? "minus" : "plus"}
+                      size={18}
+                      color="var(--color-gold)"
+                    />
+                  </span>
                 </button>
                 {isOpen && (
                   <div

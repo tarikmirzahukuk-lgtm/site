@@ -55,23 +55,14 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <Link
             href="/iletisim"
-            className="hidden md:inline-flex items-center gap-2.5 px-5 py-3 text-[12.5px] font-bold uppercase tracking-[0.16em] no-underline transition-all"
-            style={{ background: "var(--color-gold)", color: "#0a0d11" }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "#e8c452";
-              e.currentTarget.style.boxShadow = "0 8px 28px var(--gold-glow)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "var(--color-gold)";
-              e.currentTarget.style.boxShadow = "none";
-            }}
+            className="cta-gold hidden md:inline-flex"
           >
             <Icon name="phone" size={16} color="#0a0d11" />
             İletişim
           </Link>
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2"
+            className="md:hidden p-2.5"
             style={{ color: "var(--color-ink)" }}
             aria-label="Menü"
           >
@@ -82,7 +73,7 @@ export default function Header() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden border-t px-5 py-4 space-y-3" style={{ borderColor: "var(--rule-dim)", background: "var(--color-bg)" }}>
+        <div className="menu-slide md:hidden border-t px-5 py-4 space-y-3" style={{ borderColor: "var(--rule-dim)", background: "var(--color-bg)" }}>
           {NAV.map((link) => (
             <Link
               key={link.href}
