@@ -1,12 +1,36 @@
 import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { SITE_CONFIG } from "@/lib/site-config";
+import JsonLdScript from "@/components/public/JsonLdScript";
+import { personJsonLd } from "@/lib/seo/jsonld";
+import { IKullanici } from "@/types";
 
-export const metadata: Metadata = {
+const HAKKIMDA_DESC =
+  "Tarık Mirza — ceza hukuku alanında araştırmalar yapan bir hukuk öğrencisi. Akademik makaleler, Yargıtay kararı değerlendirmeleri ve hukuki analizler.";
+
+export const metadata: Metadata = buildMetadata({
   title: "Hakkımda",
+  description: HAKKIMDA_DESC,
+  path: "/hakkimda",
+});
+
+const hakkimdaYazar: IKullanici = {
+  _id: "",
+  name: SITE_CONFIG.author.name,
+  email: "",
+  role: "admin",
+  bio: HAKKIMDA_DESC,
+  avatar: "",
+  slug: "tarik-mirza",
+  socials: {},
+  createdAt: "",
+  updatedAt: "",
 };
 
 export default function HakkimdaPage() {
   return (
     <div className="max-w-content mx-auto px-6 py-16">
+      <JsonLdScript data={personJsonLd(hakkimdaYazar)} />
       <h1 className="text-3xl font-extrabold mb-8">Hakkımda</h1>
 
       <div className="flex flex-col md:flex-row gap-8 items-start">
