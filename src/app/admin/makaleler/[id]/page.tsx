@@ -23,72 +23,125 @@ export default function MakaleDuzenlePage({
   const [tags, setTags] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
+  const [uploadError, setUploadError] = useState("");
 
   useEffect(() => {
-    Promise.all([
-      fetch(`/api/makaleler/${id}`).then((r) => r.json()),
-      fetch("/api/kategoriler").then((r) => r.json()),
-    ]).then(([makale, kats]: [IMakale, IKategori[]]) => {
-      setTitle(makale.title);
-      setSlug(makale.slug);
-      setExcerpt(makale.excerpt);
-      setContent(makale.content);
-      setCategory(
-        typeof makale.category === "string"
-          ? makale.category
-          : makale.category._id
-      );
-      setCoverImage(makale.coverImage);
-      setStatus(makale.status);
-      setTags(makale.tags.join(", "));
-      setKategoriler(kats);
-      setLoading(false);
-    });
+    const load = async () => {
+      try {
+        const [makaleRes, katRes] = await Promise.all([
+          fetch(`/api/makaleler/${id}`),
+          fetch("/api/kategoriler"),
+        ]);
+        if (!makaleRes.ok) {
+          setLoadError("Makale yüklenemedi");
+          setLoading(false);
+          return;
+        }
+        const makale: IMakale = await makaleRes.json();
+        const kats: IKategori[] = katRes.ok ? await katRes.json() : [];
+
+        setTitle(makale.title ?? "");
+        setSlug(makale.slug ?? "");
+        setExcerpt(makale.excerpt ?? "");
+        setContent(makale.content ?? "");
+        setCategory(
+          makale.category && typeof makale.category === "object"
+            ? makale.category._id
+            : (makale.category as string) ?? ""
+        );
+        setCoverImage(makale.coverImage ?? "");
+        setStatus(makale.status ?? "taslak");
+        setTags(Array.isArray(makale.tags) ? makale.tags.join(", ") : "");
+        setKategoriler(Array.isArray(kats) ? kats : []);
+        setLoading(false);
+      } catch {
+        setLoadError("Ağ hatası");
+        setLoading(false);
+      }
+    };
+    load();
   }, [id]);
 
   const handleCoverUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setUploadError("");
     const file = e.target.files?.[0];
     if (!file) return;
     const fd = new FormData();
     fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    if (data.url) setCoverImage(data.url);
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) {
+        setUploadError(data.error || "Görsel yüklenemedi");
+        return;
+      }
+      setCoverImage(data.url);
+    } catch {
+      setUploadError("Ağ hatası, tekrar deneyin");
+    }
   };
 
   const handleSave = async (newStatus?: "taslak" | "yayinda") => {
+    setError("");
+
+    if (!title.trim() || !excerpt.trim() || !category) {
+      setError("Başlık, özet ve kategori zorunludur");
+      return;
+    }
+
     setSaving(true);
-    await fetch(`/api/makaleler/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        slug,
-        excerpt,
-        content,
-        category,
-        coverImage,
-        status: newStatus || status,
-        tags: tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean),
-      }),
-    });
-    setSaving(false);
-    router.push("/admin/makaleler");
+    try {
+      const res = await fetch(`/api/makaleler/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          slug,
+          excerpt,
+          content,
+          category,
+          coverImage,
+          status: newStatus || status,
+          tags: tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Makale güncellenemedi");
+        setSaving(false);
+        return;
+      }
+
+      router.push("/admin/makaleler");
+    } catch {
+      setError("Ağ hatası, tekrar deneyin");
+      setSaving(false);
+    }
   };
 
   if (loading)
-    return <p className="text-gray-text text-sm">Yukleniyor...</p>;
+    return <p className="text-gray-text text-sm">Yükleniyor...</p>;
+
+  if (loadError)
+    return (
+      <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+        {loadError}
+      </div>
+    );
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold">Makale Duzenle</h1>
+          <h1 className="text-xl font-bold">Makale Düzenle</h1>
           <p className="text-gray-text text-sm mt-1">{title}</p>
         </div>
         <div className="flex gap-2">
@@ -104,15 +157,22 @@ export default function MakaleDuzenlePage({
             disabled={saving}
             className="btn-primary disabled:opacity-50"
           >
-            Yayinla
+            Yayınla
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+          {error}
+        </div>
+      )}
+
       <div className="grid grid-cols-[1fr_280px] gap-5">
         <div className="space-y-3">
           <div className="bg-white border border-gray-border rounded-lg p-4">
             <label className="block text-xs font-medium text-gray-text mb-2 uppercase tracking-wide">
-              Baslik
+              Başlık
             </label>
             <input
               type="text"
@@ -123,7 +183,7 @@ export default function MakaleDuzenlePage({
           </div>
           <div className="bg-white border border-gray-border rounded-lg p-4">
             <label className="block text-xs font-medium text-gray-text mb-2 uppercase tracking-wide">
-              Ozet
+              Özet
             </label>
             <textarea
               value={excerpt}
@@ -137,7 +197,7 @@ export default function MakaleDuzenlePage({
         <div className="space-y-3">
           <div className="bg-white border border-gray-border rounded-lg p-4">
             <label className="block text-xs font-medium text-gray-text mb-2 uppercase tracking-wide">
-              Kapak Gorseli
+              Kapak Görseli
             </label>
             {coverImage ? (
               <div className="relative">
@@ -157,7 +217,7 @@ export default function MakaleDuzenlePage({
               <label className="block h-32 bg-gray-light rounded-md border-2 border-dashed border-gray-border cursor-pointer flex items-center justify-center hover:border-primary transition-colors">
                 <div className="text-center">
                   <p className="text-2xl mb-1">+</p>
-                  <p className="text-xs text-gray-text">Gorsel yukle</p>
+                  <p className="text-xs text-gray-text">Görsel yükle</p>
                 </div>
                 <input
                   type="file"
@@ -166,6 +226,9 @@ export default function MakaleDuzenlePage({
                   className="hidden"
                 />
               </label>
+            )}
+            {uploadError && (
+              <p className="text-red-600 text-xs mt-2">{uploadError}</p>
             )}
           </div>
           <div className="bg-white border border-gray-border rounded-lg p-4">
@@ -177,7 +240,7 @@ export default function MakaleDuzenlePage({
               onChange={(e) => setCategory(e.target.value)}
               className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              <option value="">Kategori secin</option>
+              <option value="">Kategori seçin</option>
               {kategoriler.map((k) => (
                 <option key={k._id} value={k._id}>
                   {k.name}
@@ -219,7 +282,7 @@ export default function MakaleDuzenlePage({
                     : "bg-gray-light text-gray-text"
                 }`}
               >
-                Yayinda
+                Yayında
               </button>
             </div>
           </div>
@@ -232,7 +295,7 @@ export default function MakaleDuzenlePage({
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="virgülle ayirin"
+              placeholder="virgülle ayırın"
             />
           </div>
         </div>

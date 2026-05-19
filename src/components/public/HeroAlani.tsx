@@ -3,7 +3,10 @@ import { IMakale, IKategori } from "@/types";
 import { formatDate } from "@/lib/utils";
 
 export default function HeroAlani({ makale }: { makale: IMakale }) {
-  const kategori = makale.category as IKategori;
+  const kategori =
+    makale.category && typeof makale.category === "object"
+      ? (makale.category as IKategori)
+      : null;
 
   return (
     <section className="border-b border-gray-border">

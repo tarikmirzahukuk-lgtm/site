@@ -2,7 +2,10 @@ import Link from "next/link";
 import { IMakale, IKategori } from "@/types";
 
 export default function MakaleKart({ makale }: { makale: IMakale }) {
-  const kategori = makale.category as IKategori;
+  const kategori =
+    makale.category && typeof makale.category === "object"
+      ? (makale.category as IKategori)
+      : null;
 
   return (
     <Link href={`/makale/${makale.slug}`} className="group">

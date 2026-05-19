@@ -10,15 +10,24 @@ export default function AnaSayfa() {
   const [makaleler, setMakaleler] = useState<IMakale[]>([]);
   const [kategoriler, setKategoriler] = useState<IKategori[]>([]);
   const [aktifKategori, setAktifKategori] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/makaleler?status=yayinda").then((r) => r.json()),
-      fetch("/api/kategoriler").then((r) => r.json()),
-    ]).then(([makaleData, katData]) => {
-      setMakaleler(makaleData.makaleler);
-      setKategoriler(katData);
-    });
+      fetch("/api/makaleler?status=yayinda")
+        .then((r) => (r.ok ? r.json() : { makaleler: [] }))
+        .catch(() => ({ makaleler: [] })),
+      fetch("/api/kategoriler")
+        .then((r) => (r.ok ? r.json() : []))
+        .catch(() => []),
+    ])
+      .then(([makaleData, katData]) => {
+        setMakaleler(
+          Array.isArray(makaleData?.makaleler) ? makaleData.makaleler : []
+        );
+        setKategoriler(Array.isArray(katData) ? katData : []);
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   const oneCikan = makaleler[0];
@@ -26,11 +35,16 @@ export default function AnaSayfa() {
 
   const filtrelenmis = aktifKategori
     ? digerMakaleler.filter((m) => {
+        if (!m.category) return false;
         const catId =
           typeof m.category === "string" ? m.category : m.category._id;
         return catId === aktifKategori;
       })
     : digerMakaleler;
+
+  const bosMesaj = aktifKategori
+    ? "Bu kategoride henüz makale bulunmuyor."
+    : "Henüz makale yayınlanmamış.";
 
   return (
     <>
@@ -57,7 +71,7 @@ export default function AnaSayfa() {
           </div>
         ) : (
           <p className="text-gray-text text-sm text-center py-12">
-            Bu kategoride henüz makale bulunmuyor.
+            {loading ? "Yükleniyor..." : bosMesaj}
           </p>
         )}
       </section>

@@ -21,10 +21,46 @@ export async function POST(req: NextRequest) {
   if (!session || (session.user as { role?: string }).role !== "admin")
     return NextResponse.json({ error: "Yetkisiz" }, { status: 401 });
   await dbConnect();
-  const body = await req.json();
-  body.password = await bcrypt.hash(body.password, 12);
-  const yazar = await Kullanici.create(body);
-  const result = yazar.toObject();
-  delete (result as unknown as Record<string, unknown>).password;
-  return NextResponse.json(result, { status: 201 });
+
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Geçersiz istek" }, { status: 400 });
+  }
+
+  if (!body.name || !body.email || !body.password) {
+    return NextResponse.json(
+      { error: "Ad, e-posta ve şifre zorunludur" },
+      { status: 400 }
+    );
+  }
+
+  if (String(body.password).length < 6) {
+    return NextResponse.json(
+      { error: "Şifre en az 6 karakter olmalı" },
+      { status: 400 }
+    );
+  }
+
+  body.password = await bcrypt.hash(String(body.password), 12);
+
+  try {
+    const yazar = await Kullanici.create(body);
+    const result = yazar.toObject();
+    delete (result as unknown as Record<string, unknown>).password;
+    return NextResponse.json(result, { status: 201 });
+  } catch (err: unknown) {
+    const error = err as { code?: number; message?: string };
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { error: "Bu e-posta zaten kayıtlı" },
+        { status: 409 }
+      );
+    }
+    return NextResponse.json(
+      { error: error.message || "Yazar oluşturulamadı" },
+      { status: 500 }
+    );
+  }
 }

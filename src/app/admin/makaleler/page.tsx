@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { formatDate } from "@/lib/utils";
 import { IMakale } from "@/types";
@@ -9,22 +9,43 @@ export default function MakalelerPage() {
   const [makaleler, setMakaleler] = useState<IMakale[]>([]);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const fetchMakaleler = async () => {
-    const params = new URLSearchParams();
-    if (statusFilter) params.set("status", statusFilter);
-    const res = await fetch(`/api/makaleler?${params}`);
-    const data = await res.json();
-    setMakaleler(data.makaleler);
-  };
+  const fetchMakaleler = useCallback(async () => {
+    try {
+      const params = new URLSearchParams();
+      if (statusFilter) params.set("status", statusFilter);
+      const res = await fetch(`/api/makaleler?${params}`);
+      if (!res.ok) {
+        setError("Makaleler yüklenemedi");
+        setMakaleler([]);
+        return;
+      }
+      const data = await res.json();
+      setMakaleler(Array.isArray(data?.makaleler) ? data.makaleler : []);
+      setError("");
+    } catch {
+      setError("Ağ hatası");
+      setMakaleler([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [statusFilter]);
 
   useEffect(() => {
     fetchMakaleler();
-  }, [statusFilter]);
+  }, [fetchMakaleler]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("Bu makaleyi silmek istediğinize emin misiniz?")) return;
-    await fetch(`/api/makaleler/${id}`, { method: "DELETE" });
+    setError("");
+    const res = await fetch(`/api/makaleler/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error || "Silinemedi");
+      return;
+    }
     fetchMakaleler();
   };
 
@@ -40,6 +61,13 @@ export default function MakalelerPage() {
           Yeni Makale
         </Link>
       </div>
+
+      {error && (
+        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+          {error}
+        </div>
+      )}
+
       <div className="flex gap-3 mb-4">
         <input
           type="text"
@@ -94,7 +122,8 @@ export default function MakalelerPage() {
                   </Link>
                 </td>
                 <td className="px-5 py-3 text-sm text-gray-text">
-                  {typeof makale.category === "object"
+                  {makale.category &&
+                  typeof makale.category === "object"
                     ? makale.category.name
                     : "\u2014"}
                 </td>
@@ -130,6 +159,18 @@ export default function MakalelerPage() {
                 </td>
               </tr>
             ))}
+            {!loading && filtered.length === 0 && (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-5 py-8 text-center text-sm text-gray-text"
+                >
+                  {search
+                    ? "Aramanızla eşleşen makale bulunamadı."
+                    : "Henüz makale yok."}
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

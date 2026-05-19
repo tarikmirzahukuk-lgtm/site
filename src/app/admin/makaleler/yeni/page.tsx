@@ -17,11 +17,14 @@ export default function YeniMakalePage() {
   const [coverImage, setCoverImage] = useState("");
   const [tags, setTags] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [uploadError, setUploadError] = useState("");
 
   useEffect(() => {
     fetch("/api/kategoriler")
-      .then((r) => r.json())
-      .then(setKategoriler);
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setKategoriler(Array.isArray(data) ? data : []))
+      .catch(() => setKategoriler([]));
   }, []);
 
   const handleTitleChange = (v: string) => {
@@ -32,36 +35,64 @@ export default function YeniMakalePage() {
   const handleCoverUpload = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
+    setUploadError("");
     const file = e.target.files?.[0];
     if (!file) return;
     const fd = new FormData();
     fd.append("file", file);
-    const res = await fetch("/api/upload", { method: "POST", body: fd });
-    const data = await res.json();
-    if (data.url) setCoverImage(data.url);
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) {
+        setUploadError(data.error || "Görsel yüklenemedi");
+        return;
+      }
+      setCoverImage(data.url);
+    } catch {
+      setUploadError("Ağ hatası, tekrar deneyin");
+    }
   };
 
   const handleSave = async (status: "taslak" | "yayinda") => {
+    setError("");
+
+    if (!title.trim() || !excerpt.trim() || !category) {
+      setError("Başlık, özet ve kategori zorunludur");
+      return;
+    }
+
     setLoading(true);
-    const res = await fetch("/api/makaleler", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title,
-        slug,
-        excerpt,
-        content,
-        category,
-        coverImage,
-        status,
-        tags: tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean),
-      }),
-    });
-    if (res.ok) router.push("/admin/makaleler");
-    setLoading(false);
+    try {
+      const res = await fetch("/api/makaleler", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          slug,
+          excerpt,
+          content,
+          category,
+          coverImage,
+          status,
+          tags: tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean),
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Makale kaydedilemedi");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/admin/makaleler");
+    } catch {
+      setError("Ağ hatası, tekrar deneyin");
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,7 +101,7 @@ export default function YeniMakalePage() {
         <div>
           <h1 className="text-xl font-bold">Yeni Makale</h1>
           <p className="text-gray-text text-sm mt-1">
-            Makale olustur ve yayinla
+            Makale oluştur ve yayınla
           </p>
         </div>
         <div className="flex gap-2">
@@ -86,34 +117,41 @@ export default function YeniMakalePage() {
             disabled={loading}
             className="btn-primary disabled:opacity-50"
           >
-            Yayinla
+            Yayınla
           </button>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+          {error}
+        </div>
+      )}
+
       <div className="grid grid-cols-[1fr_280px] gap-5">
         <div className="space-y-3">
           <div className="bg-white border border-gray-border rounded-lg p-4">
             <label className="block text-xs font-medium text-gray-text mb-2 uppercase tracking-wide">
-              Baslik
+              Başlık
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => handleTitleChange(e.target.value)}
               className="w-full text-xl font-bold border-b border-gray-border pb-2 focus:outline-none focus:border-primary"
-              placeholder="Makale basligi"
+              placeholder="Makale başlığı"
             />
           </div>
           <div className="bg-white border border-gray-border rounded-lg p-4">
             <label className="block text-xs font-medium text-gray-text mb-2 uppercase tracking-wide">
-              Ozet
+              Özet
             </label>
             <textarea
               value={excerpt}
               onChange={(e) => setExcerpt(e.target.value)}
               rows={2}
               className="w-full text-sm border-none focus:outline-none resize-none"
-              placeholder="Makale ozeti (kart ve SEO icin)"
+              placeholder="Makale özeti (kart ve SEO için)"
             />
           </div>
           <MakaleEditoru content={content} onChange={setContent} />
@@ -121,7 +159,7 @@ export default function YeniMakalePage() {
         <div className="space-y-3">
           <div className="bg-white border border-gray-border rounded-lg p-4">
             <label className="block text-xs font-medium text-gray-text mb-2 uppercase tracking-wide">
-              Kapak Gorseli
+              Kapak Görseli
             </label>
             {coverImage ? (
               <div className="relative">
@@ -141,7 +179,7 @@ export default function YeniMakalePage() {
               <label className="block h-32 bg-gray-light rounded-md border-2 border-dashed border-gray-border cursor-pointer flex items-center justify-center hover:border-primary transition-colors">
                 <div className="text-center">
                   <p className="text-2xl mb-1">+</p>
-                  <p className="text-xs text-gray-text">Gorsel yukle</p>
+                  <p className="text-xs text-gray-text">Görsel yükle</p>
                 </div>
                 <input
                   type="file"
@@ -150,6 +188,9 @@ export default function YeniMakalePage() {
                   className="hidden"
                 />
               </label>
+            )}
+            {uploadError && (
+              <p className="text-red-600 text-xs mt-2">{uploadError}</p>
             )}
           </div>
           <div className="bg-white border border-gray-border rounded-lg p-4">
@@ -161,7 +202,7 @@ export default function YeniMakalePage() {
               onChange={(e) => setCategory(e.target.value)}
               className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             >
-              <option value="">Kategori secin</option>
+              <option value="">Kategori seçin</option>
               {kategoriler.map((k) => (
                 <option key={k._id} value={k._id}>
                   {k.name}
@@ -189,7 +230,7 @@ export default function YeniMakalePage() {
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="virgülle ayirin"
+              placeholder="virgülle ayırın"
             />
           </div>
         </div>

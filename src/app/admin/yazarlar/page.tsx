@@ -12,42 +12,97 @@ export default function YazarlarPage() {
   const [role, setRole] = useState<"admin" | "yazar">("yazar");
   const [bio, setBio] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [listError, setListError] = useState("");
 
   const fetchYazarlar = async () => {
-    const res = await fetch("/api/yazarlar");
-    if (res.ok) setYazarlar(await res.json());
+    try {
+      const res = await fetch("/api/yazarlar");
+      if (!res.ok) {
+        setListError("Yazarlar yüklenemedi");
+        setYazarlar([]);
+        return;
+      }
+      const data = await res.json();
+      setYazarlar(Array.isArray(data) ? data : []);
+    } catch {
+      setListError("Ağ hatası");
+      setYazarlar([]);
+    }
   };
 
   useEffect(() => {
     fetchYazarlar();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    await fetch("/api/yazarlar", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, role, bio }),
-    });
-    setLoading(false);
-    setShowForm(false);
+  const resetForm = () => {
     setName("");
     setEmail("");
     setPassword("");
     setRole("yazar");
     setBio("");
-    fetchYazarlar();
+    setError("");
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!name.trim() || !email.trim() || !password) {
+      setError("Ad, e-posta ve şifre zorunludur");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Şifre en az 6 karakter olmalı");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/yazarlar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password, role, bio }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Yazar oluşturulamadı");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(false);
+      setShowForm(false);
+      resetForm();
+      fetchYazarlar();
+    } catch {
+      setError("Ağ hatası, tekrar deneyin");
+      setLoading(false);
+    }
   };
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-xl font-bold">Yazarlar</h1>
-        <button onClick={() => setShowForm(true)} className="btn-primary">
+        <button
+          onClick={() => {
+            setShowForm(true);
+            setError("");
+          }}
+          className="btn-primary"
+        >
           Yeni Yazar
         </button>
       </div>
+
+      {listError && (
+        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+          {listError}
+        </div>
+      )}
+
       {showForm && (
         <form
           onSubmit={handleSubmit}
@@ -86,6 +141,7 @@ export default function YazarlarPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                minLength={6}
                 className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
@@ -115,6 +171,7 @@ export default function YazarlarPage() {
               className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+          {error && <p className="text-red-600 text-sm">{error}</p>}
           <div className="flex gap-2">
             <button
               type="submit"
@@ -125,7 +182,10 @@ export default function YazarlarPage() {
             </button>
             <button
               type="button"
-              onClick={() => setShowForm(false)}
+              onClick={() => {
+                setShowForm(false);
+                resetForm();
+              }}
               className="btn-secondary"
             >
               İptal
@@ -169,6 +229,16 @@ export default function YazarlarPage() {
                 </td>
               </tr>
             ))}
+            {yazarlar.length === 0 && !listError && (
+              <tr>
+                <td
+                  colSpan={3}
+                  className="px-5 py-8 text-center text-sm text-gray-text"
+                >
+                  Henüz yazar yok.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

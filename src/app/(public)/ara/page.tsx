@@ -9,24 +9,42 @@ export default function AramaSayfasi() {
   const [results, setResults] = useState<IMakale[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (query.trim().length < 2) return;
+    setError("");
+    if (query.trim().length < 2) {
+      setError("En az 2 karakter girin");
+      return;
+    }
 
     setLoading(true);
-    const res = await fetch(`/api/ara?q=${encodeURIComponent(query)}`);
-    const data = await res.json();
-    setResults(data.makaleler);
-    setSearched(true);
-    setLoading(false);
+    try {
+      const res = await fetch(`/api/ara?q=${encodeURIComponent(query)}`);
+      if (!res.ok) {
+        setError("Arama başarısız oldu");
+        setResults([]);
+        setSearched(true);
+        return;
+      }
+      const data = await res.json();
+      setResults(Array.isArray(data?.makaleler) ? data.makaleler : []);
+      setSearched(true);
+    } catch {
+      setError("Ağ hatası, tekrar deneyin");
+      setResults([]);
+      setSearched(true);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
       <h1 className="text-2xl font-extrabold mb-6">Makale Ara</h1>
 
-      <form onSubmit={handleSearch} className="flex gap-3 mb-10">
+      <form onSubmit={handleSearch} className="flex gap-3 mb-4">
         <input
           type="text"
           value={query}
@@ -44,7 +62,13 @@ export default function AramaSayfasi() {
         </button>
       </form>
 
-      {searched && (
+      {error && (
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+          {error}
+        </div>
+      )}
+
+      {searched && !error && (
         <>
           <p className="text-sm text-gray-text mb-6">
             &quot;{query}&quot; için {results.length} sonuç bulundu.

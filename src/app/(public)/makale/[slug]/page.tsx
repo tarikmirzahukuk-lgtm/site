@@ -36,10 +36,18 @@ export default async function MakaleDetay({ params }: Props) {
   if (!makale) notFound();
 
   const makaleObj = JSON.parse(JSON.stringify(makale)) as IMakale;
-  const yazar = makaleObj.author as IKullanici;
-  const kategori = makaleObj.category as IKategori;
 
-  // İçerikteki h2/h3'lere id ekle
+  // Null-safe: category or author may have been deleted (orphan).
+  const yazar =
+    makaleObj.author && typeof makaleObj.author === "object"
+      ? (makaleObj.author as IKullanici)
+      : null;
+  const kategori =
+    makaleObj.category && typeof makaleObj.category === "object"
+      ? (makaleObj.category as IKategori)
+      : null;
+
+  // İçerikteki h2/h3'lere id ekle (TOC için)
   let headingIndex = 0;
   const contentWithIds = makaleObj.content.replace(
     /<(h[23])>/g,
@@ -50,17 +58,20 @@ export default async function MakaleDetay({ params }: Props) {
     }
   );
 
-  // İlgili makaleler
-  const ilgiliRaw = await Makale.find({
-    category: makale.category._id,
-    status: "yayinda",
-    _id: { $ne: makale._id },
-  })
-    .populate("category", "name slug")
-    .populate("author", "name avatar")
-    .limit(2);
+  // İlgili makaleler (kategori orphan değilse)
+  let ilgiliMakaleler: IMakale[] = [];
+  if (makale.category) {
+    const ilgiliRaw = await Makale.find({
+      category: makale.category._id ?? makale.category,
+      status: "yayinda",
+      _id: { $ne: makale._id },
+    })
+      .populate("category", "name slug")
+      .populate("author", "name avatar")
+      .limit(2);
 
-  const ilgiliMakaleler = JSON.parse(JSON.stringify(ilgiliRaw)) as IMakale[];
+    ilgiliMakaleler = JSON.parse(JSON.stringify(ilgiliRaw)) as IMakale[];
+  }
 
   return (
     <article>
@@ -79,18 +90,20 @@ export default async function MakaleDetay({ params }: Props) {
         {/* Meta */}
         <div className="flex items-center gap-4 mt-6 pb-6 border-b border-gray-border">
           <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold overflow-hidden">
-            {yazar.avatar ? (
+            {yazar?.avatar ? (
               <img
                 src={yazar.avatar}
                 alt={yazar.name}
                 className="w-full h-full rounded-full object-cover"
               />
             ) : (
-              yazar.name.charAt(0)
+              yazar?.name?.charAt(0) ?? "?"
             )}
           </div>
           <div>
-            <p className="text-sm font-semibold">{yazar.name}</p>
+            <p className="text-sm font-semibold">
+              {yazar?.name ?? "Anonim"}
+            </p>
             <p className="text-xs text-gray-text">
               {formatDate(makaleObj.createdAt)} · {makaleObj.readingTime} dk
               okuma
@@ -135,7 +148,7 @@ export default async function MakaleDetay({ params }: Props) {
 
       {/* Author Card & Related */}
       <div className="max-w-content mx-auto px-6 pb-16">
-        <YazarKarti yazar={yazar} />
+        {yazar && <YazarKarti yazar={yazar} />}
         <IlgiliMakaleler makaleler={ilgiliMakaleler} />
       </div>
     </article>

@@ -8,14 +8,23 @@ import { slugify, calculateReadingTime } from "@/lib/utils";
 export async function GET(req: NextRequest) {
   await dbConnect();
 
+  const session = await getServerSession(authOptions);
   const { searchParams } = new URL(req.url);
-  const status = searchParams.get("status");
+  const requestedStatus = searchParams.get("status");
   const category = searchParams.get("category");
-  const limit = parseInt(searchParams.get("limit") || "50");
-  const page = parseInt(searchParams.get("page") || "1");
+  const limit = Math.min(parseInt(searchParams.get("limit") || "50") || 50, 100);
+  const page = Math.max(parseInt(searchParams.get("page") || "1") || 1, 1);
 
   const filter: Record<string, unknown> = {};
-  if (status) filter.status = status;
+
+  // Public visitors can ONLY see published articles, regardless of query param.
+  // Authenticated admins can filter by any status (or leave unfiltered for "all").
+  if (!session) {
+    filter.status = "yayinda";
+  } else if (requestedStatus) {
+    filter.status = requestedStatus;
+  }
+
   if (category) filter.category = category;
 
   const skip = (page - 1) * limit;
@@ -39,15 +48,41 @@ export async function POST(req: NextRequest) {
   }
 
   await dbConnect();
-  const body = await req.json();
-
-  if (!body.slug) {
-    body.slug = slugify(body.title);
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Geçersiz istek" }, { status: 400 });
   }
 
-  body.readingTime = calculateReadingTime(body.content || "");
+  if (!body.title || !body.excerpt || !body.category) {
+    return NextResponse.json(
+      { error: "Başlık, özet ve kategori zorunludur" },
+      { status: 400 }
+    );
+  }
+
+  if (!body.slug) {
+    body.slug = slugify(String(body.title));
+  }
+
+  body.readingTime = calculateReadingTime(String(body.content || ""));
   body.author = (session.user as { id: string }).id;
 
-  const makale = await Makale.create(body);
-  return NextResponse.json(makale, { status: 201 });
+  try {
+    const makale = await Makale.create(body);
+    return NextResponse.json(makale, { status: 201 });
+  } catch (err: unknown) {
+    const error = err as { code?: number; message?: string };
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { error: "Bu slug zaten kullanılıyor. Farklı bir slug seçin." },
+        { status: 409 }
+      );
+    }
+    return NextResponse.json(
+      { error: error.message || "Makale oluşturulamadı" },
+      { status: 500 }
+    );
+  }
 }
