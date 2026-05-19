@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import MakaleEditoru from "@/components/admin/MakaleEditoru";
+import FaqEditor from "@/components/admin/FaqEditor";
 import { slugify } from "@/lib/utils";
-import { IKategori } from "@/types";
+import { IFaq, IKategori } from "@/types";
 
 export default function YeniMakalePage() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function YeniMakalePage() {
   const [category, setCategory] = useState("");
   const [coverImage, setCoverImage] = useState("");
   const [tags, setTags] = useState("");
+  const [faqs, setFaqs] = useState<IFaq[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [uploadError, setUploadError] = useState("");
@@ -78,6 +80,7 @@ export default function YeniMakalePage() {
             .split(",")
             .map((t) => t.trim())
             .filter(Boolean),
+          faqs: faqs.filter((f) => f.question.trim() && f.answer.trim()),
         }),
       });
 
@@ -155,6 +158,12 @@ export default function YeniMakalePage() {
             />
           </div>
           <MakaleEditoru content={content} onChange={setContent} />
+          <div className="bg-white border border-gray-border rounded-lg p-4">
+            <label className="block text-xs font-medium text-gray-text mb-3 uppercase tracking-wide">
+              Sıkça Sorulan Sorular (opsiyonel — SEO için FAQ schema oluşturur)
+            </label>
+            <FaqEditor value={faqs} onChange={setFaqs} />
+          </div>
         </div>
         <div className="space-y-3">
           <div className="bg-white border border-gray-border rounded-lg p-4">

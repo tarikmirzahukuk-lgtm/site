@@ -3,7 +3,8 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import MakaleEditoru from "@/components/admin/MakaleEditoru";
-import { IKategori, IMakale } from "@/types";
+import FaqEditor from "@/components/admin/FaqEditor";
+import { IFaq, IKategori, IMakale } from "@/types";
 
 export default function MakaleDuzenlePage({
   params,
@@ -21,6 +22,7 @@ export default function MakaleDuzenlePage({
   const [coverImage, setCoverImage] = useState("");
   const [status, setStatus] = useState<"taslak" | "yayinda">("taslak");
   const [tags, setTags] = useState("");
+  const [faqs, setFaqs] = useState<IFaq[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -54,6 +56,7 @@ export default function MakaleDuzenlePage({
         setCoverImage(makale.coverImage ?? "");
         setStatus(makale.status ?? "taslak");
         setTags(Array.isArray(makale.tags) ? makale.tags.join(", ") : "");
+        setFaqs(Array.isArray(makale.faqs) ? makale.faqs : []);
         setKategoriler(Array.isArray(kats) ? kats : []);
         setLoading(false);
       } catch {
@@ -110,6 +113,7 @@ export default function MakaleDuzenlePage({
             .split(",")
             .map((t) => t.trim())
             .filter(Boolean),
+          faqs: faqs.filter((f) => f.question.trim() && f.answer.trim()),
         }),
       });
 
@@ -193,6 +197,12 @@ export default function MakaleDuzenlePage({
             />
           </div>
           <MakaleEditoru content={content} onChange={setContent} />
+          <div className="bg-white border border-gray-border rounded-lg p-4">
+            <label className="block text-xs font-medium text-gray-text mb-3 uppercase tracking-wide">
+              Sıkça Sorulan Sorular (opsiyonel — SEO için FAQ schema oluşturur)
+            </label>
+            <FaqEditor value={faqs} onChange={setFaqs} />
+          </div>
         </div>
         <div className="space-y-3">
           <div className="bg-white border border-gray-border rounded-lg p-4">

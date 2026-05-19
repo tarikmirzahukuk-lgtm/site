@@ -68,6 +68,7 @@ export async function POST(req: NextRequest) {
 
   body.readingTime = calculateReadingTime(String(body.content || ""));
   body.author = (session.user as { id: string }).id;
+  if (!Array.isArray(body.faqs)) body.faqs = [];
 
   try {
     const makale = await Makale.create(body);
