@@ -1,16 +1,34 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { SITE_CONFIG, SITE_URL } from "@/lib/site-config";
+import JsonLdScript from "@/components/public/JsonLdScript";
+import { organizationJsonLd } from "@/lib/seo/jsonld";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin", "latin-ext"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Tarık Mirza | Ceza Hukuku Yazıları",
-    template: "%s | Tarık Mirza",
+    default: `${SITE_CONFIG.brand} | ${SITE_CONFIG.tagline}`,
+    template: `%s | ${SITE_CONFIG.brand}`,
   },
-  description:
-    "Ceza hukuku alanında akademik makaleler, içtihat değerlendirmeleri ve güncel hukuki analizler.",
+  description: SITE_CONFIG.description,
+  applicationName: SITE_CONFIG.fullName,
+  authors: [{ name: SITE_CONFIG.author.name, url: SITE_URL }],
+  creator: SITE_CONFIG.author.name,
+  publisher: SITE_CONFIG.fullName,
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: SITE_CONFIG.themeColor,
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -19,8 +37,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="tr">
-      <body className={inter.className}>{children}</body>
+    <html lang={SITE_CONFIG.language}>
+      <body className={inter.className}>
+        <JsonLdScript data={organizationJsonLd()} />
+        {children}
+      </body>
     </html>
   );
 }
