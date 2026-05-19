@@ -11,6 +11,7 @@ export interface NavLink {
 
 export const NAV: NavLink[] = [
   { href: "/", label: "Ana Sayfa" },
+  { href: "/makaleler", label: "Makaleler" },
   { href: "/hakkimda", label: "Hakkımda" },
   { href: "/#uzmanlik", label: "İlgi Alanları" },
   { href: "/#surec", label: "Yaklaşım" },
