@@ -3,26 +3,57 @@ import Makale from "@/models/Makale";
 import "@/models/Kullanici";
 import "@/models/Kategori";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { formatDate } from "@/lib/utils";
 import IcindekilerTablosu from "@/components/public/IcindekilerTablosu";
 import PaylasimButonlari from "@/components/public/PaylasimButonlari";
 import YazarKarti from "@/components/public/YazarKarti";
 import IlgiliMakaleler from "@/components/public/IlgiliMakaleler";
+import Breadcrumb from "@/components/public/Breadcrumb";
+import JsonLdScript from "@/components/public/JsonLdScript";
+import {
+  articleJsonLd,
+  breadcrumbJsonLd,
+  faqJsonLd,
+} from "@/lib/seo/jsonld";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { SITE_URL } from "@/lib/site-config";
 import { IMakale, IKullanici, IKategori } from "@/types";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   await dbConnect();
   const { slug } = await params;
-  const makale = await Makale.findOne({ slug, status: "yayinda" });
+  const makale = await Makale.findOne({ slug, status: "yayinda" })
+    .populate("author", "name")
+    .populate("category", "name");
   if (!makale) return { title: "Bulunamadı" };
-  return {
-    title: makale.title,
-    description: makale.excerpt,
-  };
+
+  const obj = JSON.parse(JSON.stringify(makale)) as IMakale;
+  const yazar =
+    obj.author && typeof obj.author === "object" ? (obj.author as IKullanici) : null;
+  const kategori =
+    obj.category && typeof obj.category === "object"
+      ? (obj.category as IKategori)
+      : null;
+
+  return buildMetadata({
+    title: obj.title,
+    description: obj.excerpt,
+    path: `/makale/${obj.slug}`,
+    image: `${SITE_URL}/api/og?id=${obj._id}&v=${encodeURIComponent(
+      obj.updatedAt
+    )}`,
+    type: "article",
+    publishedTime: obj.createdAt,
+    modifiedTime: obj.updatedAt,
+    authors: yazar ? [yazar.name] : undefined,
+    section: kategori?.name,
+    tags: obj.tags,
+  });
 }
 
 export default async function MakaleDetay({ params }: Props) {
@@ -31,13 +62,12 @@ export default async function MakaleDetay({ params }: Props) {
 
   const makale = await Makale.findOne({ slug, status: "yayinda" })
     .populate("category", "name slug")
-    .populate("author", "name avatar bio");
+    .populate("author", "name avatar bio slug socials");
 
   if (!makale) notFound();
 
   const makaleObj = JSON.parse(JSON.stringify(makale)) as IMakale;
 
-  // Null-safe: category or author may have been deleted (orphan).
   const yazar =
     makaleObj.author && typeof makaleObj.author === "object"
       ? (makaleObj.author as IKullanici)
@@ -58,7 +88,7 @@ export default async function MakaleDetay({ params }: Props) {
     }
   );
 
-  // İlgili makaleler (kategori orphan değilse)
+  // İlgili makaleler
   let ilgiliMakaleler: IMakale[] = [];
   if (makale.category) {
     const ilgiliRaw = await Makale.find({
@@ -73,10 +103,38 @@ export default async function MakaleDetay({ params }: Props) {
     ilgiliMakaleler = JSON.parse(JSON.stringify(ilgiliRaw)) as IMakale[];
   }
 
+  // Breadcrumb items
+  const breadcrumbItems = [
+    { name: "Ana Sayfa", href: "/" },
+    ...(kategori
+      ? [{ name: kategori.name, href: `/kategori/${kategori.slug}` }]
+      : []),
+    { name: makaleObj.title }, // son item href'siz
+  ];
+
+  const breadcrumbAbsolute = [
+    { name: "Ana Sayfa", url: SITE_URL },
+    ...(kategori
+      ? [
+          {
+            name: kategori.name,
+            url: `${SITE_URL}/kategori/${kategori.slug}`,
+          },
+        ]
+      : []),
+    { name: makaleObj.title, url: `${SITE_URL}/makale/${makaleObj.slug}` },
+  ];
+
   return (
     <article>
+      <JsonLdScript data={articleJsonLd(makaleObj)} />
+      <JsonLdScript data={breadcrumbJsonLd(breadcrumbAbsolute)} />
+      <JsonLdScript data={faqJsonLd(makaleObj.faqs)} />
+
       {/* Header */}
       <div className="max-w-content mx-auto px-6 pt-12">
+        <Breadcrumb items={breadcrumbItems} />
+
         {kategori && (
           <p className="kategori-etiketi mb-4">{kategori.name}</p>
         )}
@@ -91,6 +149,7 @@ export default async function MakaleDetay({ params }: Props) {
         <div className="flex items-center gap-4 mt-6 pb-6 border-b border-gray-border">
           <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold overflow-hidden">
             {yazar?.avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={yazar.avatar}
                 alt={yazar.name}
@@ -101,9 +160,7 @@ export default async function MakaleDetay({ params }: Props) {
             )}
           </div>
           <div>
-            <p className="text-sm font-semibold">
-              {yazar?.name ?? "Anonim"}
-            </p>
+            <p className="text-sm font-semibold">{yazar?.name ?? "Anonim"}</p>
             <p className="text-xs text-gray-text">
               {formatDate(makaleObj.createdAt)} · {makaleObj.readingTime} dk
               okuma
@@ -121,6 +178,7 @@ export default async function MakaleDetay({ params }: Props) {
       {/* Cover Image */}
       {makaleObj.coverImage && (
         <div className="max-w-content-wide mx-auto px-6 my-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={makaleObj.coverImage}
             alt={makaleObj.title}
@@ -145,6 +203,29 @@ export default async function MakaleDetay({ params }: Props) {
         />
         <IcindekilerTablosu content={makaleObj.content} />
       </div>
+
+      {/* FAQ Section */}
+      {makaleObj.faqs && makaleObj.faqs.length > 0 && (
+        <section className="max-w-content mx-auto px-6 mt-12">
+          <h2 className="text-2xl font-bold mb-6">Sıkça Sorulan Sorular</h2>
+          <div className="space-y-4">
+            {makaleObj.faqs.map((faq, idx) => (
+              <details
+                key={idx}
+                className="bg-gray-light/50 rounded-lg p-4 border border-gray-border"
+              >
+                <summary className="font-semibold cursor-pointer">
+                  {faq.question}
+                </summary>
+                <div
+                  className="mt-3 text-dark/80 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: faq.answer }}
+                />
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Author Card & Related */}
       <div className="max-w-content mx-auto px-6 pb-16">
