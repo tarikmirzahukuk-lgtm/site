@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import KategoriDropdown from "@/components/public/KategoriDropdown";
+import { IKategori } from "@/types";
 
 const navLinks = [
   { href: "/", label: "Ana Sayfa" },
@@ -10,7 +12,7 @@ const navLinks = [
   { href: "/iletisim", label: "İletişim" },
 ];
 
-export default function Header() {
+export default function Header({ kategoriler }: { kategoriler: IKategori[] }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -35,6 +37,7 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          <KategoriDropdown kategoriler={kategoriler} />
           <Link
             href="/ara"
             className="text-gray-text hover:text-dark transition-colors"
@@ -99,6 +102,23 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
+          {kategoriler.length > 0 && (
+            <div className="pt-2 border-t border-gray-border">
+              <p className="text-xs uppercase tracking-wide text-gray-text mb-2">
+                Kategoriler
+              </p>
+              {kategoriler.map((k) => (
+                <Link
+                  key={k._id}
+                  href={`/kategori/${k.slug}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="block text-sm text-gray-text hover:text-dark py-1"
+                >
+                  {k.name}
+                </Link>
+              ))}
+            </div>
+          )}
           <Link
             href="/ara"
             onClick={() => setMobileOpen(false)}
