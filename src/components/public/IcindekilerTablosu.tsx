@@ -53,29 +53,29 @@ export default function IcindekilerTablosu({ content }: { content: string }) {
   if (items.length === 0) return null;
 
   return (
-    <nav className="hidden lg:block w-48 flex-shrink-0">
-      <div className="sticky top-24">
-        <p className="text-xs font-semibold text-gray-text uppercase tracking-widest mb-3">
-          İçindekiler
-        </p>
-        <div className="border-l-2 border-gray-border pl-3 space-y-2">
+    <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
+      <div className="pcard p-5">
+        <p className="kicker mb-3">İçindekiler</p>
+        <ul className="space-y-2">
           {items.map((item) => (
-            <a
-              key={item.id}
-              href={`#${item.id}`}
-              className={`block text-xs transition-colors ${
-                item.level === 3 ? "pl-3" : ""
-              } ${
-                activeId === item.id
-                  ? "text-primary font-medium"
-                  : "text-gray-text hover:text-dark"
-              }`}
-            >
-              {item.text}
-            </a>
+            <li key={item.id} className={item.level === 3 ? "pl-3" : ""}>
+              <a
+                href={`#${item.id}`}
+                className="text-xs leading-snug transition-colors block"
+                style={{
+                  color:
+                    activeId === item.id
+                      ? "var(--color-gold)"
+                      : "var(--color-muted)",
+                  fontWeight: activeId === item.id ? 600 : 400,
+                }}
+              >
+                {item.text}
+              </a>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
-    </nav>
+    </aside>
   );
 }

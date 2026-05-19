@@ -9,10 +9,10 @@ export default function MakaleKart({ makale }: { makale: IMakale }) {
       : null;
 
   return (
-    <Link href={`/makale/${makale.slug}`} className="group">
-      <article className="border border-gray-border rounded-lg overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
+    <Link href={`/makale/${makale.slug}`} className="group block no-underline">
+      <article className="pcard overflow-hidden h-full flex flex-col">
         {makale.coverImage ? (
-          <div className="h-44 bg-gray-light overflow-hidden relative">
+          <div className="h-44 overflow-hidden relative" style={{ background: "var(--color-panel-hi)" }}>
             <Image
               src={makale.coverImage}
               alt={makale.title}
@@ -22,19 +22,20 @@ export default function MakaleKart({ makale }: { makale: IMakale }) {
             />
           </div>
         ) : (
-          <div className="h-44 bg-gray-light" />
+          <div className="h-44" style={{ background: "var(--color-panel-hi)" }} />
         )}
-        <div className="p-5">
-          {kategori && (
-            <p className="kategori-etiketi mb-2">{kategori.name}</p>
-          )}
-          <h3 className="font-bold text-dark leading-snug group-hover:text-primary transition-colors">
+        <div className="p-6 flex-1 flex flex-col">
+          {kategori && <p className="kicker mb-2">{kategori.name}</p>}
+          <h3
+            className="text-lg font-semibold leading-snug mb-2 transition-colors group-hover:text-[var(--color-gold)]"
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+          >
             {makale.title}
           </h3>
-          <p className="text-sm text-gray-text mt-2 leading-relaxed line-clamp-2">
+          <p className="text-sm leading-relaxed line-clamp-2 mb-3" style={{ color: "var(--color-muted)" }}>
             {makale.excerpt}
           </p>
-          <p className="text-xs text-gray-text mt-3">
+          <p className="text-xs mt-auto" style={{ color: "var(--color-muted-dim)" }}>
             {makale.readingTime} dk okuma
           </p>
         </div>

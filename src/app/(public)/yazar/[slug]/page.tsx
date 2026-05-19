@@ -96,8 +96,11 @@ export default async function YazarSayfasi({ params }: Props) {
       <Breadcrumb items={breadcrumbItems} />
 
       {/* Profile */}
-      <div className="flex flex-col md:flex-row gap-8 items-start mb-12 pb-10 border-b border-gray-border">
-        <div className="relative w-32 h-32 bg-primary rounded-full flex items-center justify-center text-white font-bold text-4xl flex-shrink-0 overflow-hidden">
+      <div className="flex flex-col md:flex-row gap-8 items-start mb-12 pb-10 border-b" style={{ borderColor: "var(--rule-dim)" }}>
+        <div
+          className="relative w-32 h-32 flex items-center justify-center flex-shrink-0 overflow-hidden"
+          style={{ border: "1px solid var(--color-gold)", background: "var(--color-panel-hi)" }}
+        >
           {yazarObj.avatar ? (
             <Image
               src={yazarObj.avatar}
@@ -107,13 +110,28 @@ export default async function YazarSayfasi({ params }: Props) {
               className="object-cover"
             />
           ) : (
-            yazarObj.name.charAt(0)
+            <span
+              className="italic"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: 48,
+                color: "var(--color-gold)",
+                fontWeight: 500,
+              }}
+            >
+              {yazarObj.name.charAt(0)}
+            </span>
           )}
         </div>
         <div className="flex-1">
-          <h1 className="text-3xl font-extrabold mb-2">{yazarObj.name}</h1>
+          <h1
+            className="display text-3xl md:text-4xl mb-2"
+            style={{ fontWeight: 600 }}
+          >
+            {yazarObj.name}
+          </h1>
           {yazarObj.bio && (
-            <p className="text-dark/80 leading-relaxed mb-4">{yazarObj.bio}</p>
+            <p className="leading-relaxed mb-4" style={{ color: "var(--color-body)" }}>{yazarObj.bio}</p>
           )}
           {hasSocials && (
             <div className="flex flex-wrap gap-3 text-sm">
@@ -122,7 +140,8 @@ export default async function YazarSayfasi({ params }: Props) {
                   href={socials.linkedin}
                   target="_blank"
                   rel="noopener noreferrer me"
-                  className="text-primary hover:underline"
+                  className="transition-colors hover:underline"
+                  style={{ color: "var(--color-gold)" }}
                 >
                   LinkedIn
                 </a>
@@ -132,7 +151,8 @@ export default async function YazarSayfasi({ params }: Props) {
                   href={socials.twitter}
                   target="_blank"
                   rel="noopener noreferrer me"
-                  className="text-primary hover:underline"
+                  className="transition-colors hover:underline"
+                  style={{ color: "var(--color-gold)" }}
                 >
                   Twitter
                 </a>
@@ -142,7 +162,8 @@ export default async function YazarSayfasi({ params }: Props) {
                   href={socials.orcid}
                   target="_blank"
                   rel="noopener noreferrer me"
-                  className="text-primary hover:underline"
+                  className="transition-colors hover:underline"
+                  style={{ color: "var(--color-gold)" }}
                 >
                   ORCID
                 </a>
@@ -152,7 +173,8 @@ export default async function YazarSayfasi({ params }: Props) {
                   href={socials.website}
                   target="_blank"
                   rel="noopener noreferrer me"
-                  className="text-primary hover:underline"
+                  className="transition-colors hover:underline"
+                  style={{ color: "var(--color-gold)" }}
                 >
                   Website
                 </a>
@@ -163,7 +185,10 @@ export default async function YazarSayfasi({ params }: Props) {
       </div>
 
       {/* Articles */}
-      <h2 className="text-xl font-bold mb-6">
+      <h2
+        className="text-xl font-semibold mb-6"
+        style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+      >
         {yazarObj.name} tarafından yazılmış makaleler ({makaleler.length})
       </h2>
 
@@ -174,7 +199,7 @@ export default async function YazarSayfasi({ params }: Props) {
           ))}
         </div>
       ) : (
-        <p className="text-gray-text text-center py-12">
+        <p className="text-center py-12" style={{ color: "var(--color-muted)" }}>
           Bu yazarın henüz yayınlanmış makalesi yok.
         </p>
       )}

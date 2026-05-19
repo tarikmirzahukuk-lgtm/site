@@ -42,7 +42,12 @@ export default function AraClient() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-12">
-      <h1 className="text-2xl font-extrabold mb-6">Makale Ara</h1>
+      <h1
+        className="display text-2xl md:text-3xl mb-6"
+        style={{ fontWeight: 600 }}
+      >
+        Makale Ara
+      </h1>
 
       <form onSubmit={handleSearch} className="flex gap-3 mb-4">
         <input
@@ -50,7 +55,14 @@ export default function AraClient() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Başlık veya içerik ara..."
-          className="flex-1 px-4 py-3 border border-gray-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+          className="flex-1 px-4 py-3 text-sm focus:outline-none"
+          style={{
+            background: "var(--color-panel)",
+            border: "1px solid var(--rule-dim)",
+            color: "var(--color-ink)",
+          }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-gold)"; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = "var(--rule-dim)"; }}
           autoFocus
         />
         <button
@@ -63,14 +75,21 @@ export default function AraClient() {
       </form>
 
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+        <div
+          className="mb-6 text-sm px-4 py-2"
+          style={{
+            background: "var(--color-panel)",
+            border: "1px solid var(--rule-dim)",
+            color: "#f87171",
+          }}
+        >
           {error}
         </div>
       )}
 
       {searched && !error && (
         <>
-          <p className="text-sm text-gray-text mb-6">
+          <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
             &quot;{query}&quot; için {results.length} sonuç bulundu.
           </p>
           {results.length > 0 ? (
@@ -80,7 +99,7 @@ export default function AraClient() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-text text-center py-12">
+            <p className="text-center py-12" style={{ color: "var(--color-muted)" }}>
               Aramanızla eşleşen makale bulunamadı.
             </p>
           )}

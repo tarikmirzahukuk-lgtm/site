@@ -139,16 +139,22 @@ export default async function MakaleDetay({ params }: Props) {
         {kategori && (
           <p className="kategori-etiketi mb-4">{kategori.name}</p>
         )}
-        <h1 className="text-3xl md:text-4xl font-extrabold leading-tight">
+        <h1
+          className="text-3xl md:text-4xl font-semibold leading-tight"
+          style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+        >
           {makaleObj.title}
         </h1>
-        <p className="text-lg text-gray-text mt-4 leading-relaxed">
+        <p className="text-lg mt-4 leading-relaxed" style={{ color: "var(--color-muted)" }}>
           {makaleObj.excerpt}
         </p>
 
         {/* Meta */}
-        <div className="flex items-center gap-4 mt-6 pb-6 border-b border-gray-border">
-          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-bold overflow-hidden relative">
+        <div className="flex items-center gap-4 mt-6 pb-6 border-b" style={{ borderColor: "var(--rule-dim)" }}>
+          <div
+            className="w-10 h-10 flex items-center justify-center overflow-hidden relative flex-shrink-0"
+            style={{ border: "1px solid var(--color-gold)", background: "var(--color-panel-hi)" }}
+          >
             {yazar?.avatar ? (
               <Image
                 src={yazar.avatar}
@@ -158,12 +164,14 @@ export default async function MakaleDetay({ params }: Props) {
                 className="object-cover"
               />
             ) : (
-              yazar?.name?.charAt(0) ?? "?"
+              <span style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 500 }}>
+                {yazar?.name?.charAt(0) ?? "?"}
+              </span>
             )}
           </div>
           <div>
-            <p className="text-sm font-semibold">{yazar?.name ?? "Anonim"}</p>
-            <p className="text-xs text-gray-text">
+            <p className="text-sm font-semibold" style={{ color: "var(--color-ink)" }}>{yazar?.name ?? "Anonim"}</p>
+            <p className="text-xs" style={{ color: "var(--color-muted)" }}>
               {formatDate(makaleObj.createdAt)} · {makaleObj.readingTime} dk
               okuma
             </p>
@@ -186,7 +194,7 @@ export default async function MakaleDetay({ params }: Props) {
             width={1200}
             height={384}
             sizes="(max-width: 768px) 100vw, 780px"
-            className="w-full rounded-xl object-cover"
+            className="w-full object-cover"
             style={{ maxHeight: 384, height: "auto" }}
             priority
           />
@@ -196,15 +204,17 @@ export default async function MakaleDetay({ params }: Props) {
       {/* Content + TOC */}
       <div className="max-w-content-wide mx-auto px-6 flex gap-12">
         <div
-          className="prose prose-lg max-w-content flex-1
-            prose-headings:text-dark prose-headings:font-bold
-            prose-h2:text-xl prose-h2:mt-10 prose-h2:mb-4
-            prose-h3:text-lg prose-h3:mt-8 prose-h3:mb-3
-            prose-p:text-dark/80 prose-p:leading-[1.85]
-            prose-blockquote:border-l-primary prose-blockquote:bg-blue-50/50 prose-blockquote:rounded-r-md prose-blockquote:py-3 prose-blockquote:not-italic
-            prose-li:text-dark/80
-            prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-            prose-img:rounded-lg"
+          className="prose prose-lg prose-invert max-w-content flex-1
+            prose-headings:font-display prose-headings:font-semibold
+            prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
+            prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
+            prose-p:leading-[1.85]
+            prose-blockquote:border-l-[var(--color-gold)] prose-blockquote:bg-[var(--color-panel)] prose-blockquote:py-3 prose-blockquote:not-italic
+            prose-a:text-[var(--color-gold)] prose-a:no-underline hover:prose-a:underline
+            prose-strong:text-[var(--color-ink)]
+            prose-code:text-[var(--color-gold)]
+            prose-img:rounded-none"
+          style={{ color: "var(--color-body)" }}
           dangerouslySetInnerHTML={{ __html: contentWithIds }}
         />
         <IcindekilerTablosu content={makaleObj.content} />
@@ -213,18 +223,31 @@ export default async function MakaleDetay({ params }: Props) {
       {/* FAQ Section */}
       {makaleObj.faqs && makaleObj.faqs.length > 0 && (
         <section className="max-w-content mx-auto px-6 mt-12">
-          <h2 className="text-2xl font-bold mb-6">Sıkça Sorulan Sorular</h2>
+          <h2
+            className="text-2xl font-semibold mb-6"
+            style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+          >
+            Sıkça Sorulan Sorular
+          </h2>
           <div className="space-y-4">
             {makaleObj.faqs.map((faq, idx) => (
               <details
                 key={idx}
-                className="bg-gray-light/50 rounded-lg p-4 border border-gray-border"
+                className="p-4"
+                style={{
+                  background: "var(--color-panel)",
+                  border: "1px solid var(--rule-dim)",
+                }}
               >
-                <summary className="font-semibold cursor-pointer">
+                <summary
+                  className="font-semibold cursor-pointer"
+                  style={{ color: "var(--color-ink)" }}
+                >
                   {faq.question}
                 </summary>
                 <div
-                  className="mt-3 text-dark/80 leading-relaxed"
+                  className="mt-3 leading-relaxed"
+                  style={{ color: "var(--color-body)" }}
                   dangerouslySetInnerHTML={{ __html: faq.answer }}
                 />
               </details>

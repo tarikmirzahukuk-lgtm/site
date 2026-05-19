@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { SITE_URL } from "@/lib/site-config";
+
 export default function PaylasimButonlari({
   title,
   slug,
@@ -7,70 +10,92 @@ export default function PaylasimButonlari({
   title: string;
   slug: string;
 }) {
-  const url =
-    typeof window !== "undefined"
-      ? `${window.location.origin}/makale/${slug}`
-      : "";
+  const [copied, setCopied] = useState(false);
+  const url = `${SITE_URL}/makale/${slug}`;
 
-  const shareTwitter = () => {
-    window.open(
-      `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-        title
-      )}&url=${encodeURIComponent(url)}`,
-      "_blank"
-    );
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    title
+  )}&url=${encodeURIComponent(url)}`;
+  const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+    url
+  )}`;
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // ignore
+    }
   };
 
-  const shareLinkedIn = () => {
-    window.open(
-      `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
-        url
-      )}`,
-      "_blank"
+  const Btn = ({
+    href,
+    onClick,
+    label,
+    children,
+  }: {
+    href?: string;
+    onClick?: () => void;
+    label: string;
+    children: React.ReactNode;
+  }) => {
+    const className =
+      "w-9 h-9 flex items-center justify-center text-xs font-semibold tracking-[0.05em] no-underline transition-all";
+    const baseStyle = {
+      border: "1px solid var(--rule-dim)",
+      color: "var(--color-muted)",
+    };
+    const enter = (e: React.MouseEvent<HTMLElement>) => {
+      e.currentTarget.style.borderColor = "var(--color-gold)";
+      e.currentTarget.style.color = "var(--color-gold)";
+    };
+    const leave = (e: React.MouseEvent<HTMLElement>) => {
+      e.currentTarget.style.borderColor = "var(--rule-dim)";
+      e.currentTarget.style.color = "var(--color-muted)";
+    };
+    if (href) {
+      return (
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={label}
+          className={className}
+          style={baseStyle}
+          onMouseEnter={enter}
+          onMouseLeave={leave}
+        >
+          {children}
+        </a>
+      );
+    }
+    return (
+      <button
+        onClick={onClick}
+        aria-label={label}
+        className={className}
+        style={baseStyle}
+        onMouseEnter={enter}
+        onMouseLeave={leave}
+      >
+        {children}
+      </button>
     );
-  };
-
-  const copyLink = async () => {
-    await navigator.clipboard.writeText(url);
-    alert("Link kopyalandı!");
   };
 
   return (
     <div className="flex gap-2">
-      <button
-        onClick={shareTwitter}
-        className="w-8 h-8 bg-gray-light rounded-md flex items-center justify-center text-gray-text hover:bg-gray-200 hover:text-dark transition-colors text-sm"
-        title="X'te paylaş"
-      >
-        𝕏
-      </button>
-      <button
-        onClick={shareLinkedIn}
-        className="w-8 h-8 bg-gray-light rounded-md flex items-center justify-center text-gray-text hover:bg-gray-200 hover:text-dark transition-colors text-xs font-bold"
-        title="LinkedIn'de paylaş"
-      >
+      <Btn href={twitterUrl} label="Twitter'da paylaş">
+        X
+      </Btn>
+      <Btn href={linkedinUrl} label="LinkedIn'de paylaş">
         in
-      </button>
-      <button
-        onClick={copyLink}
-        className="w-8 h-8 bg-gray-light rounded-md flex items-center justify-center text-gray-text hover:bg-gray-200 hover:text-dark transition-colors"
-        title="Linki kopyala"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="w-4 h-4"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
-          />
-        </svg>
-      </button>
+      </Btn>
+      <Btn onClick={handleCopy} label="Linki kopyala">
+        {copied ? "✓" : "⎘"}
+      </Btn>
     </div>
   );
 }

@@ -64,9 +64,11 @@ export default async function EtiketSayfasi({ params }: Props) {
       <Breadcrumb items={breadcrumbItems} />
 
       <div className="mb-10">
-        <p className="kategori-etiketi mb-2">ETİKET</p>
-        <h1 className="text-2xl font-extrabold">#{tag}</h1>
-        <p className="text-gray-text mt-2">
+        <p className="kicker mb-2">ETİKET</p>
+        <h1 className="display text-3xl md:text-4xl" style={{ fontWeight: 600 }}>
+          #{tag}
+        </h1>
+        <p className="mt-2" style={{ color: "var(--color-muted)" }}>
           {makaleler.length} makale
         </p>
       </div>
@@ -78,7 +80,7 @@ export default async function EtiketSayfasi({ params }: Props) {
           ))}
         </div>
       ) : (
-        <p className="text-gray-text text-center py-12">
+        <p className="text-center py-12" style={{ color: "var(--color-muted)" }}>
           Bu etikete ait makale yok.
         </p>
       )}

@@ -11,30 +11,36 @@ export const metadata: Metadata = buildMetadata({
 export default function IletisimPage() {
   return (
     <div className="max-w-content mx-auto px-6 py-16">
-      <h1 className="text-3xl font-extrabold mb-4">İletişim</h1>
-      <p className="text-gray-text mb-10">
+      <h1
+        className="display text-3xl md:text-4xl mb-4"
+        style={{ fontWeight: 600 }}
+      >
+        İletişim
+      </h1>
+      <p className="mb-10" style={{ color: "var(--color-muted)" }}>
         Soru, öneri veya iş birliği teklifleri için aşağıdaki kanallardan
         bana ulaşabilirsiniz.
       </p>
 
       <div className="space-y-6">
-        <div className="bg-gray-light/50 rounded-xl p-6">
-          <h3 className="font-semibold text-sm uppercase tracking-wide text-gray-text mb-2">
+        <div className="pcard p-6">
+          <h3 className="kicker mb-2">
             E-posta
           </h3>
           <a
             href="mailto:tarik@example.com"
-            className="text-primary hover:underline"
+            className="transition-colors hover:underline"
+            style={{ color: "var(--color-gold)" }}
           >
             tarik@example.com
           </a>
         </div>
 
-        <div className="bg-gray-light/50 rounded-xl p-6">
-          <h3 className="font-semibold text-sm uppercase tracking-wide text-gray-text mb-2">
+        <div className="pcard p-6">
+          <h3 className="kicker mb-2">
             LinkedIn
           </h3>
-          <p className="text-dark">linkedin.com/in/tarikmirza</p>
+          <p style={{ color: "var(--color-body)" }}>linkedin.com/in/tarikmirza</p>
         </div>
       </div>
     </div>

@@ -65,10 +65,12 @@ export default async function KategoriSayfasi({ params }: Props) {
       <Breadcrumb items={breadcrumbItems} />
 
       <div className="mb-10">
-        <p className="kategori-etiketi mb-2">KATEGORİ</p>
-        <h1 className="text-2xl font-extrabold">{kategori.name}</h1>
+        <p className="kicker mb-2">KATEGORİ</p>
+        <h1 className="display text-3xl md:text-4xl" style={{ fontWeight: 600 }}>
+          {kategori.name}
+        </h1>
         {kategori.description && (
-          <p className="text-gray-text mt-2">{kategori.description}</p>
+          <p className="mt-2" style={{ color: "var(--color-muted)" }}>{kategori.description}</p>
         )}
       </div>
 
@@ -79,7 +81,7 @@ export default async function KategoriSayfasi({ params }: Props) {
           ))}
         </div>
       ) : (
-        <p className="text-gray-text text-center py-12">
+        <p className="text-center py-12" style={{ color: "var(--color-muted)" }}>
           Bu kategoride henüz makale bulunmuyor.
         </p>
       )}

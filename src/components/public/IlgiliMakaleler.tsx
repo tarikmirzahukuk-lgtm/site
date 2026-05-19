@@ -1,5 +1,5 @@
-import MakaleKart from "./MakaleKart";
 import { IMakale } from "@/types";
+import MakaleKart from "@/components/public/MakaleKart";
 
 export default function IlgiliMakaleler({
   makaleler,
@@ -9,13 +9,19 @@ export default function IlgiliMakaleler({
   if (makaleler.length === 0) return null;
 
   return (
-    <section className="mt-16">
-      <h2 className="text-lg font-bold mb-6">İlgili Makaleler</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {makaleler.map((makale) => (
-          <MakaleKart key={makale._id} makale={makale} />
+    <div className="mt-12 pt-10 border-t" style={{ borderColor: "var(--rule-dim)" }}>
+      <p className="kicker mb-3">İlgili Makaleler</p>
+      <h2
+        className="text-xl md:text-2xl font-semibold mb-6"
+        style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+      >
+        Bunları da okumak ister misiniz?
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {makaleler.map((m) => (
+          <MakaleKart key={m._id} makale={m} />
         ))}
       </div>
-    </section>
+    </div>
   );
 }
