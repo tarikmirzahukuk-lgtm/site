@@ -1,50 +1,40 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import dbConnect from "@/lib/db";
+import Makale from "@/models/Makale";
+import Kategori from "@/models/Kategori";
+import "@/models/Kullanici";
 import HeroAlani from "@/components/public/HeroAlani";
-import MakaleKart from "@/components/public/MakaleKart";
-import KategoriFiltre from "@/components/public/KategoriFiltre";
+import KategoriFiltreClient from "@/components/public/KategoriFiltreClient";
 import { IMakale, IKategori } from "@/types";
+import { buildMetadata } from "@/lib/seo/metadata";
+import { SITE_CONFIG } from "@/lib/site-config";
 
-export default function AnaSayfa() {
-  const [makaleler, setMakaleler] = useState<IMakale[]>([]);
-  const [kategoriler, setKategoriler] = useState<IKategori[]>([]);
-  const [aktifKategori, setAktifKategori] = useState("");
-  const [loading, setLoading] = useState(true);
+export const metadata: Metadata = buildMetadata({
+  title: `${SITE_CONFIG.brand} | ${SITE_CONFIG.tagline}`,
+  description: SITE_CONFIG.description,
+  path: "/",
+});
 
-  useEffect(() => {
-    Promise.all([
-      fetch("/api/makaleler?status=yayinda")
-        .then((r) => (r.ok ? r.json() : { makaleler: [] }))
-        .catch(() => ({ makaleler: [] })),
-      fetch("/api/kategoriler")
-        .then((r) => (r.ok ? r.json() : []))
-        .catch(() => []),
-    ])
-      .then(([makaleData, katData]) => {
-        setMakaleler(
-          Array.isArray(makaleData?.makaleler) ? makaleData.makaleler : []
-        );
-        setKategoriler(Array.isArray(katData) ? katData : []);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+export const revalidate = 300; // 5 dk ISR
+
+export default async function AnaSayfa() {
+  await dbConnect();
+
+  const [makalelerRaw, kategorilerRaw] = await Promise.all([
+    Makale.find({ status: "yayinda" })
+      .populate("category", "name slug")
+      .populate("author", "name avatar")
+      .sort({ createdAt: -1 })
+      .limit(50),
+    Kategori.find().sort({ order: 1 }),
+  ]);
+
+  const makaleler = JSON.parse(JSON.stringify(makalelerRaw)) as IMakale[];
+  const kategoriler = JSON.parse(JSON.stringify(kategorilerRaw)) as IKategori[];
 
   const oneCikan = makaleler[0];
   const digerMakaleler = makaleler.slice(1);
-
-  const filtrelenmis = aktifKategori
-    ? digerMakaleler.filter((m) => {
-        if (!m.category) return false;
-        const catId =
-          typeof m.category === "string" ? m.category : m.category._id;
-        return catId === aktifKategori;
-      })
-    : digerMakaleler;
-
-  const bosMesaj = aktifKategori
-    ? "Bu kategoride henüz makale bulunmuyor."
-    : "Henüz makale yayınlanmamış.";
 
   return (
     <>
@@ -55,25 +45,12 @@ export default function AnaSayfa() {
           <h2 className="text-lg font-bold">Makaleler</h2>
         </div>
 
-        <div className="mb-8">
-          <KategoriFiltre
+        <Suspense fallback={null}>
+          <KategoriFiltreClient
             kategoriler={kategoriler}
-            aktif={aktifKategori}
-            onChange={setAktifKategori}
+            makaleler={digerMakaleler}
           />
-        </div>
-
-        {filtrelenmis.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filtrelenmis.map((makale) => (
-              <MakaleKart key={makale._id} makale={makale} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-text text-sm text-center py-12">
-            {loading ? "Yükleniyor..." : bosMesaj}
-          </p>
-        )}
+        </Suspense>
       </section>
     </>
   );
