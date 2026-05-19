@@ -1,3 +1,15 @@
+export interface IFaq {
+  question: string;
+  answer: string;
+}
+
+export interface ISocials {
+  linkedin?: string;
+  twitter?: string;
+  orcid?: string;
+  website?: string;
+}
+
 export interface IMakale {
   _id: string;
   title: string;
@@ -10,6 +22,7 @@ export interface IMakale {
   status: "taslak" | "yayinda";
   readingTime: number;
   tags: string[];
+  faqs: IFaq[];
   createdAt: string;
   updatedAt: string;
 }
@@ -21,6 +34,7 @@ export interface IKategori {
   description: string;
   order: number;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface IKullanici {
@@ -30,5 +44,8 @@ export interface IKullanici {
   role: "admin" | "yazar";
   bio: string;
   avatar: string;
+  slug: string;
+  socials: ISocials;
   createdAt: string;
+  updatedAt: string;
 }

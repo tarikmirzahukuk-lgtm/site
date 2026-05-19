@@ -1,5 +1,10 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+export interface IFaq {
+  question: string;
+  answer: string;
+}
+
 export interface IMakaleDoc extends Document {
   title: string;
   slug: string;
@@ -11,9 +16,18 @@ export interface IMakaleDoc extends Document {
   status: "taslak" | "yayinda";
   readingTime: number;
   tags: string[];
+  faqs: IFaq[];
   createdAt: Date;
   updatedAt: Date;
 }
+
+const FaqSchema = new Schema<IFaq>(
+  {
+    question: { type: String, required: true },
+    answer: { type: String, required: true },
+  },
+  { _id: false }
+);
 
 const MakaleSchema = new Schema<IMakaleDoc>(
   {
@@ -27,6 +41,7 @@ const MakaleSchema = new Schema<IMakaleDoc>(
     status: { type: String, enum: ["taslak", "yayinda"], default: "taslak" },
     readingTime: { type: Number, default: 1 },
     tags: [{ type: String }],
+    faqs: { type: [FaqSchema], default: [] },
   },
   { timestamps: true }
 );

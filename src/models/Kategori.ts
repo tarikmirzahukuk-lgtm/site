@@ -6,15 +6,18 @@ export interface IKategoriDoc extends Document {
   description: string;
   order: number;
   createdAt: Date;
+  updatedAt: Date;
 }
 
-const KategoriSchema = new Schema<IKategoriDoc>({
-  name: { type: String, required: true },
-  slug: { type: String, required: true, unique: true },
-  description: { type: String, default: "" },
-  order: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
-});
+const KategoriSchema = new Schema<IKategoriDoc>(
+  {
+    name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
+    description: { type: String, default: "" },
+    order: { type: Number, default: 0 },
+  },
+  { timestamps: true }
+);
 
 const Kategori: Model<IKategoriDoc> =
   mongoose.models.Kategori ||
