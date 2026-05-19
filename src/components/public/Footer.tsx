@@ -1,76 +1,134 @@
 import Link from "next/link";
-import { IKategori } from "@/types";
+import Icon from "@/components/public/icons/Icon";
+import { NAV } from "@/lib/site-data";
 import { SITE_CONFIG } from "@/lib/site-config";
 
-export default function Footer({
-  kategoriler = [],
-}: {
-  kategoriler?: IKategori[];
-} = {}) {
+export default function Footer() {
   return (
-    <footer className="border-t border-gray-border mt-20">
-      <div className="max-w-5xl mx-auto px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <footer className="border-t" style={{ background: "#080a0e", borderColor: "var(--rule)" }}>
+      <div className="max-w-7xl mx-auto px-5 md:px-10 py-12 md:py-[72px]">
+        <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-9 md:gap-12">
+          {/* Brand */}
           <div>
-            <h3 className="font-bold text-dark">{SITE_CONFIG.brand}</h3>
-            <p className="text-sm text-gray-text mt-2 max-w-xs leading-relaxed">
-              {SITE_CONFIG.description}
-            </p>
-          </div>
-          <div>
-            <h4 className="text-xs font-semibold text-gray-text uppercase tracking-wide mb-3">
-              Sayfalar
-            </h4>
-            <div className="space-y-2">
-              <Link
-                href="/"
-                className="block text-sm text-gray-text hover:text-dark transition-colors"
+            <div className="flex items-center gap-3">
+              <span
+                className="w-[38px] h-[38px] flex items-center justify-center text-[22px] font-medium italic"
+                style={{
+                  border: "1px solid var(--color-gold)",
+                  color: "var(--color-gold)",
+                  fontFamily: "var(--font-display)",
+                }}
               >
-                Ana Sayfa
-              </Link>
-              <Link
-                href="/hakkimda"
-                className="block text-sm text-gray-text hover:text-dark transition-colors"
-              >
-                Hakkımda
-              </Link>
-              <Link
-                href="/iletisim"
-                className="block text-sm text-gray-text hover:text-dark transition-colors"
-              >
-                İletişim
-              </Link>
-              <Link
-                href="/rss.xml"
-                className="block text-sm text-gray-text hover:text-dark transition-colors"
-              >
-                RSS
-              </Link>
-            </div>
-          </div>
-          {kategoriler.length > 0 && (
-            <div>
-              <h4 className="text-xs font-semibold text-gray-text uppercase tracking-wide mb-3">
-                Kategoriler
-              </h4>
-              <div className="space-y-2">
-                {kategoriler.map((k) => (
-                  <Link
-                    key={k._id}
-                    href={`/kategori/${k.slug}`}
-                    className="block text-sm text-gray-text hover:text-dark transition-colors"
-                  >
-                    {k.name}
-                  </Link>
-                ))}
+                T
+              </span>
+              <div>
+                <div className="text-[17px] font-semibold" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
+                  {SITE_CONFIG.brand}
+                </div>
+                <div className="text-[10.5px] mt-0.5 uppercase tracking-[0.22em]" style={{ color: "var(--color-muted)" }}>
+                  Ceza Hukuku Araştırmaları
+                </div>
               </div>
             </div>
-          )}
+            <p className="mt-5 text-[13.5px] max-w-sm leading-[1.7]" style={{ color: "var(--color-muted)" }}>
+              {SITE_CONFIG.description}
+            </p>
+            <div className="mt-5 flex gap-2.5">
+              {[
+                { t: "Lk", href: "#" },
+                { t: "In", href: "#" },
+                { t: "X", href: "#" },
+              ].map((s) => (
+                <a
+                  key={s.t}
+                  href={s.href}
+                  className="w-[34px] h-[34px] flex items-center justify-center text-[11px] font-semibold tracking-[0.05em] no-underline transition-colors"
+                  style={{ border: "1px solid var(--rule-dim)", color: "var(--color-muted)" }}
+                >
+                  {s.t}
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Menu */}
+          <div>
+            <div className="kicker mb-[18px]">Menü</div>
+            <ul className="space-y-1.5 text-[13.5px]" style={{ color: "var(--color-ink)" }}>
+              {NAV.map((n) => (
+                <li key={n.href}>
+                  <Link href={n.href} className="plink">
+                    {n.label}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link href="/rss.xml" className="plink">
+                  RSS
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div>
+            <div className="kicker mb-[18px]">İletişim</div>
+            <ul className="space-y-2.5 text-[13.5px] leading-[1.8]" style={{ color: "var(--color-body)" }}>
+              <li className="flex gap-2.5">
+                <Icon name="pillar" size={16} color="var(--color-gold)" />
+                <span>
+                  {SITE_CONFIG.contact.address.line1}
+                  <br />
+                  {SITE_CONFIG.contact.address.line2}
+                </span>
+              </li>
+              <li className="flex gap-2.5">
+                <Icon name="phone" size={16} color="var(--color-gold)" />
+                {SITE_CONFIG.contact.phone}
+              </li>
+              <li className="flex gap-2.5">
+                <span className="w-4 text-center" style={{ color: "var(--color-gold)" }}>
+                  @
+                </span>
+                {SITE_CONFIG.contact.email}
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <div className="kicker mb-[18px]">Hukuki</div>
+            <ul className="space-y-1.5 text-[13.5px]" style={{ color: "var(--color-muted)" }}>
+              <li>
+                <Link href="#" className="plink" style={{ color: "var(--color-muted)" }}>
+                  KVKK Aydınlatma
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="plink" style={{ color: "var(--color-muted)" }}>
+                  Gizlilik Politikası
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="plink" style={{ color: "var(--color-muted)" }}>
+                  Çerez Politikası
+                </Link>
+              </li>
+              <li>
+                <Link href="#" className="plink" style={{ color: "var(--color-muted)" }}>
+                  Sorumluluk Reddi
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="border-t border-gray-border mt-8 pt-8">
-          <p className="text-xs text-gray-text">
-            © {new Date().getFullYear()} {SITE_CONFIG.brand}. Tüm hakları saklıdır.
-          </p>
+
+        <div
+          className="mt-12 pt-6 border-t flex flex-col md:flex-row justify-between gap-3 text-[11.5px] tracking-[0.04em]"
+          style={{ borderColor: "var(--rule-dim)", color: "var(--color-muted-dim)" }}
+        >
+          <span>© {new Date().getFullYear()} {SITE_CONFIG.brand} · Tüm hakları saklıdır.</span>
+          <span>Akademik blog · Hukuki tavsiye değildir</span>
         </div>
       </div>
     </footer>
