@@ -45,6 +45,20 @@ export async function POST(req: NextRequest) {
 
   body.password = await bcrypt.hash(String(body.password), 12);
 
+  // Güvenlik: client-supplied slug'ı strip et (sunucu üretir)
+  delete body.slug;
+
+  // socials URL validation: yalnız http/https URL'leri kabul et
+  const URL_RE = /^https?:\/\/.+/;
+  if (body.socials && typeof body.socials === "object") {
+    const s = body.socials as Record<string, unknown>;
+    for (const key of ["linkedin", "twitter", "orcid", "website"]) {
+      if (s[key] && !URL_RE.test(String(s[key]))) {
+        delete s[key];
+      }
+    }
+  }
+
   try {
     const yazar = await Kullanici.create(body);
     const result = yazar.toObject();

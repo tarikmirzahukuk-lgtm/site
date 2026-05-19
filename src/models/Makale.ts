@@ -1,9 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-
-export interface IFaq {
-  question: string;
-  answer: string;
-}
+import type { IFaq } from "@/types";
 
 export interface IMakaleDoc extends Document {
   title: string;

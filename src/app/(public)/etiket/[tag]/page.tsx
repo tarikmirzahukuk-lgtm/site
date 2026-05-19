@@ -25,20 +25,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
+async function fetchTaglıMakaleler(tag: string): Promise<IMakale[]> {
+  try {
+    await dbConnect();
+    const raw = await Makale.find({
+      tags: tag,
+      status: "yayinda",
+    })
+      .populate("category", "name slug")
+      .populate("author", "name avatar")
+      .sort({ createdAt: -1 });
+    return JSON.parse(JSON.stringify(raw)) as IMakale[];
+  } catch (err) {
+    console.error("EtiketSayfasi: fetch failed —", err);
+    return [];
+  }
+}
+
 export default async function EtiketSayfasi({ params }: Props) {
-  await dbConnect();
   const { tag: tagRaw } = await params;
   const tag = decodeURIComponent(tagRaw);
-
-  const makalelerRaw = await Makale.find({
-    tags: tag,
-    status: "yayinda",
-  })
-    .populate("category", "name slug")
-    .populate("author", "name avatar")
-    .sort({ createdAt: -1 });
-
-  const makaleler = JSON.parse(JSON.stringify(makalelerRaw)) as IMakale[];
+  const makaleler = await fetchTaglıMakaleler(tag);
 
   const breadcrumbItems = [
     { name: "Ana Sayfa", href: "/" },

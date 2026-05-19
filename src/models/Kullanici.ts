@@ -1,12 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 import { slugify } from "@/lib/utils";
-
-export interface ISocials {
-  linkedin?: string;
-  twitter?: string;
-  orcid?: string;
-  website?: string;
-}
+import type { ISocials } from "@/types";
 
 export interface IKullaniciDoc extends Document {
   name: string;

@@ -4,6 +4,7 @@ import Makale from "@/models/Makale";
 import "@/models/Kategori";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Image from "next/image";
 import MakaleKart from "@/components/public/MakaleKart";
 import Breadcrumb from "@/components/public/Breadcrumb";
 import JsonLdScript from "@/components/public/JsonLdScript";
@@ -31,24 +32,47 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
+async function fetchYazarSayfasi(slug: string): Promise<
+  | { yazar: IKullanici; makaleler: IMakale[] }
+  | null
+  | "error"
+> {
+  try {
+    await dbConnect();
+    const yazar = await Kullanici.findOne({ slug });
+    if (!yazar) return null;
+    const yazarObj = JSON.parse(JSON.stringify(yazar)) as IKullanici;
+
+    const makalelerRaw = await Makale.find({
+      author: yazar._id,
+      status: "yayinda",
+    })
+      .populate("category", "name slug")
+      .populate("author", "name avatar")
+      .sort({ createdAt: -1 });
+
+    const makaleler = JSON.parse(JSON.stringify(makalelerRaw)) as IMakale[];
+    return { yazar: yazarObj, makaleler };
+  } catch (err) {
+    console.error("YazarSayfasi: fetch failed —", err);
+    return "error";
+  }
+}
+
 export default async function YazarSayfasi({ params }: Props) {
-  await dbConnect();
   const { slug } = await params;
+  const data = await fetchYazarSayfasi(slug);
 
-  const yazar = await Kullanici.findOne({ slug });
-  if (!yazar) notFound();
+  if (data === null) notFound();
+  if (data === "error") {
+    return (
+      <div className="max-w-5xl mx-auto px-6 py-12">
+        <p className="text-red-700 text-center">Yazar bilgileri yüklenemedi.</p>
+      </div>
+    );
+  }
 
-  const yazarObj = JSON.parse(JSON.stringify(yazar)) as IKullanici;
-
-  const makalelerRaw = await Makale.find({
-    author: yazar._id,
-    status: "yayinda",
-  })
-    .populate("category", "name slug")
-    .populate("author", "name avatar")
-    .sort({ createdAt: -1 });
-
-  const makaleler = JSON.parse(JSON.stringify(makalelerRaw)) as IMakale[];
+  const { yazar: yazarObj, makaleler } = data;
 
   const breadcrumbItems = [
     { name: "Ana Sayfa", href: "/" },
@@ -73,13 +97,14 @@ export default async function YazarSayfasi({ params }: Props) {
 
       {/* Profile */}
       <div className="flex flex-col md:flex-row gap-8 items-start mb-12 pb-10 border-b border-gray-border">
-        <div className="w-32 h-32 bg-primary rounded-full flex items-center justify-center text-white font-bold text-4xl flex-shrink-0 overflow-hidden">
+        <div className="relative w-32 h-32 bg-primary rounded-full flex items-center justify-center text-white font-bold text-4xl flex-shrink-0 overflow-hidden">
           {yazarObj.avatar ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <Image
               src={yazarObj.avatar}
               alt={yazarObj.name}
-              className="w-full h-full object-cover"
+              fill
+              sizes="128px"
+              className="object-cover"
             />
           ) : (
             yazarObj.name.charAt(0)
