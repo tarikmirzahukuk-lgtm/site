@@ -28,16 +28,23 @@ function firstParagraph(html: string, maxChars = 600): string {
   return text.length > maxChars ? text.slice(0, maxChars) + "..." : text;
 }
 
+async function fetchMakaleler(): Promise<IMakale[]> {
+  try {
+    await dbConnect();
+    const raw = await Makale.find({ status: "yayinda" })
+      .populate("author", "name email")
+      .populate("category", "name")
+      .sort({ createdAt: -1 })
+      .limit(50);
+    return JSON.parse(JSON.stringify(raw)) as IMakale[];
+  } catch (err) {
+    console.error("RSS: makale fetch failed —", err);
+    return [];
+  }
+}
+
 export async function GET() {
-  await dbConnect();
-
-  const makalelerRaw = await Makale.find({ status: "yayinda" })
-    .populate("author", "name email")
-    .populate("category", "name")
-    .sort({ createdAt: -1 })
-    .limit(50);
-
-  const makaleler = JSON.parse(JSON.stringify(makalelerRaw)) as IMakale[];
+  const makaleler = await fetchMakaleler();
 
   const items = makaleler
     .map((m) => {

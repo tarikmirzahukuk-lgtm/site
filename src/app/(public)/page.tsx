@@ -18,20 +18,33 @@ export const metadata: Metadata = buildMetadata({
 
 export const revalidate = 300; // 5 dk ISR
 
+async function fetchHomeData(): Promise<{
+  makaleler: IMakale[];
+  kategoriler: IKategori[];
+}> {
+  try {
+    await dbConnect();
+    const [makalelerRaw, kategorilerRaw] = await Promise.all([
+      Makale.find({ status: "yayinda" })
+        .populate("category", "name slug")
+        .populate("author", "name avatar")
+        .sort({ createdAt: -1 })
+        .limit(50),
+      Kategori.find().sort({ order: 1 }),
+    ]);
+
+    return {
+      makaleler: JSON.parse(JSON.stringify(makalelerRaw)) as IMakale[],
+      kategoriler: JSON.parse(JSON.stringify(kategorilerRaw)) as IKategori[],
+    };
+  } catch (err) {
+    console.error("AnaSayfa: data fetch failed —", err);
+    return { makaleler: [], kategoriler: [] };
+  }
+}
+
 export default async function AnaSayfa() {
-  await dbConnect();
-
-  const [makalelerRaw, kategorilerRaw] = await Promise.all([
-    Makale.find({ status: "yayinda" })
-      .populate("category", "name slug")
-      .populate("author", "name avatar")
-      .sort({ createdAt: -1 })
-      .limit(50),
-    Kategori.find().sort({ order: 1 }),
-  ]);
-
-  const makaleler = JSON.parse(JSON.stringify(makalelerRaw)) as IMakale[];
-  const kategoriler = JSON.parse(JSON.stringify(kategorilerRaw)) as IKategori[];
+  const { makaleler, kategoriler } = await fetchHomeData();
 
   const oneCikan = makaleler[0];
   const digerMakaleler = makaleler.slice(1);
