@@ -1,11 +1,8 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { SITE_CONFIG, SITE_URL } from "@/lib/site-config";
 import JsonLdScript from "@/components/public/JsonLdScript";
 import { organizationJsonLd } from "@/lib/seo/jsonld";
-
-const inter = Inter({ subsets: ["latin", "latin-ext"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -38,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang={SITE_CONFIG.language}>
-      <body className={inter.className}>
+      <body>
         <JsonLdScript data={organizationJsonLd()} />
         {children}
       </body>
