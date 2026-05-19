@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { IMakale, IKategori } from "@/types";
 import { formatDate } from "@/lib/utils";
 
@@ -36,11 +37,14 @@ export default function HeroAlani({ makale }: { makale: IMakale }) {
               </div>
             </div>
             {makale.coverImage && (
-              <div className="w-full md:w-64 h-44 flex-shrink-0 rounded-lg overflow-hidden bg-gray-light">
-                <img
+              <div className="w-full md:w-64 h-44 flex-shrink-0 rounded-lg overflow-hidden bg-gray-light relative">
+                <Image
                   src={makale.coverImage}
                   alt={makale.title}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 256px"
+                  className="object-cover"
+                  priority
                 />
               </div>
             )}
