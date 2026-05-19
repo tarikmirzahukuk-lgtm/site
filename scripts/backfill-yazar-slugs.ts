@@ -5,10 +5,14 @@
  * Çalıştır: npm run migrate:yazar-slugs
  */
 
-import "dotenv/config";
+import dotenv from "dotenv";
 import mongoose from "mongoose";
 import Kullanici from "../src/models/Kullanici";
 import { slugify } from "../src/lib/utils";
+
+// Next.js convention: .env.local has dev secrets; fall back to .env
+dotenv.config({ path: ".env.local" });
+dotenv.config();
 
 async function main() {
   const uri = process.env.MONGODB_URI;
