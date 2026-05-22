@@ -1,11 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-if (!MONGODB_URI) {
-  throw new Error("MONGODB_URI ortam değişkeni tanımlı değil");
-}
-
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -25,6 +19,14 @@ if (!global.mongoose) {
 export default async function dbConnect(): Promise<typeof mongoose> {
   if (cached.conn) {
     return cached.conn;
+  }
+
+  // Lazy kontrol: modül import edilirken değil, bağlantı denendiğinde.
+  // Böylece build sırasında (collect page data) env yoksa hard-fail olmaz;
+  // runtime'da çağıranların try/catch'i graceful yakalar.
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error("MONGODB_URI ortam değişkeni tanımlı değil");
   }
 
   if (!cached.promise) {
