@@ -27,8 +27,8 @@ function ToolbarButton({
       onClick={onClick}
       className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
         active
-          ? "bg-primary text-white"
-          : "bg-gray-light text-dark hover:bg-gray-200"
+          ? "bg-[var(--color-gold)] text-[#0a0d11]"
+          : "bg-[var(--color-panel-hi)] text-[var(--color-body)] hover:bg-[var(--color-panel-hi)] hover:text-[var(--color-ink)]"
       }`}
     >
       {children}
@@ -56,7 +56,7 @@ export default function MakaleEditoru({ content, onChange }: Props) {
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm max-w-none min-h-[400px] px-5 py-4 focus:outline-none",
+          "prose prose-sm prose-invert max-w-none min-h-[400px] px-5 py-4 focus:outline-none",
       },
     },
   });
@@ -85,8 +85,8 @@ export default function MakaleEditoru({ content, onChange }: Props) {
   };
 
   return (
-    <div className="bg-white border border-gray-border rounded-lg overflow-hidden">
-      <div className="flex flex-wrap gap-1 p-2 border-b border-gray-border">
+    <div className="bg-[var(--color-panel)] border border-[var(--rule-dim)] rounded-lg overflow-hidden">
+      <div className="flex flex-wrap gap-1 p-2 border-b border-[var(--rule-dim)]">
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           active={editor.isActive("bold")}
@@ -105,7 +105,7 @@ export default function MakaleEditoru({ content, onChange }: Props) {
         >
           U
         </ToolbarButton>
-        <div className="w-px bg-gray-border mx-1" />
+        <div className="w-px bg-[var(--rule-dim)] mx-1" />
         <ToolbarButton
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
@@ -122,7 +122,7 @@ export default function MakaleEditoru({ content, onChange }: Props) {
         >
           H3
         </ToolbarButton>
-        <div className="w-px bg-gray-border mx-1" />
+        <div className="w-px bg-[var(--rule-dim)] mx-1" />
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           active={editor.isActive("bulletList")}
@@ -141,7 +141,7 @@ export default function MakaleEditoru({ content, onChange }: Props) {
         >
           Alıntı
         </ToolbarButton>
-        <div className="w-px bg-gray-border mx-1" />
+        <div className="w-px bg-[var(--rule-dim)] mx-1" />
         <ToolbarButton onClick={addImage}>Görsel</ToolbarButton>
         <ToolbarButton onClick={addLink} active={editor.isActive("link")}>
           Link

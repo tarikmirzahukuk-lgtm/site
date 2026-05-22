@@ -31,42 +31,56 @@ export default function GirisPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-light flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-dark">Tarık Mirza</h1>
-          <p className="text-gray-text text-sm mt-1">Yönetim Paneli</p>
+          {/* Gold monogram */}
+          <div className="inline-flex items-center justify-center w-[38px] h-[38px] border border-[var(--color-gold)] rounded mb-4">
+            <span
+              className="text-[var(--color-gold)] text-xl italic"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              T
+            </span>
+          </div>
+          <h1
+            className="text-2xl font-bold text-[var(--color-ink)]"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Tarık Mirza
+          </h1>
+          <p className="text-[var(--color-muted)] text-sm mt-1">Yönetim Paneli</p>
         </div>
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-lg border border-gray-border p-6 space-y-4"
+          className="bg-[var(--color-panel)] rounded-lg border border-[var(--rule)] p-6 space-y-4"
         >
           <div>
-            <label className="block text-xs font-medium text-gray-text mb-1.5 uppercase tracking-wide">
+            <label className="block text-xs font-medium text-[var(--color-muted)] mb-1.5 uppercase tracking-wide">
               E-posta
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 bg-[var(--color-panel-hi)] border border-[var(--rule-dim)] text-[var(--color-ink)] rounded-md text-sm focus:outline-none focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] placeholder:text-[var(--color-muted-dim)]"
               required
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-text mb-1.5 uppercase tracking-wide">
+            <label className="block text-xs font-medium text-[var(--color-muted)] mb-1.5 uppercase tracking-wide">
               Şifre
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+              className="w-full px-3 py-2 bg-[var(--color-panel-hi)] border border-[var(--rule-dim)] text-[var(--color-ink)] rounded-md text-sm focus:outline-none focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] placeholder:text-[var(--color-muted-dim)]"
               required
             />
           </div>
           {error && (
-            <p className="text-red-600 text-sm">{error}</p>
+            <p className="text-red-300 text-sm">{error}</p>
           )}
           <button
             type="submit"

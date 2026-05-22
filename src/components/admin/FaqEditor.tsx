@@ -14,21 +14,24 @@ export default function FaqEditor({ value, onChange }: Props) {
     onChange(value.map((f, i) => (i === idx ? { ...f, [key]: v } : f)));
   };
 
+  const inputClass =
+    "w-full px-3 py-2 bg-[var(--color-panel-hi)] border border-[var(--rule-dim)] text-[var(--color-ink)] rounded-md text-sm focus:outline-none focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] placeholder:text-[var(--color-muted-dim)]";
+
   return (
     <div className="space-y-3">
       {value.map((faq, idx) => (
         <div
           key={idx}
-          className="bg-gray-light/50 border border-gray-border rounded-md p-3 space-y-2"
+          className="bg-[var(--color-panel-hi)] border border-[var(--rule-dim)] rounded-md p-3 space-y-2"
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-gray-text">
+            <span className="text-xs font-medium text-[var(--color-muted)]">
               Soru #{idx + 1}
             </span>
             <button
               type="button"
               onClick={() => remove(idx)}
-              className="text-xs text-red-600 hover:underline"
+              className="text-xs text-red-400 hover:underline"
             >
               Sil
             </button>
@@ -38,21 +41,21 @@ export default function FaqEditor({ value, onChange }: Props) {
             value={faq.question}
             onChange={(e) => update(idx, "question", e.target.value)}
             placeholder="Soru"
-            className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className={inputClass}
           />
           <textarea
             value={faq.answer}
             onChange={(e) => update(idx, "answer", e.target.value)}
             placeholder="Cevap"
             rows={3}
-            className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            className={inputClass}
           />
         </div>
       ))}
       <button
         type="button"
         onClick={add}
-        className="text-sm text-primary hover:underline"
+        className="text-sm text-[var(--color-gold)] hover:underline"
       >
         + Soru ekle
       </button>

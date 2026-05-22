@@ -57,12 +57,12 @@ export default function AdminDashboard() {
 
   if (error)
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+      <div className="bg-red-500/10 border border-red-500/30 text-red-300 text-sm rounded-md px-4 py-2">
         {error}
       </div>
     );
 
-  if (!stats) return <p className="text-gray-text text-sm">Yükleniyor...</p>;
+  if (!stats) return <p className="text-[var(--color-muted)] text-sm">Yükleniyor...</p>;
 
   const userName = session?.user?.name || "Yönetici";
 
@@ -70,8 +70,13 @@ export default function AdminDashboard() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold">Genel Bakış</h1>
-          <p className="text-gray-text text-sm mt-1">Hoş geldiniz, {userName}</p>
+          <h1
+            className="text-xl font-bold text-[var(--color-ink)]"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Genel Bakış
+          </h1>
+          <p className="text-[var(--color-muted)] text-sm mt-1">Hoş geldiniz, {userName}</p>
         </div>
         <Link href="/admin/makaleler/yeni" className="btn-primary">Yeni Makale</Link>
       </div>
@@ -82,31 +87,33 @@ export default function AdminDashboard() {
           { label: "Taslak", value: stats.taslakMakaleler },
           { label: "Kategori", value: stats.totalKategoriler },
         ].map((item) => (
-          <div key={item.label} className="bg-white rounded-lg border border-gray-border p-5">
-            <p className="text-xs text-gray-text font-medium uppercase tracking-wide">{item.label}</p>
-            <p className="text-2xl font-bold mt-1">{item.value}</p>
+          <div key={item.label} className="bg-[var(--color-panel)] rounded-lg border border-[var(--rule-dim)] p-5">
+            <p className="text-xs text-[var(--color-muted)] font-medium uppercase tracking-wide">{item.label}</p>
+            <p className="text-2xl font-bold mt-1 text-[var(--color-gold)]">{item.value}</p>
           </div>
         ))}
       </div>
-      <div className="bg-white rounded-lg border border-gray-border">
-        <div className="px-5 py-4 border-b border-gray-border">
-          <h2 className="font-semibold text-sm">Son Makaleler</h2>
+      <div className="bg-[var(--color-panel)] rounded-lg border border-[var(--rule-dim)]">
+        <div className="px-5 py-4 border-b border-[var(--rule-dim)]">
+          <h2 className="font-semibold text-sm text-[var(--color-ink)]">Son Makaleler</h2>
         </div>
-        <div className="divide-y divide-gray-border">
+        <div className="divide-y divide-[var(--rule-dim)]">
           {sonMakaleler.length === 0 ? (
-            <p className="px-5 py-8 text-center text-sm text-gray-text">
+            <p className="px-5 py-8 text-center text-sm text-[var(--color-muted)]">
               Henüz makale yok.
             </p>
           ) : (
             sonMakaleler.map((makale) => (
               <Link key={makale._id} href={`/admin/makaleler/${makale._id}`}
-                className="flex items-center justify-between px-5 py-3 hover:bg-gray-light transition-colors">
+                className="flex items-center justify-between px-5 py-3 hover:bg-[var(--color-panel-hi)] transition-colors">
                 <div>
-                  <p className="text-sm font-medium">{makale.title}</p>
-                  <p className="text-xs text-gray-text mt-0.5">{formatDate(makale.createdAt)}</p>
+                  <p className="text-sm font-medium text-[var(--color-body)]">{makale.title}</p>
+                  <p className="text-xs text-[var(--color-muted)] mt-0.5">{formatDate(makale.createdAt)}</p>
                 </div>
                 <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  makale.status === "yayinda" ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-text"
+                  makale.status === "yayinda"
+                    ? "bg-green-500/15 text-green-400"
+                    : "bg-[var(--color-panel-hi)] text-[var(--color-muted)]"
                 }`}>
                   {makale.status === "yayinda" ? "Yayında" : "Taslak"}
                 </span>

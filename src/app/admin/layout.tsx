@@ -23,8 +23,8 @@ function AdminContent({ children }: { children: React.ReactNode }) {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen bg-gray-light flex items-center justify-center">
-        <p className="text-gray-text text-sm">Yükleniyor...</p>
+      <div className="min-h-screen bg-[var(--color-bg)] flex items-center justify-center">
+        <p className="text-[var(--color-muted)] text-sm">Yükleniyor...</p>
       </div>
     );
   }
@@ -32,7 +32,7 @@ function AdminContent({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
-      <main className="flex-1 bg-gray-light p-6 overflow-auto">
+      <main className="flex-1 bg-[var(--color-bg)] p-6 overflow-auto">
         {children}
       </main>
     </div>

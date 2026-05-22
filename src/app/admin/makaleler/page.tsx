@@ -56,14 +56,19 @@ export default function MakalelerPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold">Makaleler</h1>
+        <h1
+          className="text-xl font-bold text-[var(--color-ink)]"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Makaleler
+        </h1>
         <Link href="/admin/makaleler/yeni" className="btn-primary">
           Yeni Makale
         </Link>
       </div>
 
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+        <div className="mb-4 bg-red-500/10 border border-red-500/30 text-red-300 text-sm rounded-md px-4 py-2">
           {error}
         </div>
       )}
@@ -74,84 +79,84 @@ export default function MakalelerPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Makale ara..."
-          className="flex-1 max-w-xs px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="flex-1 max-w-xs px-3 py-2 bg-[var(--color-panel-hi)] border border-[var(--rule-dim)] text-[var(--color-ink)] rounded-md text-sm focus:outline-none focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] placeholder:text-[var(--color-muted-dim)]"
         />
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          className="px-3 py-2 bg-[var(--color-panel-hi)] border border-[var(--rule-dim)] text-[var(--color-ink)] rounded-md text-sm focus:outline-none focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)]"
         >
           <option value="">Tüm Durumlar</option>
           <option value="yayinda">Yayında</option>
           <option value="taslak">Taslak</option>
         </select>
       </div>
-      <div className="bg-white rounded-lg border border-gray-border">
+      <div className="bg-[var(--color-panel)] rounded-lg border border-[var(--rule-dim)]">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-border text-left">
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+            <tr className="border-b border-[var(--rule-dim)] text-left">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 Başlık
               </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 Kategori
               </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 Durum
               </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 Tarih
               </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 İşlemler
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-border">
+          <tbody className="divide-y divide-[var(--rule-dim)]">
             {filtered.map((makale) => (
               <tr
                 key={makale._id}
-                className="hover:bg-gray-light transition-colors"
+                className="hover:bg-[var(--color-panel-hi)] transition-colors"
               >
                 <td className="px-5 py-3">
                   <Link
                     href={`/admin/makaleler/${makale._id}`}
-                    className="text-sm font-medium hover:text-primary"
+                    className="text-sm font-medium text-[var(--color-body)] hover:text-[var(--color-gold)]"
                   >
                     {makale.title}
                   </Link>
                 </td>
-                <td className="px-5 py-3 text-sm text-gray-text">
+                <td className="px-5 py-3 text-sm text-[var(--color-muted)]">
                   {makale.category &&
                   typeof makale.category === "object"
                     ? makale.category.name
-                    : "\u2014"}
+                    : "—"}
                 </td>
                 <td className="px-5 py-3">
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full ${
                       makale.status === "yayinda"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-text"
+                        ? "bg-green-500/15 text-green-400"
+                        : "bg-[var(--color-panel-hi)] text-[var(--color-muted)]"
                     }`}
                   >
                     {makale.status === "yayinda" ? "Yayında" : "Taslak"}
                   </span>
                 </td>
-                <td className="px-5 py-3 text-sm text-gray-text">
+                <td className="px-5 py-3 text-sm text-[var(--color-muted)]">
                   {formatDate(makale.createdAt)}
                 </td>
                 <td className="px-5 py-3">
                   <div className="flex gap-2">
                     <Link
                       href={`/admin/makaleler/${makale._id}`}
-                      className="text-xs text-primary hover:underline"
+                      className="text-xs text-[var(--color-gold)] hover:underline"
                     >
                       Düzenle
                     </Link>
                     <button
                       onClick={() => handleDelete(makale._id)}
-                      className="text-xs text-red-600 hover:underline"
+                      className="text-xs text-red-400 hover:underline"
                     >
                       Sil
                     </button>
@@ -163,7 +168,7 @@ export default function MakalelerPage() {
               <tr>
                 <td
                   colSpan={5}
-                  className="px-5 py-8 text-center text-sm text-gray-text"
+                  className="px-5 py-8 text-center text-sm text-[var(--color-muted)]"
                 >
                   {search
                     ? "Aramanızla eşleşen makale bulunamadı."

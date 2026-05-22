@@ -54,7 +54,12 @@ export default function KategorilerPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold">Kategoriler</h1>
+        <h1
+          className="text-xl font-bold text-[var(--color-ink)]"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Kategoriler
+        </h1>
         <button
           onClick={() => {
             setEditing(null);
@@ -67,7 +72,7 @@ export default function KategorilerPage() {
       </div>
 
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+        <div className="mb-4 bg-red-500/10 border border-red-500/30 text-red-300 text-sm rounded-md px-4 py-2">
           {error}
         </div>
       )}
@@ -84,39 +89,39 @@ export default function KategorilerPage() {
           />
         </div>
       )}
-      <div className="bg-white rounded-lg border border-gray-border">
+      <div className="bg-[var(--color-panel)] rounded-lg border border-[var(--rule-dim)]">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-border text-left">
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+            <tr className="border-b border-[var(--rule-dim)] text-left">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 Sıra
               </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 Ad
               </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 Slug
               </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 Açıklama
               </th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">
                 İşlemler
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-border">
+          <tbody className="divide-y divide-[var(--rule-dim)]">
             {kategoriler.map((kat) => (
               <tr
                 key={kat._id}
-                className="hover:bg-gray-light transition-colors"
+                className="hover:bg-[var(--color-panel-hi)] transition-colors"
               >
-                <td className="px-5 py-3 text-sm">{kat.order}</td>
-                <td className="px-5 py-3 text-sm font-medium">{kat.name}</td>
-                <td className="px-5 py-3 text-sm text-gray-text font-mono">
+                <td className="px-5 py-3 text-sm text-[var(--color-body)]">{kat.order}</td>
+                <td className="px-5 py-3 text-sm font-medium text-[var(--color-body)]">{kat.name}</td>
+                <td className="px-5 py-3 text-sm text-[var(--color-muted)] font-mono">
                   {kat.slug}
                 </td>
-                <td className="px-5 py-3 text-sm text-gray-text">
+                <td className="px-5 py-3 text-sm text-[var(--color-muted)]">
                   {kat.description}
                 </td>
                 <td className="px-5 py-3">
@@ -126,13 +131,13 @@ export default function KategorilerPage() {
                         setEditing(kat);
                         setShowForm(false);
                       }}
-                      className="text-xs text-primary hover:underline"
+                      className="text-xs text-[var(--color-gold)] hover:underline"
                     >
                       Düzenle
                     </button>
                     <button
                       onClick={() => handleDelete(kat._id)}
-                      className="text-xs text-red-600 hover:underline"
+                      className="text-xs text-red-400 hover:underline"
                     >
                       Sil
                     </button>
@@ -144,7 +149,7 @@ export default function KategorilerPage() {
               <tr>
                 <td
                   colSpan={5}
-                  className="px-5 py-8 text-center text-sm text-gray-text"
+                  className="px-5 py-8 text-center text-sm text-[var(--color-muted)]"
                 >
                   Henüz kategori yok.
                 </td>

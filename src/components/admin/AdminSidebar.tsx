@@ -20,11 +20,11 @@ export default function AdminSidebar() {
   };
 
   return (
-    <aside className="w-56 bg-dark min-h-screen flex flex-col flex-shrink-0">
-      <div className="px-5 py-5 border-b border-gray-800">
+    <aside className="w-56 bg-[var(--color-bg-alt)] min-h-screen flex flex-col flex-shrink-0 border-r border-[var(--rule-dim)]">
+      <div className="px-5 py-5 border-b border-[var(--rule-dim)]">
         <Link href="/" className="block">
-          <h1 className="text-white font-bold text-sm">Tarık Mirza</h1>
-          <p className="text-gray-400 text-xs mt-0.5">Admin Panel</p>
+          <h1 className="text-[var(--color-ink)] font-bold text-sm" style={{ fontFamily: "var(--font-display)" }}>Tarık Mirza</h1>
+          <p className="text-[var(--color-muted)] text-xs mt-0.5">Admin Panel</p>
         </Link>
       </div>
 
@@ -35,8 +35,8 @@ export default function AdminSidebar() {
             href={item.href}
             className={`flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
               isActive(item.href)
-                ? "text-white bg-gray-800 border-l-2 border-primary"
-                : "text-gray-400 hover:text-white hover:bg-gray-800/50"
+                ? "text-[var(--color-ink)] bg-[var(--color-panel-hi)] border-l-2 border-[var(--color-gold)]"
+                : "text-[var(--color-muted)] hover:text-[var(--color-ink)] hover:bg-[var(--color-panel-hi)]"
             }`}
           >
             <span>{item.icon}</span>
@@ -45,10 +45,10 @@ export default function AdminSidebar() {
         ))}
       </nav>
 
-      <div className="px-5 py-4 border-t border-gray-800">
+      <div className="px-5 py-4 border-t border-[var(--rule-dim)]">
         <button
           onClick={() => signOut({ callbackUrl: "/admin/giris" })}
-          className="text-gray-400 text-sm hover:text-white transition-colors"
+          className="text-[var(--color-muted)] text-sm hover:text-[var(--color-gold)] transition-colors"
         >
           Çıkış Yap
         </button>

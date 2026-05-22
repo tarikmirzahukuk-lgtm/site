@@ -145,17 +145,27 @@ export default function YazarlarPage() {
     }
   };
 
+  const inputClass =
+    "w-full px-3 py-2 bg-[var(--color-panel-hi)] border border-[var(--rule-dim)] text-[var(--color-ink)] rounded-md text-sm focus:outline-none focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] placeholder:text-[var(--color-muted-dim)]";
+  const labelClass =
+    "block text-xs font-medium text-[var(--color-muted)] mb-1.5 uppercase tracking-wide";
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-bold">Yazarlar</h1>
+        <h1
+          className="text-xl font-bold text-[var(--color-ink)]"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          Yazarlar
+        </h1>
         <button onClick={handleNew} className="btn-primary">
           Yeni Yazar
         </button>
       </div>
 
       {listError && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md px-4 py-2">
+        <div className="mb-4 bg-red-500/10 border border-red-500/30 text-red-300 text-sm rounded-md px-4 py-2">
           {listError}
         </div>
       )}
@@ -163,64 +173,58 @@ export default function YazarlarPage() {
       {showForm && (
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-lg border border-gray-border p-5 space-y-4 mb-6"
+          className="bg-[var(--color-panel)] rounded-lg border border-[var(--rule-dim)] p-5 space-y-4 mb-6"
         >
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold text-sm">
+            <h2 className="font-semibold text-sm text-[var(--color-ink)]">
               {editingId ? "Yazarı Düzenle" : "Yeni Yazar"}
             </h2>
             {editingId && (
-              <span className="text-xs text-gray-text">
+              <span className="text-xs text-[var(--color-muted)]">
                 Slug değişmez — URL stabil kalır
               </span>
             )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-text mb-1.5 uppercase tracking-wide">
-                Ad
-              </label>
+              <label className={labelClass}>Ad</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className={inputClass}
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-text mb-1.5 uppercase tracking-wide">
-                E-posta
-              </label>
+              <label className={labelClass}>E-posta</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className={inputClass}
                 required
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-text mb-1.5 uppercase tracking-wide">
-                Şifre {editingId && <span className="text-gray-text normal-case">(boş bırak = değişmez)</span>}
+              <label className={labelClass}>
+                Şifre {editingId && <span className="text-[var(--color-muted)] normal-case">(boş bırak = değişmez)</span>}
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 minLength={editingId ? undefined : 6}
-                className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className={inputClass}
                 required={!editingId}
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-text mb-1.5 uppercase tracking-wide">
-                Rol
-              </label>
+              <label className={labelClass}>Rol</label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as "admin" | "yazar")}
-                className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                className={inputClass}
               >
                 <option value="yazar">Yazar</option>
                 <option value="admin">Admin</option>
@@ -228,23 +232,21 @@ export default function YazarlarPage() {
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-text mb-1.5 uppercase tracking-wide">
-              Biyografi
-            </label>
+            <label className={labelClass}>Biyografi</label>
             <textarea
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               rows={2}
-              className="w-full px-3 py-2 border border-gray-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className={inputClass}
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-text mb-2 uppercase tracking-wide">
+            <label className="block text-xs font-medium text-[var(--color-muted)] mb-2 uppercase tracking-wide">
               Sosyal Bağlantılar (opsiyonel — E-A-T sinyali için)
             </label>
             <YazarSosyalForm value={socials} onChange={setSocials} />
           </div>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && <p className="text-red-400 text-sm">{error}</p>}
           <div className="flex gap-2">
             <button
               type="submit"
@@ -270,27 +272,27 @@ export default function YazarlarPage() {
           </div>
         </form>
       )}
-      <div className="bg-white rounded-lg border border-gray-border">
+      <div className="bg-[var(--color-panel)] rounded-lg border border-[var(--rule-dim)]">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-border text-left">
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">Ad</th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">E-posta</th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">Rol</th>
-              <th className="px-5 py-3 text-xs font-medium text-gray-text uppercase tracking-wide">İşlemler</th>
+            <tr className="border-b border-[var(--rule-dim)] text-left">
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">Ad</th>
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">E-posta</th>
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">Rol</th>
+              <th className="px-5 py-3 text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide">İşlemler</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-border">
+          <tbody className="divide-y divide-[var(--rule-dim)]">
             {yazarlar.map((y) => (
-              <tr key={y._id} className="hover:bg-gray-light transition-colors">
-                <td className="px-5 py-3 text-sm font-medium">{y.name}</td>
-                <td className="px-5 py-3 text-sm text-gray-text">{y.email}</td>
+              <tr key={y._id} className="hover:bg-[var(--color-panel-hi)] transition-colors">
+                <td className="px-5 py-3 text-sm font-medium text-[var(--color-body)]">{y.name}</td>
+                <td className="px-5 py-3 text-sm text-[var(--color-muted)]">{y.email}</td>
                 <td className="px-5 py-3">
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full ${
                       y.role === "admin"
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-gray-100 text-gray-text"
+                        ? "bg-[var(--color-gold)]/15 text-[var(--color-gold)]"
+                        : "bg-[var(--color-panel-hi)] text-[var(--color-muted)]"
                     }`}
                   >
                     {y.role === "admin" ? "Admin" : "Yazar"}
@@ -300,13 +302,13 @@ export default function YazarlarPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEdit(y)}
-                      className="text-xs text-primary hover:underline"
+                      className="text-xs text-[var(--color-gold)] hover:underline"
                     >
                       Düzenle
                     </button>
                     <button
                       onClick={() => handleDelete(y)}
-                      className="text-xs text-red-600 hover:underline"
+                      className="text-xs text-red-400 hover:underline"
                     >
                       Sil
                     </button>
@@ -316,7 +318,7 @@ export default function YazarlarPage() {
             ))}
             {yazarlar.length === 0 && !listError && (
               <tr>
-                <td colSpan={4} className="px-5 py-8 text-center text-sm text-gray-text">
+                <td colSpan={4} className="px-5 py-8 text-center text-sm text-[var(--color-muted)]">
                   Henüz yazar yok.
                 </td>
               </tr>
