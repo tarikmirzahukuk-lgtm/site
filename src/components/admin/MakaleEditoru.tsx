@@ -38,6 +38,8 @@ function ToolbarButton({
 
 export default function MakaleEditoru({ content, onChange }: Props) {
   const editor = useEditor({
+    // Next.js App Router SSR — hydration mismatch'i önler (TipTap v3 gereği)
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] } }),
       Image,
@@ -137,10 +139,10 @@ export default function MakaleEditoru({ content, onChange }: Props) {
           onClick={() => editor.chain().focus().toggleBlockquote().run()}
           active={editor.isActive("blockquote")}
         >
-          Alinti
+          Alıntı
         </ToolbarButton>
         <div className="w-px bg-gray-border mx-1" />
-        <ToolbarButton onClick={addImage}>Gorsel</ToolbarButton>
+        <ToolbarButton onClick={addImage}>Görsel</ToolbarButton>
         <ToolbarButton onClick={addLink} active={editor.isActive("link")}>
           Link
         </ToolbarButton>
