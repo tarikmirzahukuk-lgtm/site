@@ -49,3 +49,6 @@ public/uploads/*
 
 # Design reference (not source)
 .design-handoff/
+
+# Claude Code local tooling (settings, transcripts, launch config)
+.claude/
