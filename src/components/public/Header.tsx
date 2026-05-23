@@ -3,10 +3,17 @@
 import Link from "next/link";
 import { useState } from "react";
 import Icon from "@/components/public/icons/Icon";
-import { NAV } from "@/lib/site-data";
-import { SITE_CONFIG } from "@/lib/site-config";
+import type { INavLink } from "@/types";
 
-export default function Header() {
+export default function Header({
+  nav,
+  brand,
+  tagline,
+}: {
+  nav: INavLink[];
+  brand: string;
+  tagline: string;
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -26,17 +33,17 @@ export default function Header() {
           </span>
           <span className="hidden md:flex flex-col leading-tight">
             <span className="text-base font-semibold" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
-              {SITE_CONFIG.brand}
+              {brand}
             </span>
             <span className="text-[10px] mt-0.5 uppercase tracking-[0.22em]" style={{ color: "var(--color-muted)" }}>
-              {SITE_CONFIG.tagline}
+              {tagline}
             </span>
           </span>
         </Link>
 
         {/* Desktop nav */}
         <nav className="hidden md:flex gap-8">
-          {NAV.map((link, i) => (
+          {nav.map((link, i) => (
             <Link
               key={link.href}
               href={link.href}
@@ -74,7 +81,7 @@ export default function Header() {
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="menu-slide md:hidden border-t px-5 py-4 space-y-3" style={{ borderColor: "var(--rule-dim)", background: "var(--color-bg)" }}>
-          {NAV.map((link) => (
+          {nav.map((link) => (
             <Link
               key={link.href}
               href={link.href}

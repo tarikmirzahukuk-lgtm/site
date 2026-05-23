@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { getSiteContent } from "@/lib/get-site-content";
 
-export const metadata: Metadata = buildMetadata({
-  title: "İletişim",
-  description:
-    "Tarık Mirza ile iletişim — soru, öneri ve iş birliği teklifleri için e-posta ve LinkedIn üzerinden ulaşın.",
-  path: "/iletisim",
-});
+export async function generateMetadata(): Promise<Metadata> {
+  return buildMetadata({
+    title: "İletişim",
+    description:
+      "Tarık Mirza ile iletişim — soru, öneri ve iş birliği teklifleri için e-posta ve LinkedIn üzerinden ulaşın.",
+    path: "/iletisim",
+  });
+}
 
-export default function IletisimPage() {
+export default async function IletisimPage() {
+  const c = await getSiteContent();
   return (
     <div className="max-w-content mx-auto px-6 py-16">
       <h1
@@ -24,24 +28,43 @@ export default function IletisimPage() {
 
       <div className="space-y-6">
         <div className="pcard p-6">
-          <h3 className="kicker mb-2">
-            E-posta
-          </h3>
+          <h3 className="kicker mb-2">E-posta</h3>
           <a
-            href="mailto:tarik@example.com"
+            href={`mailto:${c.contact.email}`}
             className="transition-colors hover:underline"
             style={{ color: "var(--color-gold)" }}
           >
-            tarik@example.com
+            {c.contact.email}
           </a>
         </div>
 
-        <div className="pcard p-6">
-          <h3 className="kicker mb-2">
-            LinkedIn
-          </h3>
-          <p style={{ color: "var(--color-body)" }}>linkedin.com/in/tarikmirza</p>
-        </div>
+        {c.contact.phone && (
+          <div className="pcard p-6">
+            <h3 className="kicker mb-2">Telefon</h3>
+            <a
+              href={`tel:${c.contact.phoneRaw || c.contact.phone}`}
+              className="transition-colors hover:underline"
+              style={{ color: "var(--color-gold)" }}
+            >
+              {c.contact.phone}
+            </a>
+          </div>
+        )}
+
+        {(c.contact.address.line1 || c.contact.address.line2) && (
+          <div className="pcard p-6">
+            <h3 className="kicker mb-2">Adres</h3>
+            <p style={{ color: "var(--color-body)" }}>
+              {c.contact.address.line1}
+              {c.contact.address.line2 && (
+                <>
+                  <br />
+                  {c.contact.address.line2}
+                </>
+              )}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

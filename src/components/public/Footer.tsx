@@ -1,9 +1,18 @@
 import Link from "next/link";
 import Icon from "@/components/public/icons/Icon";
-import { NAV } from "@/lib/site-data";
-import { SITE_CONFIG } from "@/lib/site-config";
+import type { INavLink, ISiteContent } from "@/types";
 
-export default function Footer() {
+export default function Footer({
+  nav,
+  brand,
+  description,
+  contact,
+}: {
+  nav: INavLink[];
+  brand: string;
+  description: string;
+  contact: ISiteContent["contact"];
+}) {
   return (
     <footer className="border-t" style={{ background: "#080a0e", borderColor: "var(--rule)" }}>
       <div className="max-w-7xl mx-auto px-5 md:px-10 py-12 md:py-[72px]">
@@ -23,7 +32,7 @@ export default function Footer() {
               </span>
               <div>
                 <div className="text-[17px] font-semibold" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
-                  {SITE_CONFIG.brand}
+                  {brand}
                 </div>
                 <div className="text-[10.5px] mt-0.5 uppercase tracking-[0.22em]" style={{ color: "var(--color-muted)" }}>
                   Ceza Hukuku Araştırmaları
@@ -31,7 +40,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="mt-5 text-[13.5px] max-w-sm leading-[1.7]" style={{ color: "var(--color-muted)" }}>
-              {SITE_CONFIG.description}
+              {description}
             </p>
             <div className="mt-5 flex gap-2.5">
               {[
@@ -54,7 +63,7 @@ export default function Footer() {
           <div>
             <div className="kicker mb-[18px]">Menü</div>
             <ul className="space-y-1.5 text-[13.5px]" style={{ color: "var(--color-ink)" }}>
-              {NAV.map((n) => (
+              {nav.map((n) => (
                 <li key={n.href}>
                   <Link href={n.href} className="plink">
                     {n.label}
@@ -76,20 +85,20 @@ export default function Footer() {
               <li className="flex gap-2.5">
                 <Icon name="pillar" size={16} color="var(--color-gold)" />
                 <span>
-                  {SITE_CONFIG.contact.address.line1}
+                  {contact.address.line1}
                   <br />
-                  {SITE_CONFIG.contact.address.line2}
+                  {contact.address.line2}
                 </span>
               </li>
               <li className="flex gap-2.5">
                 <Icon name="phone" size={16} color="var(--color-gold)" />
-                {SITE_CONFIG.contact.phone}
+                {contact.phone}
               </li>
               <li className="flex gap-2.5">
                 <span className="w-4 text-center" style={{ color: "var(--color-gold)" }}>
                   @
                 </span>
-                {SITE_CONFIG.contact.email}
+                {contact.email}
               </li>
             </ul>
           </div>
@@ -126,7 +135,7 @@ export default function Footer() {
           className="mt-12 pt-6 border-t flex flex-col md:flex-row justify-between gap-3 text-[11.5px] tracking-[0.04em]"
           style={{ borderColor: "var(--rule-dim)", color: "var(--color-muted-dim)" }}
         >
-          <span>© {new Date().getFullYear()} {SITE_CONFIG.brand} · Tüm hakları saklıdır.</span>
+          <span>© {new Date().getFullYear()} {brand} · Tüm hakları saklıdır.</span>
           <span>Akademik blog · Hukuki tavsiye değildir</span>
         </div>
       </div>
