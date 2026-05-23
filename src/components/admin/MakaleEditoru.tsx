@@ -1,34 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import { useEditor, EditorContent, type Editor } from "@tiptap/react";
+import { BubbleMenu } from "@tiptap/react/menus";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
 import LinkExtension from "@tiptap/extension-link";
 import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
+import { CharacterCount } from "@tiptap/extensions";
 import { TextStyle, Color, FontSize } from "@tiptap/extension-text-style";
 import { Highlight } from "@tiptap/extension-highlight";
 import { TextAlign } from "@tiptap/extension-text-align";
 import { Subscript } from "@tiptap/extension-subscript";
 import { Superscript } from "@tiptap/extension-superscript";
+import EIcon, { type EIconName } from "@/components/admin/editor-icons";
 
 interface Props {
   content: string;
   onChange: (html: string) => void;
 }
 
-function ToolbarButton({
+const btnBase =
+  "h-8 min-w-8 px-1.5 flex items-center justify-center rounded-md text-[13px] font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed";
+const btnIdle =
+  "text-[var(--color-muted)] hover:bg-[var(--color-panel-hi)] hover:text-[var(--color-ink)]";
+const btnActive = "bg-[var(--color-gold)] text-[#0a0d11]";
+
+function IconBtn({
+  icon,
   onClick,
   active,
   disabled,
   title,
-  children,
 }: {
+  icon: EIconName;
   onClick: () => void;
   active?: boolean;
   disabled?: boolean;
-  title?: string;
-  children: React.ReactNode;
+  title: string;
 }) {
   return (
     <button
@@ -36,29 +46,100 @@ function ToolbarButton({
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className={`px-2 py-1 rounded text-xs font-medium transition-colors disabled:opacity-30 ${
-        active
-          ? "bg-[var(--color-gold)] text-[#0a0d11]"
-          : "bg-transparent text-[var(--color-body)] hover:bg-[var(--color-panel-hi)] hover:text-[var(--color-ink)]"
-      }`}
+      aria-label={title}
+      aria-pressed={active}
+      className={`${btnBase} ${active ? btnActive : btnIdle}`}
     >
-      {children}
+      <EIcon name={icon} />
     </button>
   );
 }
 
 function Divider() {
-  return <div className="w-px bg-[var(--rule-dim)] mx-1 self-stretch" />;
+  return <span className="w-px h-5 bg-[var(--rule-dim)] mx-0.5 shrink-0" />;
 }
 
-const FONT_SIZES = [
-  { label: "Boyut", value: "" },
-  { label: "Küçük (14)", value: "14px" },
-  { label: "Normal (16)", value: "16px" },
-  { label: "Orta (18)", value: "18px" },
-  { label: "Büyük (24)", value: "24px" },
-  { label: "Çok büyük (30)", value: "30px" },
+function Dropdown({
+  trigger,
+  title,
+  width = "w-44",
+  children,
+}: {
+  trigger: React.ReactNode;
+  title: string;
+  width?: string;
+  children: (close: () => void) => React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative shrink-0">
+      <button
+        type="button"
+        title={title}
+        aria-label={title}
+        onClick={() => setOpen((o) => !o)}
+        className={`${btnBase} ${open ? "bg-[var(--color-panel-hi)] text-[var(--color-ink)]" : btnIdle} gap-1`}
+      >
+        {trigger}
+        <EIcon name="chevron" size={12} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
+          <div
+            className={`absolute left-0 top-full mt-1.5 z-50 ${width} rounded-lg border border-[var(--rule-dim)] bg-[var(--color-panel)] p-1.5 shadow-2xl shadow-black/50`}
+          >
+            {children(() => setOpen(false))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+const HEADINGS = [
+  { label: "Normal metin", level: 0 },
+  { label: "Başlık 1", level: 1 },
+  { label: "Başlık 2", level: 2 },
+  { label: "Başlık 3", level: 3 },
+  { label: "Başlık 4", level: 4 },
+] as const;
+
+const TEXT_COLORS = [
+  { name: "Altın", value: "#D4AF37" },
+  { name: "Beyaz", value: "#F5F5F5" },
+  { name: "Gri", value: "#B8B8B8" },
+  { name: "Kırmızı", value: "#ef4444" },
+  { name: "Turuncu", value: "#f59e0b" },
+  { name: "Yeşil", value: "#22c55e" },
+  { name: "Mavi", value: "#3b82f6" },
+  { name: "Mor", value: "#a855f7" },
 ];
+
+const HIGHLIGHTS = [
+  { name: "Altın", value: "rgba(212,175,55,0.35)" },
+  { name: "Sarı", value: "rgba(234,179,8,0.35)" },
+  { name: "Yeşil", value: "rgba(34,197,94,0.30)" },
+  { name: "Mavi", value: "rgba(59,130,246,0.30)" },
+  { name: "Pembe", value: "rgba(236,72,153,0.30)" },
+];
+
+const FONT_SIZES = [
+  { label: "Varsayılan", value: "" },
+  { label: "Küçük", value: "14px" },
+  { label: "Normal", value: "16px" },
+  { label: "Orta", value: "19px" },
+  { label: "Büyük", value: "24px" },
+  { label: "Çok büyük", value: "30px" },
+];
+
+function currentHeadingLabel(editor: Editor): string {
+  for (const h of HEADINGS) {
+    if (h.level > 0 && editor.isActive("heading", { level: h.level }))
+      return h.label;
+  }
+  return "Normal metin";
+}
 
 function Toolbar({ editor }: { editor: Editor }) {
   const addImage = () => {
@@ -89,150 +170,192 @@ function Toolbar({ editor }: { editor: Editor }) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1 p-2 border-b border-[var(--rule-dim)]">
-      {/* Geri / İleri */}
-      <ToolbarButton onClick={() => editor.chain().focus().undo().run()} disabled={!editor.can().undo()} title="Geri al">
-        ↶
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().redo().run()} disabled={!editor.can().redo()} title="İleri al">
-        ↷
-      </ToolbarButton>
-      <Divider />
+    <div className="sticky top-0 z-20 flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-[var(--rule-dim)] bg-[var(--color-panel)]/95 backdrop-blur-md rounded-t-lg">
+      {/* Blok tipi */}
+      <Dropdown
+        title="Paragraf stili"
+        width="w-44"
+        trigger={<span className="px-0.5">{currentHeadingLabel(editor)}</span>}
+      >
+        {(close) => (
+          <div className="flex flex-col">
+            {HEADINGS.map((h) => {
+              const active =
+                h.level === 0
+                  ? editor.isActive("paragraph")
+                  : editor.isActive("heading", { level: h.level });
+              return (
+                <button
+                  key={h.level}
+                  type="button"
+                  onClick={() => {
+                    if (h.level === 0)
+                      editor.chain().focus().setParagraph().run();
+                    else
+                      editor
+                        .chain()
+                        .focus()
+                        .toggleHeading({ level: h.level as 1 | 2 | 3 | 4 })
+                        .run();
+                    close();
+                  }}
+                  className={`text-left px-2.5 py-1.5 rounded-md transition-colors ${
+                    active
+                      ? "text-[var(--color-gold)]"
+                      : "text-[var(--color-body)] hover:bg-[var(--color-panel-hi)]"
+                  } ${h.level === 1 ? "text-xl font-semibold" : ""} ${
+                    h.level === 2 ? "text-lg font-semibold" : ""
+                  } ${h.level === 3 ? "text-base font-medium" : ""} ${
+                    h.level === 4 ? "text-sm font-medium" : ""
+                  }`}
+                  style={{ fontFamily: h.level > 0 ? "var(--font-display)" : undefined }}
+                >
+                  {h.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </Dropdown>
 
-      {/* Paragraf / Başlıklar */}
-      <ToolbarButton onClick={() => editor.chain().focus().setParagraph().run()} active={editor.isActive("paragraph")} title="Paragraf">
-        P
-      </ToolbarButton>
-      {[1, 2, 3, 4].map((level) => (
-        <ToolbarButton
-          key={level}
-          onClick={() => editor.chain().focus().toggleHeading({ level: level as 1 | 2 | 3 | 4 }).run()}
-          active={editor.isActive("heading", { level })}
-          title={`Başlık ${level}`}
-        >
-          H{level}
-        </ToolbarButton>
-      ))}
       <Divider />
 
       {/* Karakter biçimi */}
-      <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive("bold")} title="Kalın">
-        <span className="font-bold">B</span>
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive("italic")} title="İtalik">
-        <span className="italic">I</span>
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive("underline")} title="Altı çizili">
-        <span className="underline">U</span>
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive("strike")} title="Üstü çizili">
-        <span className="line-through">S</span>
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().toggleCode().run()} active={editor.isActive("code")} title="Satır içi kod">
-        {"</>"}
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().toggleSubscript().run()} active={editor.isActive("subscript")} title="Alt simge">
-        x₂
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().toggleSuperscript().run()} active={editor.isActive("superscript")} title="Üst simge">
-        x²
-      </ToolbarButton>
+      <IconBtn icon="bold" title="Kalın (Ctrl+B)" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} />
+      <IconBtn icon="italic" title="İtalik (Ctrl+I)" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} />
+      <IconBtn icon="underline" title="Altı çizili (Ctrl+U)" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} />
+      <IconBtn icon="strike" title="Üstü çizili" active={editor.isActive("strike")} onClick={() => editor.chain().focus().toggleStrike().run()} />
+      <IconBtn icon="code" title="Satır içi kod" active={editor.isActive("code")} onClick={() => editor.chain().focus().toggleCode().run()} />
+
       <Divider />
 
       {/* Renk / Vurgu / Boyut */}
-      <label className="flex items-center gap-1 text-xs text-[var(--color-muted)] cursor-pointer" title="Yazı rengi">
-        <span>A</span>
-        <input
-          type="color"
-          onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
-          className="w-5 h-5 p-0 border-0 bg-transparent cursor-pointer"
-        />
-      </label>
-      <ToolbarButton onClick={() => editor.chain().focus().unsetColor().run()} title="Rengi kaldır">
-        A⨯
-      </ToolbarButton>
-      <label className="flex items-center gap-1 text-xs text-[var(--color-muted)] cursor-pointer" title="Vurgu rengi">
-        <span>🖍</span>
-        <input
-          type="color"
-          onChange={(e) => editor.chain().focus().toggleHighlight({ color: e.target.value }).run()}
-          className="w-5 h-5 p-0 border-0 bg-transparent cursor-pointer"
-        />
-      </label>
-      <select
-        value=""
-        onChange={(e) => {
-          const v = e.target.value;
-          if (v) editor.chain().focus().setFontSize(v).run();
-          else editor.chain().focus().unsetFontSize().run();
-        }}
-        className="text-xs bg-[var(--color-panel-hi)] text-[var(--color-body)] border border-[var(--rule-dim)] rounded px-1 py-1 focus:outline-none"
-        title="Yazı boyutu"
-      >
-        {FONT_SIZES.map((f) => (
-          <option key={f.value} value={f.value}>
-            {f.label}
-          </option>
-        ))}
-      </select>
+      <Dropdown title="Yazı rengi" width="w-44" trigger={<EIcon name="textColor" />}>
+        {(close) => (
+          <div>
+            <div className="grid grid-cols-4 gap-1.5 p-1">
+              {TEXT_COLORS.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  title={c.name}
+                  onClick={() => {
+                    editor.chain().focus().setColor(c.value).run();
+                    close();
+                  }}
+                  className="w-7 h-7 rounded-md border border-[var(--rule-dim)] transition-transform hover:scale-110"
+                  style={{ background: c.value }}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                editor.chain().focus().unsetColor().run();
+                close();
+              }}
+              className="w-full text-left text-xs text-[var(--color-muted)] hover:text-[var(--color-ink)] px-2 py-1.5 mt-1"
+            >
+              Rengi kaldır
+            </button>
+          </div>
+        )}
+      </Dropdown>
+
+      <Dropdown title="Vurgu rengi" width="w-44" trigger={<EIcon name="highlight" />}>
+        {(close) => (
+          <div>
+            <div className="grid grid-cols-5 gap-1.5 p-1">
+              {HIGHLIGHTS.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  title={c.name}
+                  onClick={() => {
+                    editor.chain().focus().toggleHighlight({ color: c.value }).run();
+                    close();
+                  }}
+                  className="w-7 h-7 rounded-md border border-[var(--rule-dim)] transition-transform hover:scale-110"
+                  style={{ background: c.value }}
+                />
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                editor.chain().focus().unsetHighlight().run();
+                close();
+              }}
+              className="w-full text-left text-xs text-[var(--color-muted)] hover:text-[var(--color-ink)] px-2 py-1.5 mt-1"
+            >
+              Vurguyu kaldır
+            </button>
+          </div>
+        )}
+      </Dropdown>
+
+      <Dropdown title="Yazı boyutu" width="w-40" trigger={<span className="text-xs px-0.5">Boyut</span>}>
+        {(close) => (
+          <div className="flex flex-col">
+            {FONT_SIZES.map((f) => (
+              <button
+                key={f.value}
+                type="button"
+                onClick={() => {
+                  if (f.value) editor.chain().focus().setFontSize(f.value).run();
+                  else editor.chain().focus().unsetFontSize().run();
+                  close();
+                }}
+                className="text-left px-2.5 py-1.5 rounded-md text-[var(--color-body)] hover:bg-[var(--color-panel-hi)] transition-colors"
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </Dropdown>
+
       <Divider />
 
       {/* Hizalama */}
-      <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("left").run()} active={editor.isActive({ textAlign: "left" })} title="Sola hizala">
-        Sol
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("center").run()} active={editor.isActive({ textAlign: "center" })} title="Ortala">
-        Orta
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("right").run()} active={editor.isActive({ textAlign: "right" })} title="Sağa hizala">
-        Sağ
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().setTextAlign("justify").run()} active={editor.isActive({ textAlign: "justify" })} title="İki yana yasla">
-        Yasla
-      </ToolbarButton>
+      <IconBtn icon="alignLeft" title="Sola hizala" active={editor.isActive({ textAlign: "left" })} onClick={() => editor.chain().focus().setTextAlign("left").run()} />
+      <IconBtn icon="alignCenter" title="Ortala" active={editor.isActive({ textAlign: "center" })} onClick={() => editor.chain().focus().setTextAlign("center").run()} />
+      <IconBtn icon="alignRight" title="Sağa hizala" active={editor.isActive({ textAlign: "right" })} onClick={() => editor.chain().focus().setTextAlign("right").run()} />
+      <IconBtn icon="alignJustify" title="İki yana yasla" active={editor.isActive({ textAlign: "justify" })} onClick={() => editor.chain().focus().setTextAlign("justify").run()} />
+
       <Divider />
 
       {/* Bloklar */}
-      <ToolbarButton onClick={() => editor.chain().focus().toggleBulletList().run()} active={editor.isActive("bulletList")} title="Madde listesi">
-        Liste
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().toggleOrderedList().run()} active={editor.isActive("orderedList")} title="Numaralı liste">
-        1.
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive("blockquote")} title="Alıntı">
-        Alıntı
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive("codeBlock")} title="Kod bloğu">
-        Kod
-      </ToolbarButton>
-      <ToolbarButton onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Yatay çizgi">
-        —
-      </ToolbarButton>
+      <IconBtn icon="bulletList" title="Madde listesi" active={editor.isActive("bulletList")} onClick={() => editor.chain().focus().toggleBulletList().run()} />
+      <IconBtn icon="orderedList" title="Numaralı liste" active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()} />
+      <IconBtn icon="quote" title="Alıntı" active={editor.isActive("blockquote")} onClick={() => editor.chain().focus().toggleBlockquote().run()} />
+      <IconBtn icon="codeBlock" title="Kod bloğu" active={editor.isActive("codeBlock")} onClick={() => editor.chain().focus().toggleCodeBlock().run()} />
+      <IconBtn icon="rule" title="Yatay çizgi" onClick={() => editor.chain().focus().setHorizontalRule().run()} />
+
+      <Divider />
+
+      {/* Alt / üst simge */}
+      <IconBtn icon="subscript" title="Alt simge" active={editor.isActive("subscript")} onClick={() => editor.chain().focus().toggleSubscript().run()} />
+      <IconBtn icon="superscript" title="Üst simge" active={editor.isActive("superscript")} onClick={() => editor.chain().focus().toggleSuperscript().run()} />
+
       <Divider />
 
       {/* Görsel / Link */}
-      <ToolbarButton onClick={addImage} title="Görsel ekle">
-        Görsel
-      </ToolbarButton>
-      <ToolbarButton onClick={setLink} active={editor.isActive("link")} title="Link ekle/düzenle">
-        Link
-      </ToolbarButton>
+      <IconBtn icon="image" title="Görsel ekle" onClick={addImage} />
+      <IconBtn icon="link" title="Link ekle / düzenle" active={editor.isActive("link")} onClick={setLink} />
+
       <Divider />
 
-      {/* Temizle */}
-      <ToolbarButton
-        onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}
-        title="Biçimlendirmeyi temizle"
-      >
-        Temizle
-      </ToolbarButton>
+      {/* Geri / İleri / Temizle */}
+      <IconBtn icon="undo" title="Geri al" disabled={!editor.can().undo()} onClick={() => editor.chain().focus().undo().run()} />
+      <IconBtn icon="redo" title="İleri al" disabled={!editor.can().redo()} onClick={() => editor.chain().focus().redo().run()} />
+      <IconBtn icon="eraser" title="Biçimlendirmeyi temizle" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()} />
     </div>
   );
 }
 
 export default function MakaleEditoru({ content, onChange }: Props) {
   const editor = useEditor({
-    // Next.js App Router SSR — hydration mismatch'i önler (TipTap v3 gereği)
     immediatelyRender: false,
     extensions: [
       StarterKit.configure({ heading: { levels: [1, 2, 3, 4] } }),
@@ -246,28 +369,56 @@ export default function MakaleEditoru({ content, onChange }: Props) {
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Subscript,
       Superscript,
+      CharacterCount,
       Placeholder.configure({
-        placeholder: "Makale içeriğinizi buraya yazın...",
+        placeholder: "Makale içeriğinizi buraya yazın…",
       }),
     ],
     content,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
-    },
+    onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm prose-invert max-w-none min-h-[400px] px-5 py-4 focus:outline-none",
+          "prose prose-invert max-w-none min-h-[460px] px-6 md:px-10 py-6 focus:outline-none prose-headings:font-[var(--font-display)] prose-a:text-[var(--color-gold)]",
       },
     },
   });
 
   if (!editor) return null;
 
+  const words = editor.storage.characterCount.words();
+  const chars = editor.storage.characterCount.characters();
+
   return (
-    <div className="bg-[var(--color-panel)] border border-[var(--rule-dim)] rounded-lg overflow-hidden">
+    <div className="bg-[var(--color-panel)] border border-[var(--rule-dim)] rounded-lg">
       <Toolbar editor={editor} />
+
+      <BubbleMenu
+        editor={editor}
+        options={{ placement: "top" }}
+        shouldShow={({ editor, state }) =>
+          editor.isEditable &&
+          !state.selection.empty &&
+          !editor.isActive("image") &&
+          !editor.isActive("codeBlock")
+        }
+      >
+        <div className="flex items-center gap-0.5 rounded-lg border border-[var(--rule-dim)] bg-[var(--color-bg-alt)] p-1 shadow-2xl shadow-black/60">
+          <IconBtn icon="bold" title="Kalın" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} />
+          <IconBtn icon="italic" title="İtalik" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} />
+          <IconBtn icon="underline" title="Altı çizili" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} />
+          <IconBtn icon="highlight" title="Vurgula" active={editor.isActive("highlight")} onClick={() => editor.chain().focus().toggleHighlight({ color: "rgba(212,175,55,0.35)" }).run()} />
+          <IconBtn icon="link" title="Link" active={editor.isActive("link")} onClick={() => { const u = prompt("Link URL'si:", "https://"); if (u) editor.chain().focus().extendMarkRange("link").setLink({ href: u }).run(); }} />
+        </div>
+      </BubbleMenu>
+
       <EditorContent editor={editor} />
+
+      <div className="flex justify-end gap-3 px-4 py-2 border-t border-[var(--rule-dim)] text-[11px] text-[var(--color-muted-dim)]">
+        <span>{words} kelime</span>
+        <span>·</span>
+        <span>{chars} karakter</span>
+      </div>
     </div>
   );
 }

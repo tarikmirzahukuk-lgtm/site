@@ -12,6 +12,7 @@
     "seed:site-content": "tsx scripts/seed-site-content.ts"
   },
   "dependencies": {
+    "@floating-ui/dom": "^1.7.6",
     "@tailwindcss/typography": "^0.5.19",
     "@tiptap/extension-highlight": "^3.22.3",
     "@tiptap/extension-image": "^3.22.3",
