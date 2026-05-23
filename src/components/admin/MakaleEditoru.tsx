@@ -22,19 +22,21 @@ interface Props {
 }
 
 const btnBase =
-  "h-8 min-w-8 px-1.5 flex items-center justify-center rounded-md text-[13px] font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed";
+  "h-8 flex items-center gap-1.5 px-2 rounded-md text-[13px] font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed whitespace-nowrap";
 const btnIdle =
   "text-[var(--color-muted)] hover:bg-[var(--color-panel-hi)] hover:text-[var(--color-ink)]";
 const btnActive = "bg-[var(--color-gold)] text-[#0a0d11]";
 
 function IconBtn({
   icon,
+  label,
   onClick,
   active,
   disabled,
   title,
 }: {
   icon: EIconName;
+  label?: string;
   onClick: () => void;
   active?: boolean;
   disabled?: boolean;
@@ -51,12 +53,13 @@ function IconBtn({
       className={`${btnBase} ${active ? btnActive : btnIdle}`}
     >
       <EIcon name={icon} />
+      {label && <span>{label}</span>}
     </button>
   );
 }
 
 function Divider() {
-  return <span className="w-px h-5 bg-[var(--rule-dim)] mx-0.5 shrink-0" />;
+  return <span className="w-px h-5 bg-[var(--rule-dim)] mx-1 shrink-0" />;
 }
 
 function Dropdown({
@@ -78,7 +81,7 @@ function Dropdown({
         title={title}
         aria-label={title}
         onClick={() => setOpen((o) => !o)}
-        className={`${btnBase} ${open ? "bg-[var(--color-panel-hi)] text-[var(--color-ink)]" : btnIdle} gap-1`}
+        className={`${btnBase} ${open ? "bg-[var(--color-panel-hi)] text-[var(--color-ink)]" : btnIdle}`}
       >
         {trigger}
         <EIcon name="chevron" size={12} />
@@ -160,7 +163,7 @@ function Toolbar({ editor }: { editor: Editor }) {
 
   const setLink = () => {
     const prev = editor.getAttributes("link").href as string | undefined;
-    const url = prompt("Link URL'si:", prev || "https://");
+    const url = prompt("Bağlantı adresi (URL):", prev || "https://");
     if (url === null) return;
     if (url === "") {
       editor.chain().focus().extendMarkRange("link").unsetLink().run();
@@ -170,15 +173,18 @@ function Toolbar({ editor }: { editor: Editor }) {
   };
 
   return (
-    <div className="sticky top-0 z-20 flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-[var(--rule-dim)] bg-[var(--color-panel)]/95 backdrop-blur-md rounded-t-lg">
+    <div className="sticky top-0 z-20 flex flex-wrap items-center gap-0.5 px-2 py-2 border-b border-[var(--rule-dim)] bg-[var(--color-panel)]/95 backdrop-blur-md rounded-t-lg">
       {/* Blok tipi */}
       <Dropdown
-        title="Paragraf stili"
-        width="w-44"
+        title="Paragraf / başlık stili"
+        width="w-48"
         trigger={<span className="px-0.5">{currentHeadingLabel(editor)}</span>}
       >
         {(close) => (
           <div className="flex flex-col">
+            <p className="px-2.5 pt-1 pb-1.5 text-[11px] text-[var(--color-muted-dim)]">
+              Metnin türü
+            </p>
             {HEADINGS.map((h) => {
               const active =
                 h.level === 0
@@ -221,18 +227,28 @@ function Toolbar({ editor }: { editor: Editor }) {
       <Divider />
 
       {/* Karakter biçimi */}
-      <IconBtn icon="bold" title="Kalın (Ctrl+B)" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} />
-      <IconBtn icon="italic" title="İtalik (Ctrl+I)" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} />
-      <IconBtn icon="underline" title="Altı çizili (Ctrl+U)" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} />
-      <IconBtn icon="strike" title="Üstü çizili" active={editor.isActive("strike")} onClick={() => editor.chain().focus().toggleStrike().run()} />
-      <IconBtn icon="code" title="Satır içi kod" active={editor.isActive("code")} onClick={() => editor.chain().focus().toggleCode().run()} />
+      <IconBtn icon="bold" label="Kalın" title="Kalın (Ctrl+B)" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} />
+      <IconBtn icon="italic" label="İtalik" title="İtalik (Ctrl+I)" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} />
+      <IconBtn icon="underline" label="Altı çizili" title="Altı çizili (Ctrl+U)" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} />
+      <IconBtn icon="strike" label="Üstü çizili" title="Üstü çizili" active={editor.isActive("strike")} onClick={() => editor.chain().focus().toggleStrike().run()} />
+      <IconBtn icon="code" label="Kod" title="Satır içi kod" active={editor.isActive("code")} onClick={() => editor.chain().focus().toggleCode().run()} />
 
       <Divider />
 
       {/* Renk / Vurgu / Boyut */}
-      <Dropdown title="Yazı rengi" width="w-44" trigger={<EIcon name="textColor" />}>
+      <Dropdown
+        title="Yazı rengi"
+        width="w-44"
+        trigger={
+          <span className="flex items-center gap-1.5">
+            <EIcon name="textColor" />
+            Renk
+          </span>
+        }
+      >
         {(close) => (
           <div>
+            <p className="px-1 pb-1.5 text-[11px] text-[var(--color-muted-dim)]">Yazı rengi</p>
             <div className="grid grid-cols-4 gap-1.5 p-1">
               {TEXT_COLORS.map((c) => (
                 <button
@@ -262,9 +278,19 @@ function Toolbar({ editor }: { editor: Editor }) {
         )}
       </Dropdown>
 
-      <Dropdown title="Vurgu rengi" width="w-44" trigger={<EIcon name="highlight" />}>
+      <Dropdown
+        title="Vurgu (arka plan rengi)"
+        width="w-44"
+        trigger={
+          <span className="flex items-center gap-1.5">
+            <EIcon name="highlight" />
+            Vurgu
+          </span>
+        }
+      >
         {(close) => (
           <div>
+            <p className="px-1 pb-1.5 text-[11px] text-[var(--color-muted-dim)]">Arka plan vurgusu</p>
             <div className="grid grid-cols-5 gap-1.5 p-1">
               {HIGHLIGHTS.map((c) => (
                 <button
@@ -318,38 +344,38 @@ function Toolbar({ editor }: { editor: Editor }) {
       <Divider />
 
       {/* Hizalama */}
-      <IconBtn icon="alignLeft" title="Sola hizala" active={editor.isActive({ textAlign: "left" })} onClick={() => editor.chain().focus().setTextAlign("left").run()} />
-      <IconBtn icon="alignCenter" title="Ortala" active={editor.isActive({ textAlign: "center" })} onClick={() => editor.chain().focus().setTextAlign("center").run()} />
-      <IconBtn icon="alignRight" title="Sağa hizala" active={editor.isActive({ textAlign: "right" })} onClick={() => editor.chain().focus().setTextAlign("right").run()} />
-      <IconBtn icon="alignJustify" title="İki yana yasla" active={editor.isActive({ textAlign: "justify" })} onClick={() => editor.chain().focus().setTextAlign("justify").run()} />
+      <IconBtn icon="alignLeft" label="Sol" title="Sola hizala" active={editor.isActive({ textAlign: "left" })} onClick={() => editor.chain().focus().setTextAlign("left").run()} />
+      <IconBtn icon="alignCenter" label="Orta" title="Ortala" active={editor.isActive({ textAlign: "center" })} onClick={() => editor.chain().focus().setTextAlign("center").run()} />
+      <IconBtn icon="alignRight" label="Sağ" title="Sağa hizala" active={editor.isActive({ textAlign: "right" })} onClick={() => editor.chain().focus().setTextAlign("right").run()} />
+      <IconBtn icon="alignJustify" label="Yasla" title="İki yana yasla" active={editor.isActive({ textAlign: "justify" })} onClick={() => editor.chain().focus().setTextAlign("justify").run()} />
 
       <Divider />
 
       {/* Bloklar */}
-      <IconBtn icon="bulletList" title="Madde listesi" active={editor.isActive("bulletList")} onClick={() => editor.chain().focus().toggleBulletList().run()} />
-      <IconBtn icon="orderedList" title="Numaralı liste" active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()} />
-      <IconBtn icon="quote" title="Alıntı" active={editor.isActive("blockquote")} onClick={() => editor.chain().focus().toggleBlockquote().run()} />
-      <IconBtn icon="codeBlock" title="Kod bloğu" active={editor.isActive("codeBlock")} onClick={() => editor.chain().focus().toggleCodeBlock().run()} />
-      <IconBtn icon="rule" title="Yatay çizgi" onClick={() => editor.chain().focus().setHorizontalRule().run()} />
+      <IconBtn icon="bulletList" label="Madde" title="Madde listesi" active={editor.isActive("bulletList")} onClick={() => editor.chain().focus().toggleBulletList().run()} />
+      <IconBtn icon="orderedList" label="Sıralı" title="Numaralı liste" active={editor.isActive("orderedList")} onClick={() => editor.chain().focus().toggleOrderedList().run()} />
+      <IconBtn icon="quote" label="Alıntı" title="Alıntı" active={editor.isActive("blockquote")} onClick={() => editor.chain().focus().toggleBlockquote().run()} />
+      <IconBtn icon="codeBlock" label="Kod bloğu" title="Kod bloğu" active={editor.isActive("codeBlock")} onClick={() => editor.chain().focus().toggleCodeBlock().run()} />
+      <IconBtn icon="rule" label="Çizgi" title="Yatay ayraç çizgisi" onClick={() => editor.chain().focus().setHorizontalRule().run()} />
 
       <Divider />
 
       {/* Alt / üst simge */}
-      <IconBtn icon="subscript" title="Alt simge" active={editor.isActive("subscript")} onClick={() => editor.chain().focus().toggleSubscript().run()} />
-      <IconBtn icon="superscript" title="Üst simge" active={editor.isActive("superscript")} onClick={() => editor.chain().focus().toggleSuperscript().run()} />
+      <IconBtn icon="subscript" label="Alt simge" title="Alt simge (x₂)" active={editor.isActive("subscript")} onClick={() => editor.chain().focus().toggleSubscript().run()} />
+      <IconBtn icon="superscript" label="Üst simge" title="Üst simge (x²)" active={editor.isActive("superscript")} onClick={() => editor.chain().focus().toggleSuperscript().run()} />
 
       <Divider />
 
       {/* Görsel / Link */}
-      <IconBtn icon="image" title="Görsel ekle" onClick={addImage} />
-      <IconBtn icon="link" title="Link ekle / düzenle" active={editor.isActive("link")} onClick={setLink} />
+      <IconBtn icon="image" label="Görsel" title="Görsel ekle" onClick={addImage} />
+      <IconBtn icon="link" label="Bağlantı" title="Bağlantı (link) ekle / düzenle" active={editor.isActive("link")} onClick={setLink} />
 
       <Divider />
 
       {/* Geri / İleri / Temizle */}
-      <IconBtn icon="undo" title="Geri al" disabled={!editor.can().undo()} onClick={() => editor.chain().focus().undo().run()} />
-      <IconBtn icon="redo" title="İleri al" disabled={!editor.can().redo()} onClick={() => editor.chain().focus().redo().run()} />
-      <IconBtn icon="eraser" title="Biçimlendirmeyi temizle" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()} />
+      <IconBtn icon="undo" label="Geri al" title="Geri al" disabled={!editor.can().undo()} onClick={() => editor.chain().focus().undo().run()} />
+      <IconBtn icon="redo" label="İleri al" title="İleri al" disabled={!editor.can().redo()} onClick={() => editor.chain().focus().redo().run()} />
+      <IconBtn icon="eraser" label="Biçimi temizle" title="Biçimlendirmeyi temizle" onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()} />
     </div>
   );
 }
@@ -404,11 +430,11 @@ export default function MakaleEditoru({ content, onChange }: Props) {
         }
       >
         <div className="flex items-center gap-0.5 rounded-lg border border-[var(--rule-dim)] bg-[var(--color-bg-alt)] p-1 shadow-2xl shadow-black/60">
-          <IconBtn icon="bold" title="Kalın" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} />
-          <IconBtn icon="italic" title="İtalik" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} />
-          <IconBtn icon="underline" title="Altı çizili" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} />
-          <IconBtn icon="highlight" title="Vurgula" active={editor.isActive("highlight")} onClick={() => editor.chain().focus().toggleHighlight({ color: "rgba(212,175,55,0.35)" }).run()} />
-          <IconBtn icon="link" title="Link" active={editor.isActive("link")} onClick={() => { const u = prompt("Link URL'si:", "https://"); if (u) editor.chain().focus().extendMarkRange("link").setLink({ href: u }).run(); }} />
+          <IconBtn icon="bold" label="Kalın" title="Kalın" active={editor.isActive("bold")} onClick={() => editor.chain().focus().toggleBold().run()} />
+          <IconBtn icon="italic" label="İtalik" title="İtalik" active={editor.isActive("italic")} onClick={() => editor.chain().focus().toggleItalic().run()} />
+          <IconBtn icon="underline" label="Altı çizili" title="Altı çizili" active={editor.isActive("underline")} onClick={() => editor.chain().focus().toggleUnderline().run()} />
+          <IconBtn icon="highlight" label="Vurgu" title="Vurgula" active={editor.isActive("highlight")} onClick={() => editor.chain().focus().toggleHighlight({ color: "rgba(212,175,55,0.35)" }).run()} />
+          <IconBtn icon="link" label="Bağlantı" title="Bağlantı" active={editor.isActive("link")} onClick={() => { const u = prompt("Bağlantı adresi (URL):", "https://"); if (u) editor.chain().focus().extendMarkRange("link").setLink({ href: u }).run(); }} />
         </div>
       </BubbleMenu>
 

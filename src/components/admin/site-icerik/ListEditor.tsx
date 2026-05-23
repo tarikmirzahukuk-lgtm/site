@@ -16,6 +16,7 @@ export default function ListEditor<T extends object>({
   newItem,
   addLabel,
   itemTitle,
+  note,
 }: {
   items: T[];
   onChange: (v: T[]) => void;
@@ -23,6 +24,7 @@ export default function ListEditor<T extends object>({
   newItem: T;
   addLabel: string;
   itemTitle?: (item: T, index: number) => string;
+  note?: string;
 }) {
   const val = (item: T, key: string) =>
     (item as Record<string, string>)[key] ?? "";
@@ -46,6 +48,11 @@ export default function ListEditor<T extends object>({
 
   return (
     <div className="space-y-3">
+      {note && (
+        <p className="text-xs text-[var(--color-muted-dim)] leading-relaxed">
+          {note}
+        </p>
+      )}
       {items.map((item, i) => (
         <div
           key={i}

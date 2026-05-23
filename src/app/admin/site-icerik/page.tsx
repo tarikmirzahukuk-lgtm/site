@@ -16,17 +16,33 @@ const TABS: { id: Tab; label: string }[] = [
   { id: "ayarlar", label: "Ayarlar" },
 ];
 
-// --- küçük alan bileşenleri ---
+// Yıldız-vurgu kuralının kısa açıklaması (başlık alanlarında tekrar kullanılır).
+const VURGU_HELP =
+  "İpucu: bir kelimeyi *yıldız* içine alırsan sitede altın renkte çıkar. Örn. “Ceza Hukukunda *titiz* analiz”.";
+
+function Help({ children }: { children?: React.ReactNode }) {
+  if (!children) return null;
+  return (
+    <p className="text-xs text-[var(--color-muted-dim)] mt-1 leading-relaxed">
+      {children}
+    </p>
+  );
+}
+
 function Text({
   label,
   value,
   onChange,
   mono,
+  help,
+  placeholder,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   mono?: boolean;
+  help?: React.ReactNode;
+  placeholder?: string;
 }) {
   return (
     <div>
@@ -34,9 +50,11 @@ function Text({
       <input
         type="text"
         value={value ?? ""}
+        placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         className={mono ? `${inputClass} font-mono` : inputClass}
       />
+      <Help>{help}</Help>
     </div>
   );
 }
@@ -45,34 +63,71 @@ function Area({
   label,
   value,
   onChange,
+  help,
+  placeholder,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
+  help?: React.ReactNode;
+  placeholder?: string;
 }) {
   return (
     <div>
       <label className={labelClass}>{label}</label>
       <textarea
         value={value ?? ""}
+        placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         rows={3}
         className={inputClass}
       />
+      <Help>{help}</Help>
+    </div>
+  );
+}
+
+function RichField({
+  label,
+  help,
+  value,
+  onChange,
+}: {
+  label: string;
+  help?: React.ReactNode;
+  value: string;
+  onChange: (html: string) => void;
+}) {
+  return (
+    <div>
+      <label className={labelClass}>{label}</label>
+      <Help>{help}</Help>
+      <div className="mt-1.5">
+        <MakaleEditoru content={value} onChange={onChange} />
+      </div>
     </div>
   );
 }
 
 function Card({
   title,
+  description,
   children,
 }: {
   title: string;
+  description?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className={`${panelClass} space-y-3`}>
-      <h3 className="text-sm font-semibold text-[var(--color-ink)]">{title}</h3>
+      <div>
+        <h3 className="text-sm font-semibold text-[var(--color-ink)]">{title}</h3>
+        {description && (
+          <p className="text-xs text-[var(--color-muted)] mt-1 leading-relaxed">
+            {description}
+          </p>
+        )}
+      </div>
       {children}
     </div>
   );
@@ -126,16 +181,14 @@ export default function SiteIcerikPage() {
     return <p className="text-[var(--color-muted)] text-sm">Yükleniyor...</p>;
   if (!content)
     return (
-      <p className="text-red-300 text-sm">
-        {error || "İçerik yüklenemedi"}
-      </p>
+      <p className="text-red-300 text-sm">{error || "İçerik yüklenemedi"}</p>
     );
 
   const c = content;
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-2">
         <h1
           className="text-xl font-bold text-[var(--color-ink)]"
           style={{ fontFamily: "var(--font-display)" }}
@@ -150,6 +203,12 @@ export default function SiteIcerikPage() {
           {saving ? "Kaydediliyor..." : "Kaydet"}
         </button>
       </div>
+      <p className="text-sm text-[var(--color-muted)] mb-6 max-w-2xl">
+        Sitenin tüm yazıları buradan düzenlenir. Bir alanı değiştir, sayfanın
+        en üstündeki <strong className="text-[var(--color-ink)]">Kaydet</strong>{" "}
+        düğmesine bas — değişiklik anında yayına girer. Her alanın altında
+        nerede göründüğünü açıklayan not vardır.
+      </p>
 
       {error && (
         <div className="mb-4 bg-red-500/10 border border-red-500/30 text-red-300 text-sm rounded-md px-4 py-2">
@@ -182,35 +241,46 @@ export default function SiteIcerikPage() {
       {/* --- ANA SAYFA --- */}
       {tab === "anasayfa" && (
         <div className="space-y-4 max-w-3xl">
-          <Card title="Hero (üst alan)">
-            <Text label="Kicker" value={c.hero.kicker} onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, kicker: v } }))} />
-            <Text label="Başlık (vurgu için *...*)" value={c.hero.heading} onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, heading: v } }))} />
-            <Area label="Alt metin" value={c.hero.subtext} onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, subtext: v } }))} />
+          <Card
+            title="Üst Alan (Hero)"
+            description="Ana sayfanın en üstü — ziyaretçinin ilk gördüğü büyük başlık ve tanıtım bölümü."
+          >
+            <Text label="Üst etiket" value={c.hero.kicker} help="Büyük başlığın hemen üstündeki küçük altın yazı. Örn. “İstanbul · 2024’ten beri”." onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, kicker: v } }))} />
+            <Text label="Büyük başlık" value={c.hero.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, heading: v } }))} />
+            <Area label="Tanıtım metni" value={c.hero.subtext} help="Başlığın altındaki açıklayıcı paragraf." onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, subtext: v } }))} />
             <div className="grid grid-cols-2 gap-3">
-              <Text label="1. Buton metni" value={c.hero.primaryCta.label} onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, primaryCta: { ...c.hero.primaryCta, label: v } } }))} />
-              <Text label="1. Buton link" value={c.hero.primaryCta.href} onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, primaryCta: { ...c.hero.primaryCta, href: v } } }))} />
-              <Text label="2. Buton metni" value={c.hero.secondaryCta.label} onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, secondaryCta: { ...c.hero.secondaryCta, label: v } } }))} />
-              <Text label="2. Buton link" value={c.hero.secondaryCta.href} onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, secondaryCta: { ...c.hero.secondaryCta, href: v } } }))} />
+              <Text label="1. Buton — yazı" value={c.hero.primaryCta.label} help="Altın renkli ana buton." onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, primaryCta: { ...c.hero.primaryCta, label: v } } }))} />
+              <Text label="1. Buton — adres" value={c.hero.primaryCta.href} help="Tıklayınca gidilen yer. Örn. “/#uzmanlik”." onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, primaryCta: { ...c.hero.primaryCta, href: v } } }))} />
+              <Text label="2. Buton — yazı" value={c.hero.secondaryCta.label} help="Çerçeveli ikincil buton." onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, secondaryCta: { ...c.hero.secondaryCta, label: v } } }))} />
+              <Text label="2. Buton — adres" value={c.hero.secondaryCta.href} help="Örn. “/hakkimda”." onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, secondaryCta: { ...c.hero.secondaryCta, href: v } } }))} />
             </div>
-            <label className={labelClass}>Rozetler</label>
-            <ListEditor
-              items={c.hero.badges}
-              onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, badges: v } }))}
-              fields={[
-                { key: "icon", label: "İkon", type: "icon" },
-                { key: "label", label: "Metin", type: "text" },
-              ]}
-              newItem={{ icon: "shield", label: "" }}
-              addLabel="Rozet ekle"
-            />
+            <div>
+              <label className={labelClass}>Güven rozetleri</label>
+              <ListEditor
+                items={c.hero.badges}
+                onChange={(v) => set((c) => ({ ...c, hero: { ...c.hero, badges: v } }))}
+                note="Butonların altında ikonlu küçük ifadeler (örn. “Akademik referans”). İkonu listeden seç."
+                fields={[
+                  { key: "icon", label: "İkon", type: "icon" },
+                  { key: "label", label: "Yazı", type: "text" },
+                ]}
+                newItem={{ icon: "shield", label: "" }}
+                addLabel="Rozet ekle"
+                itemTitle={(it) => it.label || "Yeni rozet"}
+              />
+            </div>
           </Card>
 
-          <Card title="Güven Kartları (Trusts)">
-            <Text label="Kicker" value={c.trusts.kicker} onChange={(v) => set((c) => ({ ...c, trusts: { ...c.trusts, kicker: v } }))} />
-            <Text label="Başlık (*...*)" value={c.trusts.heading} onChange={(v) => set((c) => ({ ...c, trusts: { ...c.trusts, heading: v } }))} />
+          <Card
+            title="Güven Kartları"
+            description="Üst alanın hemen altındaki 4’lü kart şeridi (ikon + başlık + açıklama)."
+          >
+            <Text label="Üst etiket" value={c.trusts.kicker} help="Bölümün üstündeki küçük altın yazı." onChange={(v) => set((c) => ({ ...c, trusts: { ...c.trusts, kicker: v } }))} />
+            <Text label="Bölüm başlığı" value={c.trusts.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, trusts: { ...c.trusts, heading: v } }))} />
             <ListEditor
               items={c.trusts.items}
               onChange={(v) => set((c) => ({ ...c, trusts: { ...c.trusts, items: v } }))}
+              note="Her kart bir ikon, bir başlık ve kısa bir açıklamadan oluşur."
               fields={[
                 { key: "icon", label: "İkon", type: "icon" },
                 { key: "title", label: "Başlık", type: "text" },
@@ -222,13 +292,17 @@ export default function SiteIcerikPage() {
             />
           </Card>
 
-          <Card title="İlgi Alanları (Areas)">
-            <Text label="Kicker" value={c.areas.kicker} onChange={(v) => set((c) => ({ ...c, areas: { ...c.areas, kicker: v } }))} />
-            <Text label="Başlık (*...*)" value={c.areas.heading} onChange={(v) => set((c) => ({ ...c, areas: { ...c.areas, heading: v } }))} />
-            <Area label="Giriş metni" value={c.areas.intro} onChange={(v) => set((c) => ({ ...c, areas: { ...c.areas, intro: v } }))} />
+          <Card
+            title="İlgi Alanları"
+            description="“Çalıştığım konu başlıkları” bölümü — ızgara halinde konu kartları."
+          >
+            <Text label="Üst etiket" value={c.areas.kicker} help="Bölümün üstündeki küçük altın yazı." onChange={(v) => set((c) => ({ ...c, areas: { ...c.areas, kicker: v } }))} />
+            <Text label="Bölüm başlığı" value={c.areas.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, areas: { ...c.areas, heading: v } }))} />
+            <Area label="Giriş metni" value={c.areas.intro} help="Başlığın yanında görünen kısa açıklama (masaüstünde)." onChange={(v) => set((c) => ({ ...c, areas: { ...c.areas, intro: v } }))} />
             <ListEditor
               items={c.areas.items}
               onChange={(v) => set((c) => ({ ...c, areas: { ...c.areas, items: v } }))}
+              note="Her konu bir ikon, başlık ve kısa açıklamadan oluşur. Sırayı ok tuşlarıyla değiştir."
               fields={[
                 { key: "icon", label: "İkon", type: "icon" },
                 { key: "title", label: "Başlık", type: "text" },
@@ -240,13 +314,17 @@ export default function SiteIcerikPage() {
             />
           </Card>
 
-          <Card title="Süreç (Process)">
-            <Text label="Kicker" value={c.process.kicker} onChange={(v) => set((c) => ({ ...c, process: { ...c.process, kicker: v } }))} />
-            <Text label="Başlık (*...*)" value={c.process.heading} onChange={(v) => set((c) => ({ ...c, process: { ...c.process, heading: v } }))} />
-            <Area label="Giriş metni" value={c.process.intro} onChange={(v) => set((c) => ({ ...c, process: { ...c.process, intro: v } }))} />
+          <Card
+            title="Süreç Adımları"
+            description="“Nasıl çalışıyorum” bölümü — numaralı, sıralı adımlar."
+          >
+            <Text label="Üst etiket" value={c.process.kicker} help="Bölümün üstündeki küçük altın yazı." onChange={(v) => set((c) => ({ ...c, process: { ...c.process, kicker: v } }))} />
+            <Text label="Bölüm başlığı" value={c.process.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, process: { ...c.process, heading: v } }))} />
+            <Area label="Giriş metni" value={c.process.intro} help="Başlığın altındaki kısa açıklama." onChange={(v) => set((c) => ({ ...c, process: { ...c.process, intro: v } }))} />
             <ListEditor
               items={c.process.items}
               onChange={(v) => set((c) => ({ ...c, process: { ...c.process, items: v } }))}
+              note="Her adımın bir numarası (01, 02…), başlığı ve açıklaması var."
               fields={[
                 { key: "number", label: "Numara", type: "text" },
                 { key: "title", label: "Başlık", type: "text" },
@@ -258,49 +336,57 @@ export default function SiteIcerikPage() {
             />
           </Card>
 
-          <Card title="Hakkımda Özeti (About)">
-            <Text label="Kicker" value={c.about.kicker} onChange={(v) => set((c) => ({ ...c, about: { ...c.about, kicker: v } }))} />
-            <Text label="Başlık (*...*)" value={c.about.heading} onChange={(v) => set((c) => ({ ...c, about: { ...c.about, heading: v } }))} />
-            <div>
-              <label className={labelClass}>Metin</label>
-              <MakaleEditoru content={c.about.body} onChange={(html) => set((c) => ({ ...c, about: { ...c.about, body: html } }))} />
-            </div>
+          <Card
+            title="Hakkımda Özeti"
+            description="Ana sayfadaki kısa tanıtım + portre + istatistikler. (Tam “Hakkımda” sayfası ayrı sekmededir.)"
+          >
+            <Text label="Üst etiket" value={c.about.kicker} help="Bölümün üstündeki küçük altın yazı." onChange={(v) => set((c) => ({ ...c, about: { ...c.about, kicker: v } }))} />
+            <Text label="Bölüm başlığı" value={c.about.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, about: { ...c.about, heading: v } }))} />
+            <RichField label="Tanıtım metni" help="Birkaç paragraflık kısa tanıtım. Üstteki araç çubuğuyla biçimlendirebilirsin." value={c.about.body} onChange={(html) => set((c) => ({ ...c, about: { ...c.about, body: html } }))} />
             <ImageField label="Portre görseli" value={c.about.portraitImage} onChange={(url) => set((c) => ({ ...c, about: { ...c.about, portraitImage: url } }))} />
-            <label className={labelClass}>İstatistikler</label>
-            <ListEditor
-              items={c.about.stats}
-              onChange={(v) => set((c) => ({ ...c, about: { ...c.about, stats: v } }))}
-              fields={[
-                { key: "value", label: "Değer", type: "text" },
-                { key: "label", label: "Etiket", type: "text" },
-              ]}
-              newItem={{ value: "", label: "" }}
-              addLabel="İstatistik ekle"
-              itemTitle={(it) => it.value || "Yeni"}
-            />
-          </Card>
-
-          <Card title="Çağrı Bölümü (Urgent)">
-            <Text label="Kicker" value={c.urgent.kicker} onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, kicker: v } }))} />
-            <Text label="Başlık (*...*)" value={c.urgent.heading} onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, heading: v } }))} />
+            <Help>Boş bırakırsan “TM” harf logosu görünür.</Help>
             <div>
-              <label className={labelClass}>Metin</label>
-              <MakaleEditoru content={c.urgent.body} onChange={(html) => set((c) => ({ ...c, urgent: { ...c.urgent, body: html } }))} />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Text label="E-posta etiketi" value={c.urgent.emailKanal.label} onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, emailKanal: { ...c.urgent.emailKanal, label: v } } }))} />
-              <Text label="E-posta (gösterilen)" value={c.urgent.emailKanal.value} onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, emailKanal: { ...c.urgent.emailKanal, value: v } } }))} />
-              <Text label="2. Buton metni" value={c.urgent.secondaryCta.label} onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, secondaryCta: { ...c.urgent.secondaryCta, label: v } } }))} />
-              <Text label="2. Buton link" value={c.urgent.secondaryCta.href} onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, secondaryCta: { ...c.urgent.secondaryCta, href: v } } }))} />
+              <label className={labelClass}>İstatistikler</label>
+              <ListEditor
+                items={c.about.stats}
+                onChange={(v) => set((c) => ({ ...c, about: { ...c.about, stats: v } }))}
+                note="Tanıtımın altındaki üç küçük rakam + etiket. Örn. değer “7+”, etiket “Çalışma alanı”."
+                fields={[
+                  { key: "value", label: "Rakam / değer", type: "text" },
+                  { key: "label", label: "Etiket", type: "text" },
+                ]}
+                newItem={{ value: "", label: "" }}
+                addLabel="İstatistik ekle"
+                itemTitle={(it) => it.value || "Yeni"}
+              />
             </div>
           </Card>
 
-          <Card title="SSS (FAQ)">
-            <Text label="Kicker" value={c.faq.kicker} onChange={(v) => set((c) => ({ ...c, faq: { ...c.faq, kicker: v } }))} />
-            <Text label="Başlık (*...*)" value={c.faq.heading} onChange={(v) => set((c) => ({ ...c, faq: { ...c.faq, heading: v } }))} />
+          <Card
+            title="Çağrı Bölümü"
+            description="Sayfanın altına yakın, okuyucuyu konu önerisi / iletişime yönlendiren vurgulu bölüm."
+          >
+            <Text label="Üst etiket" value={c.urgent.kicker} help="Bölümün üstündeki küçük altın yazı." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, kicker: v } }))} />
+            <Text label="Bölüm başlığı" value={c.urgent.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, heading: v } }))} />
+            <RichField label="Metin" help="Çağrı paragrafı." value={c.urgent.body} onChange={(html) => set((c) => ({ ...c, urgent: { ...c.urgent, body: html } }))} />
+            <div className="grid grid-cols-2 gap-3">
+              <Text label="E-posta kutusu — etiket" value={c.urgent.emailKanal.label} help="Sağdaki altın kutunun üst yazısı, örn. “E-POSTA”." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, emailKanal: { ...c.urgent.emailKanal, label: v } } }))} />
+              <Text label="E-posta kutusu — gösterilen adres" value={c.urgent.emailKanal.value} help="Kutuda yazan e-posta. (Tıklanınca İletişim sekmesindeki e-posta açılır.)" onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, emailKanal: { ...c.urgent.emailKanal, value: v } } }))} />
+              <Text label="2. Buton — yazı" value={c.urgent.secondaryCta.label} help="Çerçeveli ikinci buton." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, secondaryCta: { ...c.urgent.secondaryCta, label: v } } }))} />
+              <Text label="2. Buton — adres" value={c.urgent.secondaryCta.href} help="Örn. “/iletisim”." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, secondaryCta: { ...c.urgent.secondaryCta, href: v } } }))} />
+            </div>
+          </Card>
+
+          <Card
+            title="Sık Sorulan Sorular"
+            description="Ana sayfanın altındaki açılır-kapanır soru–cevap listesi."
+          >
+            <Text label="Üst etiket" value={c.faq.kicker} help="Bölümün üstündeki küçük altın yazı." onChange={(v) => set((c) => ({ ...c, faq: { ...c.faq, kicker: v } }))} />
+            <Text label="Bölüm başlığı" value={c.faq.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, faq: { ...c.faq, heading: v } }))} />
             <ListEditor
               items={c.faq.items}
               onChange={(v) => set((c) => ({ ...c, faq: { ...c.faq, items: v } }))}
+              note="Her madde bir soru ve cevaptan oluşur."
               fields={[
                 { key: "question", label: "Soru", type: "text" },
                 { key: "answer", label: "Cevap", type: "textarea" },
@@ -316,14 +402,15 @@ export default function SiteIcerikPage() {
       {/* --- HAKKIMDA --- */}
       {tab === "hakkimda" && (
         <div className="space-y-4 max-w-3xl">
-          <Card title="Hakkımda Sayfası">
-            <Text label="Başlık" value={c.hakkimda.title} onChange={(v) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, title: v } }))} />
-            <div>
-              <label className={labelClass}>Metin</label>
-              <MakaleEditoru content={c.hakkimda.body} onChange={(html) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, body: html } }))} />
-            </div>
-            <ImageField label="Portre / avatar" value={c.hakkimda.avatarImage} onChange={(url) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, avatarImage: url } }))} />
-            <Area label="SEO açıklaması (meta description)" value={c.hakkimda.metaDescription} onChange={(v) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, metaDescription: v } }))} />
+          <Card
+            title="Hakkımda Sayfası"
+            description="“/hakkimda” adresindeki tam sayfa. (Ana sayfadaki kısa özet ayrı — Ana Sayfa sekmesinde.)"
+          >
+            <Text label="Sayfa başlığı" value={c.hakkimda.title} help="Sayfanın en üstündeki başlık. Örn. “Hakkımda”." onChange={(v) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, title: v } }))} />
+            <RichField label="Sayfa metni" help="Tam tanıtım yazın. Kalın, italik, başlık, liste, bağlantı ekleyebilirsin." value={c.hakkimda.body} onChange={(html) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, body: html } }))} />
+            <ImageField label="Portre / fotoğraf" value={c.hakkimda.avatarImage} onChange={(url) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, avatarImage: url } }))} />
+            <Help>Boş bırakırsan “T” harf logosu görünür.</Help>
+            <Area label="SEO açıklaması" value={c.hakkimda.metaDescription} help="Google’da ve sosyal paylaşımlarda görünen kısa özet (~155 karakter)." onChange={(v) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, metaDescription: v } }))} />
           </Card>
         </div>
       )}
@@ -331,26 +418,32 @@ export default function SiteIcerikPage() {
       {/* --- İLETİŞİM --- */}
       {tab === "iletisim" && (
         <div className="space-y-4 max-w-3xl">
-          <Card title="İletişim Bilgileri">
+          <Card
+            title="İletişim Bilgileri"
+            description="Footer’da ve “/iletisim” sayfasında görünür. Şu an örnek (placeholder) değerler — kendi gerçek bilgilerinle değiştir."
+          >
             <div className="grid grid-cols-2 gap-3">
-              <Text label="Telefon (gösterilen)" value={c.contact.phone} onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, phone: v } }))} />
-              <Text label="Telefon (ham, tel: için)" value={c.contact.phoneRaw} onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, phoneRaw: v } }))} />
-              <Text label="E-posta" value={c.contact.email} onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, email: v } }))} />
-              <Text label="WhatsApp linki" value={c.contact.whatsapp} onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, whatsapp: v } }))} />
+              <Text label="Telefon (görünen)" value={c.contact.phone} help="Ekranda görünen biçim. Örn. “+90 555 000 00 00”." onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, phone: v } }))} />
+              <Text label="Telefon (tıklama için)" value={c.contact.phoneRaw} help="Sadece rakamlar; tıklanınca telefonu arar. Örn. “+905550000000”." onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, phoneRaw: v } }))} />
+              <Text label="E-posta" value={c.contact.email} help="İletişim ve çağrı bölümünde kullanılır." onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, email: v } }))} />
+              <Text label="WhatsApp bağlantısı" value={c.contact.whatsapp} help="Tam adres. Örn. “https://wa.me/905550000000”." onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, whatsapp: v } }))} />
             </div>
-            <Text label="Adres satır 1" value={c.contact.address.line1} onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, address: { ...c.contact.address, line1: v } } }))} />
+            <Text label="Adres — 1. satır" value={c.contact.address.line1} help="Cadde / bina. Footer’da görünür." onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, address: { ...c.contact.address, line1: v } } }))} />
             <div className="grid grid-cols-2 gap-3">
-              <Text label="Adres satır 2" value={c.contact.address.line2} onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, address: { ...c.contact.address, line2: v } } }))} />
+              <Text label="Adres — 2. satır" value={c.contact.address.line2} help="İlçe / şehir." onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, address: { ...c.contact.address, line2: v } } }))} />
               <Text label="Posta kodu" value={c.contact.address.postalCode} onChange={(v) => set((c) => ({ ...c, contact: { ...c.contact, address: { ...c.contact.address, postalCode: v } } }))} />
             </div>
           </Card>
 
-          <Card title="Mesleki Bilgi">
+          <Card
+            title="Mesleki Bilgi"
+            description="Arama motorları için yapısal veri ve ana sayfadaki bazı istatistiklerde kullanılır."
+          >
             <div className="grid grid-cols-2 gap-3">
-              <Text label="Baro / sicil" value={c.professional.barosicil} onChange={(v) => set((c) => ({ ...c, professional: { ...c.professional, barosicil: v } }))} />
-              <Text label="Başlangıç yılı" value={String(c.professional.since)} onChange={(v) => set((c) => ({ ...c, professional: { ...c.professional, since: parseInt(v) || c.professional.since } }))} />
+              <Text label="Baro / sicil no" value={c.professional.barosicil} help="Varsa baro sicil bilgisi." onChange={(v) => set((c) => ({ ...c, professional: { ...c.professional, barosicil: v } }))} />
+              <Text label="Başlangıç yılı" value={String(c.professional.since)} help="Örn. 2024. Bazı istatistikler buradan hesaplanır." onChange={(v) => set((c) => ({ ...c, professional: { ...c.professional, since: parseInt(v) || c.professional.since } }))} />
             </div>
-            <Text label="Deneyim etiketi" value={c.professional.experienceLabel} onChange={(v) => set((c) => ({ ...c, professional: { ...c.professional, experienceLabel: v } }))} />
+            <Text label="Deneyim etiketi" value={c.professional.experienceLabel} help="Kısa ifade. Örn. “Akademik çalışma”." onChange={(v) => set((c) => ({ ...c, professional: { ...c.professional, experienceLabel: v } }))} />
           </Card>
         </div>
       )}
@@ -358,36 +451,46 @@ export default function SiteIcerikPage() {
       {/* --- AYARLAR --- */}
       {tab === "ayarlar" && (
         <div className="space-y-4 max-w-3xl">
-          <Card title="Menü (navigasyon)">
+          <Card
+            title="Menü (Üst Navigasyon)"
+            description="Sitenin üstündeki menü bağlantıları. Sırayı ok tuşlarıyla değiştirebilirsin."
+          >
             <ListEditor
               items={c.nav}
               onChange={(v) => set((c) => ({ ...c, nav: v }))}
+              note="Yazı = menüde görünen kelime. Adres = gidilen yer (örn. “/makaleler” ya da “/#sss”)."
               fields={[
-                { key: "label", label: "Etiket", type: "text" },
-                { key: "href", label: "Link", type: "text" },
+                { key: "label", label: "Yazı", type: "text" },
+                { key: "href", label: "Adres", type: "text" },
               ]}
               newItem={{ label: "", href: "" }}
-              addLabel="Menü öğesi ekle"
-              itemTitle={(it) => it.label || "Yeni link"}
+              addLabel="Menü bağlantısı ekle"
+              itemTitle={(it) => it.label || "Yeni bağlantı"}
             />
           </Card>
 
-          <Card title="Marka & SEO">
+          <Card
+            title="Marka & SEO"
+            description="Site adı, sloganı ve arama motorlarında görünen varsayılan açıklama."
+          >
             <div className="grid grid-cols-2 gap-3">
-              <Text label="Marka adı" value={c.seo.brand} onChange={(v) => set((c) => ({ ...c, seo: { ...c.seo, brand: v } }))} />
-              <Text label="Kısa marka" value={c.seo.brandShort} onChange={(v) => set((c) => ({ ...c, seo: { ...c.seo, brandShort: v } }))} />
+              <Text label="Marka adı" value={c.seo.brand} help="Tam ad. Örn. “Tarık Mirza”." onChange={(v) => set((c) => ({ ...c, seo: { ...c.seo, brand: v } }))} />
+              <Text label="Kısa marka adı" value={c.seo.brandShort} help="Kısaltma. Örn. “T. Mirza”." onChange={(v) => set((c) => ({ ...c, seo: { ...c.seo, brandShort: v } }))} />
             </div>
-            <Text label="Slogan (tagline)" value={c.seo.tagline} onChange={(v) => set((c) => ({ ...c, seo: { ...c.seo, tagline: v } }))} />
-            <Area label="SEO açıklaması (varsayılan)" value={c.seo.description} onChange={(v) => set((c) => ({ ...c, seo: { ...c.seo, description: v } }))} />
+            <Text label="Slogan" value={c.seo.tagline} help="Marka altında görünen kısa ifade. Örn. “Ceza Hukuku”." onChange={(v) => set((c) => ({ ...c, seo: { ...c.seo, tagline: v } }))} />
+            <Area label="Varsayılan SEO açıklaması" value={c.seo.description} help="Google’da görünen genel site açıklaması (~155 karakter)." onChange={(v) => set((c) => ({ ...c, seo: { ...c.seo, description: v } }))} />
           </Card>
 
-          <Card title="Yazar (E-A-T)">
+          <Card
+            title="Yazar Bilgisi"
+            description="Google’ın yazar otoritesini (E-A-T) tanıması için kullanılır."
+          >
             <div className="grid grid-cols-2 gap-3">
               <Text label="Ad" value={c.author.name} onChange={(v) => set((c) => ({ ...c, author: { ...c.author, name: v } }))} />
-              <Text label="Unvan" value={c.author.jobTitle} onChange={(v) => set((c) => ({ ...c, author: { ...c.author, jobTitle: v } }))} />
+              <Text label="Unvan" value={c.author.jobTitle} help="Örn. “Hukuk Öğrencisi · Araştırmacı”." onChange={(v) => set((c) => ({ ...c, author: { ...c.author, jobTitle: v } }))} />
             </div>
-            <Area label="Bilgi alanları (virgülle ayır)" value={c.author.knowsAbout.join(", ")} onChange={(v) => set((c) => ({ ...c, author: { ...c.author, knowsAbout: v.split(",").map((s) => s.trim()).filter(Boolean) } }))} />
-            <Area label="Yazar biyografisi" value={c.author.bio} onChange={(v) => set((c) => ({ ...c, author: { ...c.author, bio: v } }))} />
+            <Area label="Uzmanlık alanları" value={c.author.knowsAbout.join(", ")} help="Virgülle ayır. Örn. “Ceza Hukuku, Türk Ceza Kanunu, İçtihat Hukuku”." onChange={(v) => set((c) => ({ ...c, author: { ...c.author, knowsAbout: v.split(",").map((s) => s.trim()).filter(Boolean) } }))} />
+            <Area label="Yazar biyografisi" value={c.author.bio} help="Kısa biyografi (yapısal veride kullanılır)." onChange={(v) => set((c) => ({ ...c, author: { ...c.author, bio: v } }))} />
           </Card>
         </div>
       )}
