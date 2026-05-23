@@ -1,20 +1,21 @@
 import Icon from "@/components/public/icons/Icon";
 import type { IconName } from "@/components/public/icons/Icon";
-import { TRUSTS } from "@/lib/site-data";
+import type { ISiteContent } from "@/types";
+import { renderAccent } from "@/lib/render-accent";
 
-export default function Trusts() {
+export default function Trusts({ data }: { data: ISiteContent["trusts"] }) {
   return (
     <section
       className="px-5 md:px-16 py-14 md:py-[88px] border-y"
       style={{ background: "var(--color-panel)", borderColor: "var(--rule)" }}
     >
       <div className="max-w-7xl mx-auto">
-        <div className="kicker mb-3.5">Yaklaşım</div>
+        {data.kicker && <div className="kicker mb-3.5">{data.kicker}</div>}
         <h2 className="display max-w-[720px] m-0" style={{ fontSize: "clamp(30px, 4vw, 44px)" }}>
-          Ciddi bir konuya, <span className="italic-gold">ciddi bir çalışma.</span>
+          {renderAccent(data.heading)}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3.5 md:gap-5 mt-9 md:mt-14">
-          {TRUSTS.map((t, i) => (
+          {data.items.map((t, i) => (
             <div key={i} className="pcard p-6 md:p-7 relative">
               <div
                 className="w-12 h-12 flex items-center justify-center mb-5"

@@ -1,6 +1,7 @@
-import { STEPS } from "@/lib/site-data";
+import type { ISiteContent } from "@/types";
+import { renderAccent } from "@/lib/render-accent";
 
-export default function Process() {
+export default function Process({ data }: { data: ISiteContent["process"] }) {
   return (
     <section
       id="surec"
@@ -9,17 +10,18 @@ export default function Process() {
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10 md:mb-16">
-          <div className="kicker mb-3.5">Yaklaşım</div>
+          {data.kicker && <div className="kicker mb-3.5">{data.kicker}</div>}
           <h2 className="display m-0" style={{ fontSize: "clamp(30px, 4.5vw, 46px)" }}>
-            Nasıl <span className="italic-gold">çalışıyorum.</span>
+            {renderAccent(data.heading)}
           </h2>
-          <p
-            className="max-w-[540px] mx-auto mt-4 text-[15px] leading-[1.65]"
-            style={{ color: "var(--color-muted)" }}
-          >
-            Net bir başlangıç, titiz bir okuma, dosyaya/konuya özel bir analiz.
-            Süreç boyunca şeffaf düşünme.
-          </p>
+          {data.intro && (
+            <p
+              className="max-w-[540px] mx-auto mt-4 text-[15px] leading-[1.65]"
+              style={{ color: "var(--color-muted)" }}
+            >
+              {data.intro}
+            </p>
+          )}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 relative">
           {/* Horizontal connector line (desktop only) */}
@@ -30,7 +32,7 @@ export default function Process() {
                 "linear-gradient(90deg, transparent 0%, var(--rule) 12%, var(--rule) 88%, transparent 100%)",
             }}
           />
-          {STEPS.map((s, i) => (
+          {data.items.map((s, i) => (
             <div
               key={i}
               className={`relative flex md:flex-col gap-5 md:gap-0 items-start md:items-center text-left md:text-center md:px-5 py-6 md:py-0 ${

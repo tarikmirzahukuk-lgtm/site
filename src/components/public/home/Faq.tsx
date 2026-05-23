@@ -3,22 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/public/icons/Icon";
-import { FAQ } from "@/lib/site-data";
+import type { ISiteContent } from "@/types";
+import { renderAccent } from "@/lib/render-accent";
 
-export default function Faq() {
+export default function Faq({ data }: { data: ISiteContent["faq"] }) {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
     <section id="sss" className="px-5 md:px-16 py-16 md:py-[110px]">
       <div className="max-w-[880px] mx-auto">
         <div className="text-center mb-9 md:mb-12">
-          <div className="kicker mb-3.5">Sık Sorulan Sorular</div>
+          {data.kicker && <div className="kicker mb-3.5">{data.kicker}</div>}
           <h2 className="display m-0" style={{ fontSize: "clamp(30px, 4.5vw, 46px)" }}>
-            Aklınızdaki <span className="italic-gold">ilk sorular.</span>
+            {renderAccent(data.heading)}
           </h2>
         </div>
         <div className="flex flex-col gap-3">
-          {FAQ.map((f, i) => {
+          {data.items.map((f, i) => {
             const isOpen = open === i;
             return (
               <div

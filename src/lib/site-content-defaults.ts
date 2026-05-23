@@ -26,7 +26,12 @@ export const SITE_CONTENT_DEFAULTS: ISiteContent = {
       { icon: "user", label: "Düzenli yayın" },
     ],
   },
-  trusts: { kicker: "", heading: "", intro: "", items: TRUSTS },
+  trusts: {
+    kicker: "Yaklaşım",
+    heading: "Ciddi bir konuya, *ciddi bir çalışma.*",
+    intro: "",
+    items: TRUSTS,
+  },
   areas: {
     kicker: "İlgi Alanları",
     heading: "Çalıştığım *konu başlıkları.*",
