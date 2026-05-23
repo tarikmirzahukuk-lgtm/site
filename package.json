@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "migrate:yazar-slugs": "tsx scripts/backfill-yazar-slugs.ts",
-    "seed:admin": "tsx scripts/seed-admin.ts"
+    "seed:admin": "tsx scripts/seed-admin.ts",
+    "seed:site-content": "tsx scripts/seed-site-content.ts"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",
