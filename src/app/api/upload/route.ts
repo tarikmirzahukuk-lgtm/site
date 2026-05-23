@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { mkdir, writeFile } from "fs/promises";
-import path from "path";
+import dbConnect from "@/lib/db";
+import Upload from "@/models/Upload";
 
 const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 const ALLOWED_TYPES = new Set([
@@ -12,7 +12,6 @@ const ALLOWED_TYPES = new Set([
   "image/gif",
   "image/avif",
 ]);
-const ALLOWED_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif"]);
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -51,28 +50,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const rawExt = path.extname(file.name || "").toLowerCase();
-  const ext = ALLOWED_EXTS.has(rawExt) ? rawExt : ".jpg";
-
   const bytes = await file.arrayBuffer();
   const buffer = Buffer.from(bytes);
 
-  const filename = `${Date.now()}-${Math.random()
-    .toString(36)
-    .substring(2, 10)}${ext}`;
-  const uploadsDir = path.join(process.cwd(), "public", "uploads");
-  const filepath = path.join(uploadsDir, filename);
-
   try {
-    await mkdir(uploadsDir, { recursive: true });
-    await writeFile(filepath, buffer);
+    await dbConnect();
+    const doc = await Upload.create({ data: buffer, contentType: file.type });
+    // Kalıcı, Vercel dahil her ortamda çalışır; /api/image/[id] ile sunulur.
+    return NextResponse.json({ url: `/api/image/${doc._id}` });
   } catch (err) {
-    console.error("Upload yazma hatası:", err);
+    console.error("Upload kaydetme hatası:", err);
     return NextResponse.json(
       { error: "Dosya kaydedilemedi" },
       { status: 500 }
     );
   }
-
-  return NextResponse.json({ url: `/uploads/${filename}` });
 }
