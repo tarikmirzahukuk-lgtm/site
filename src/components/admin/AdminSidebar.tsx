@@ -9,6 +9,7 @@ const menuItems = [
   { href: "/admin/makaleler", label: "Makaleler", icon: "📝" },
   { href: "/admin/kategoriler", label: "Kategoriler", icon: "📁" },
   { href: "/admin/yazarlar", label: "Yazarlar", icon: "👥" },
+  { href: "/admin/site-icerik", label: "Site İçeriği", icon: "🎨" },
 ];
 
 export default function AdminSidebar() {
