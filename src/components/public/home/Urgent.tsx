@@ -2,6 +2,7 @@ import Link from "next/link";
 import Icon from "@/components/public/icons/Icon";
 import type { ISiteContent } from "@/types";
 import { renderAccent } from "@/lib/render-accent";
+import { sanitize } from "@/lib/sanitize";
 
 export default function Urgent({
   data,
@@ -35,12 +36,11 @@ export default function Urgent({
           <h2 className="display m-0 leading-[1.05]" style={{ fontSize: "clamp(32px, 5vw, 48px)" }}>
             {renderAccent(data.heading)}
           </h2>
-          <p
-            className="mt-5 text-base leading-[1.65] max-w-[540px]"
+          <div
+            className="prose prose-invert max-w-[540px] mt-5 text-base leading-[1.65]"
             style={{ color: "var(--color-body)" }}
-          >
-            {data.body}
-          </p>
+            dangerouslySetInnerHTML={{ __html: sanitize(data.body) }}
+          />
         </div>
         <div className="flex flex-col gap-3.5">
           <Link
@@ -55,7 +55,7 @@ export default function Urgent({
                   {data.emailKanal.label}
                 </span>
                 <span className="block text-base mt-0.5 font-extrabold tracking-[0.04em]">
-                  {data.emailKanal.value}
+                  {contactEmail}
                 </span>
               </span>
             </span>

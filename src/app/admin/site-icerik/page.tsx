@@ -354,7 +354,7 @@ export default function SiteIcerikPage() {
               <ListEditor
                 items={c.about.stats}
                 onChange={(v) => set((c) => ({ ...c, about: { ...c.about, stats: v } }))}
-                note="Tanıtımın altındaki üç küçük rakam + etiket. Örn. değer “7+”, etiket “Çalışma alanı”."
+                note="Tanıtımın altındaki üç küçük rakam + etiket. Örn. değer “7+”, etiket “Çalışma alanı”. Değere {yil} yazarsan otomatik olarak güncel yıl sayısı (başlangıç yılından bu yana) gelir."
                 fields={[
                   { key: "value", label: "Rakam / değer", type: "text" },
                   { key: "label", label: "Etiket", type: "text" },
@@ -374,8 +374,7 @@ export default function SiteIcerikPage() {
             <Text label="Bölüm başlığı" value={c.urgent.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, heading: v } }))} />
             <RichField key={`urgent-${saveGen}`} label="Metin" help="Çağrı paragrafı." value={c.urgent.body} onChange={(html) => set((c) => ({ ...c, urgent: { ...c.urgent, body: html } }))} />
             <div className="grid grid-cols-2 gap-3">
-              <Text label="E-posta kutusu — etiket" value={c.urgent.emailKanal.label} help="Sağdaki altın kutunun üst yazısı, örn. “E-POSTA”." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, emailKanal: { ...c.urgent.emailKanal, label: v } } }))} />
-              <Text label="E-posta kutusu — gösterilen adres" value={c.urgent.emailKanal.value} help="Kutuda yazan e-posta. (Tıklanınca İletişim sekmesindeki e-posta açılır.)" onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, emailKanal: { ...c.urgent.emailKanal, value: v } } }))} />
+              <Text label="E-posta kutusu — etiket" value={c.urgent.emailKanal.label} help="Sağdaki altın kutunun üst yazısı, örn. “E-POSTA”. Görünen e-posta adresi otomatik olarak İletişim sekmesindeki e-postadan gelir." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, emailKanal: { ...c.urgent.emailKanal, label: v } } }))} />
               <Text label="2. Buton — yazı" value={c.urgent.secondaryCta.label} help="Çerçeveli ikinci buton." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, secondaryCta: { ...c.urgent.secondaryCta, label: v } } }))} />
               <Text label="2. Buton — adres" value={c.urgent.secondaryCta.href} help="Örn. “/iletisim”." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, secondaryCta: { ...c.urgent.secondaryCta, href: v } } }))} />
             </div>
@@ -448,6 +447,18 @@ export default function SiteIcerikPage() {
               <Text label="Başlangıç yılı" value={String(c.professional.since)} help="Örn. 2024. Bazı istatistikler buradan hesaplanır." onChange={(v) => set((c) => ({ ...c, professional: { ...c.professional, since: parseInt(v) || c.professional.since } }))} />
             </div>
             <Text label="Deneyim etiketi" value={c.professional.experienceLabel} help="Kısa ifade. Örn. “Akademik çalışma”." onChange={(v) => set((c) => ({ ...c, professional: { ...c.professional, experienceLabel: v } }))} />
+          </Card>
+
+          <Card
+            title="Sosyal Medya"
+            description="Dolu olanlar İletişim sayfasında kart olarak görünür; ayrıca yazar otoritesi (E-A-T) için yapısal veride kullanılır. Boş bırakılanlar gizlenir."
+          >
+            <div className="grid grid-cols-2 gap-3">
+              <Text label="LinkedIn" value={c.socials.linkedin} placeholder="https://linkedin.com/in/..." help="Tam adres (https:// ile)." onChange={(v) => set((c) => ({ ...c, socials: { ...c.socials, linkedin: v } }))} />
+              <Text label="Twitter / X" value={c.socials.twitter} placeholder="https://x.com/..." help="Tam adres." onChange={(v) => set((c) => ({ ...c, socials: { ...c.socials, twitter: v } }))} />
+              <Text label="ORCID" value={c.socials.orcid} placeholder="https://orcid.org/..." help="Akademik kimlik adresi." onChange={(v) => set((c) => ({ ...c, socials: { ...c.socials, orcid: v } }))} />
+              <Text label="Web Sitesi" value={c.socials.website} placeholder="https://..." help="Kişisel/kurumsal site." onChange={(v) => set((c) => ({ ...c, socials: { ...c.socials, website: v } }))} />
+            </div>
           </Card>
         </div>
       )}

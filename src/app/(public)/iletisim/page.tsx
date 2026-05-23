@@ -6,10 +6,17 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
     title: "İletişim",
     description:
-      "Tarık Mirza ile iletişim — soru, öneri ve iş birliği teklifleri için e-posta ve LinkedIn üzerinden ulaşın.",
+      "Tarık Mirza ile iletişim — soru, öneri ve iş birliği teklifleri için e-posta ve sosyal medya üzerinden ulaşın.",
     path: "/iletisim",
   });
 }
+
+const SOCIAL_LABELS: { key: "linkedin" | "twitter" | "orcid" | "website"; label: string }[] = [
+  { key: "linkedin", label: "LinkedIn" },
+  { key: "twitter", label: "Twitter / X" },
+  { key: "orcid", label: "ORCID" },
+  { key: "website", label: "Web Sitesi" },
+];
 
 export default async function IletisimPage() {
   const c = await getSiteContent();
@@ -65,6 +72,21 @@ export default async function IletisimPage() {
             </p>
           </div>
         )}
+
+        {SOCIAL_LABELS.filter((s) => c.socials?.[s.key]).map((s) => (
+          <div key={s.key} className="pcard p-6">
+            <h3 className="kicker mb-2">{s.label}</h3>
+            <a
+              href={c.socials[s.key]}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:underline break-all"
+              style={{ color: "var(--color-gold)" }}
+            >
+              {c.socials[s.key]}
+            </a>
+          </div>
+        ))}
       </div>
     </div>
   );

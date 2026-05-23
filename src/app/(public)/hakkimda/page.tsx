@@ -4,6 +4,7 @@ import { buildMetadata } from "@/lib/seo/metadata";
 import JsonLdScript from "@/components/public/JsonLdScript";
 import { personJsonLd } from "@/lib/seo/jsonld";
 import { getSiteContent } from "@/lib/get-site-content";
+import { sanitize } from "@/lib/sanitize";
 import { IKullanici } from "@/types";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -74,7 +75,7 @@ export default async function HakkimdaPage() {
         <div
           className="prose prose-lg prose-invert max-w-none [&_p]:leading-relaxed [&>p:first-child]:text-lg"
           style={{ color: "var(--color-body)" }}
-          dangerouslySetInnerHTML={{ __html: c.hakkimda.body }}
+          dangerouslySetInnerHTML={{ __html: sanitize(c.hakkimda.body) }}
         />
       </div>
     </div>

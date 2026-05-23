@@ -1,8 +1,15 @@
 import Image from "next/image";
 import type { ISiteContent } from "@/types";
 import { renderAccent } from "@/lib/render-accent";
+import { sanitize } from "@/lib/sanitize";
 
-export default function About({ data }: { data: ISiteContent["about"] }) {
+export default function About({
+  data,
+  yearsSince,
+}: {
+  data: ISiteContent["about"];
+  yearsSince: number;
+}) {
   return (
     <section className="px-5 md:px-16 py-16 md:py-[110px]">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_1.4fr] gap-9 md:gap-[72px] items-center">
@@ -68,7 +75,7 @@ export default function About({ data }: { data: ISiteContent["about"] }) {
           <div
             className="prose prose-invert max-w-none mt-6 text-[15.5px] leading-[1.75]"
             style={{ color: "var(--color-body)" }}
-            dangerouslySetInnerHTML={{ __html: data.body }}
+            dangerouslySetInnerHTML={{ __html: sanitize(data.body) }}
           />
           {data.stats.length > 0 && (
             <div
@@ -86,7 +93,7 @@ export default function About({ data }: { data: ISiteContent["about"] }) {
                       fontWeight: 500,
                     }}
                   >
-                    {s.value}
+                    {s.value.replace("{yil}", String(yearsSince))}
                   </div>
                   <div className="text-[12.5px] mt-1" style={{ color: "var(--color-muted)" }}>
                     {s.label}

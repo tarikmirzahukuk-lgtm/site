@@ -34,7 +34,10 @@ export default async function AnaSayfa() {
         <Process data={c.process} />
       </Reveal>
       <Reveal delay={50}>
-        <About data={c.about} />
+        <About
+          data={c.about}
+          yearsSince={Math.max(1, new Date().getFullYear() - c.professional.since + 1)}
+        />
       </Reveal>
       <Reveal>
         <Urgent data={c.urgent} contactEmail={c.contact.email} />

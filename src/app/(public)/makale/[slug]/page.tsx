@@ -17,6 +17,7 @@ import {
   faqJsonLd,
 } from "@/lib/seo/jsonld";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { sanitize } from "@/lib/sanitize";
 import { SITE_URL } from "@/lib/site-config";
 import Image from "next/image";
 import { IMakale, IKullanici, IKategori } from "@/types";
@@ -215,7 +216,7 @@ export default async function MakaleDetay({ params }: Props) {
             prose-code:text-[var(--color-gold)]
             prose-img:rounded-none"
           style={{ color: "var(--color-body)" }}
-          dangerouslySetInnerHTML={{ __html: contentWithIds }}
+          dangerouslySetInnerHTML={{ __html: sanitize(contentWithIds) }}
         />
         <IcindekilerTablosu content={makaleObj.content} />
       </div>
@@ -248,7 +249,7 @@ export default async function MakaleDetay({ params }: Props) {
                 <div
                   className="mt-3 leading-relaxed"
                   style={{ color: "var(--color-body)" }}
-                  dangerouslySetInnerHTML={{ __html: faq.answer }}
+                  dangerouslySetInnerHTML={{ __html: sanitize(faq.answer) }}
                 />
               </details>
             ))}

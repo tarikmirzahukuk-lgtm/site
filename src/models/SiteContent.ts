@@ -102,6 +102,12 @@ const SiteContentSchema = new Schema<ISiteContentDoc>(
       tagline: String,
       description: String,
     },
+    socials: {
+      linkedin: String,
+      twitter: String,
+      orcid: String,
+      website: String,
+    },
   },
   { timestamps: true, minimize: false }
 );

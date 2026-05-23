@@ -124,4 +124,5 @@ export interface ISiteContent {
   author: { name: string; jobTitle: string; knowsAbout: string[]; bio: string };
   nav: INavLink[];
   seo: { brand: string; brandShort: string; tagline: string; description: string };
+  socials: { linkedin: string; twitter: string; orcid: string; website: string };
 }

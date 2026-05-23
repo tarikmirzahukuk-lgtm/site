@@ -55,10 +55,8 @@ export const SITE_CONTENT_DEFAULTS: ISiteContent = {
       "<p>İlgi alanlarım ağır ceza, bilişim ve ekonomik suçlar; CMK'nın soruşturma ve kovuşturma evrelerine ilişkin güvenceleri; özel olarak da tutukluluk hukukunun uygulamadaki yansımaları.</p>",
     portraitImage: "",
     stats: [
-      {
-        value: `${new Date().getFullYear() - since + 1}.`,
-        label: "Yıl · sürekli yazım",
-      },
+      // {yil} otomatik olarak (bugünkü yıl − başlangıç yılı + 1) ile değiştirilir.
+      { value: "{yil}.", label: "Yıl · sürekli yazım" },
       { value: "7+", label: "Çalışma alanı" },
       { value: "100%", label: "Bağımsız araştırma" },
     ],
@@ -111,4 +109,5 @@ export const SITE_CONTENT_DEFAULTS: ISiteContent = {
     tagline: SITE_CONFIG.tagline,
     description: SITE_CONFIG.description,
   },
+  socials: { linkedin: "", twitter: "", orcid: "", website: "" },
 };
