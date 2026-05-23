@@ -4,15 +4,13 @@ import dbConnect from "@/lib/db";
 import SiteContent from "@/models/SiteContent";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { SITE_CONTENT_TAG } from "@/lib/get-site-content";
-import { SITE_CONTENT_DEFAULTS } from "@/lib/site-content-defaults";
+import { SITE_CONTENT_TAG, mergeWithDefaults } from "@/lib/get-site-content";
 
 export async function GET() {
   await dbConnect();
   const doc = await SiteContent.findOne({ key: "main" }).lean();
-  return NextResponse.json(
-    doc ? JSON.parse(JSON.stringify(doc)) : SITE_CONTENT_DEFAULTS
-  );
+  // Admin formu da eksik alanlarda çökmesin diye varsayılanlarla birleştir.
+  return NextResponse.json(mergeWithDefaults(doc));
 }
 
 export async function PUT(req: NextRequest) {

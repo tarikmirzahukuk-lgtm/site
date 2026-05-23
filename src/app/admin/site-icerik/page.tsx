@@ -140,6 +140,9 @@ export default function SiteIcerikPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  // Kaydetten sonra zengin metin editörlerini yeniden bağlamak için (TipTap
+  // içeriği sadece mount'ta okur; aksi halde kayıt sonrası eski metni gösterir).
+  const [saveGen, setSaveGen] = useState(0);
 
   useEffect(() => {
     fetch("/api/site-content")
@@ -168,6 +171,7 @@ export default function SiteIcerikPage() {
         setError(data.error || "Kaydedilemedi");
       } else {
         setContent(data);
+        setSaveGen((g) => g + 1);
         setSuccess("Kaydedildi. Değişiklikler yayında.");
       }
     } catch {
@@ -342,7 +346,7 @@ export default function SiteIcerikPage() {
           >
             <Text label="Üst etiket" value={c.about.kicker} help="Bölümün üstündeki küçük altın yazı." onChange={(v) => set((c) => ({ ...c, about: { ...c.about, kicker: v } }))} />
             <Text label="Bölüm başlığı" value={c.about.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, about: { ...c.about, heading: v } }))} />
-            <RichField label="Tanıtım metni" help="Birkaç paragraflık kısa tanıtım. Üstteki araç çubuğuyla biçimlendirebilirsin." value={c.about.body} onChange={(html) => set((c) => ({ ...c, about: { ...c.about, body: html } }))} />
+            <RichField key={`about-${saveGen}`} label="Tanıtım metni" help="Birkaç paragraflık kısa tanıtım. Üstteki araç çubuğuyla biçimlendirebilirsin." value={c.about.body} onChange={(html) => set((c) => ({ ...c, about: { ...c.about, body: html } }))} />
             <ImageField label="Portre görseli" value={c.about.portraitImage} onChange={(url) => set((c) => ({ ...c, about: { ...c.about, portraitImage: url } }))} />
             <Help>Boş bırakırsan “TM” harf logosu görünür.</Help>
             <div>
@@ -368,7 +372,7 @@ export default function SiteIcerikPage() {
           >
             <Text label="Üst etiket" value={c.urgent.kicker} help="Bölümün üstündeki küçük altın yazı." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, kicker: v } }))} />
             <Text label="Bölüm başlığı" value={c.urgent.heading} help={VURGU_HELP} onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, heading: v } }))} />
-            <RichField label="Metin" help="Çağrı paragrafı." value={c.urgent.body} onChange={(html) => set((c) => ({ ...c, urgent: { ...c.urgent, body: html } }))} />
+            <RichField key={`urgent-${saveGen}`} label="Metin" help="Çağrı paragrafı." value={c.urgent.body} onChange={(html) => set((c) => ({ ...c, urgent: { ...c.urgent, body: html } }))} />
             <div className="grid grid-cols-2 gap-3">
               <Text label="E-posta kutusu — etiket" value={c.urgent.emailKanal.label} help="Sağdaki altın kutunun üst yazısı, örn. “E-POSTA”." onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, emailKanal: { ...c.urgent.emailKanal, label: v } } }))} />
               <Text label="E-posta kutusu — gösterilen adres" value={c.urgent.emailKanal.value} help="Kutuda yazan e-posta. (Tıklanınca İletişim sekmesindeki e-posta açılır.)" onChange={(v) => set((c) => ({ ...c, urgent: { ...c.urgent, emailKanal: { ...c.urgent.emailKanal, value: v } } }))} />
@@ -407,7 +411,7 @@ export default function SiteIcerikPage() {
             description="“/hakkimda” adresindeki tam sayfa. (Ana sayfadaki kısa özet ayrı — Ana Sayfa sekmesinde.)"
           >
             <Text label="Sayfa başlığı" value={c.hakkimda.title} help="Sayfanın en üstündeki başlık. Örn. “Hakkımda”." onChange={(v) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, title: v } }))} />
-            <RichField label="Sayfa metni" help="Tam tanıtım yazın. Kalın, italik, başlık, liste, bağlantı ekleyebilirsin." value={c.hakkimda.body} onChange={(html) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, body: html } }))} />
+            <RichField key={`hakkimda-${saveGen}`} label="Sayfa metni" help="Tam tanıtım yazın. Kalın, italik, başlık, liste, bağlantı ekleyebilirsin." value={c.hakkimda.body} onChange={(html) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, body: html } }))} />
             <ImageField label="Portre / fotoğraf" value={c.hakkimda.avatarImage} onChange={(url) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, avatarImage: url } }))} />
             <Help>Boş bırakırsan “T” harf logosu görünür.</Help>
             <Area label="SEO açıklaması" value={c.hakkimda.metaDescription} help="Google’da ve sosyal paylaşımlarda görünen kısa özet (~155 karakter)." onChange={(v) => set((c) => ({ ...c, hakkimda: { ...c.hakkimda, metaDescription: v } }))} />

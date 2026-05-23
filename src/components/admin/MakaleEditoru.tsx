@@ -384,7 +384,13 @@ export default function MakaleEditoru({ content, onChange }: Props) {
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit.configure({ heading: { levels: [1, 2, 3, 4] } }),
+      // StarterKit v3 link+underline'ı zaten içerir; aşağıda özel yapılandırma
+      // ile tekrar eklediğimiz için buradakileri kapatıp çift kayıt uyarısını önlüyoruz.
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3, 4] },
+        link: false,
+        underline: false,
+      }),
       Image,
       LinkExtension.configure({ openOnClick: false }),
       Underline,

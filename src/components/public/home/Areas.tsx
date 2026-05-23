@@ -39,7 +39,7 @@ export default function Areas({ data }: { data: ISiteContent["areas"] }) {
                   className="text-[11px] uppercase tracking-[0.2em] font-medium"
                   style={{ color: "var(--color-muted-dim)" }}
                 >
-                  0{i + 1}
+                  {String(i + 1).padStart(2, "0")}
                 </span>
               </div>
               <div

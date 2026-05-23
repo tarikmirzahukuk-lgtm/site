@@ -15,7 +15,9 @@ export async function GET(
 
   await dbConnect();
   const doc = await Upload.findById(id).lean<{
-    data: Buffer;
+    // .lean() Buffer alanını çoğu zaman BSON Binary olarak döner (Node Buffer değil),
+    // bu yüzden tipi gevşek tutup aşağıda iki ihtimali de ele alıyoruz.
+    data: Buffer | { buffer: Buffer };
     contentType: string;
   } | null>();
 
@@ -23,7 +25,10 @@ export async function GET(
     return NextResponse.json({ error: "Görsel bulunamadı" }, { status: 404 });
   }
 
-  const body = new Uint8Array(doc.data);
+  // Mongoose .lean() Buffer alanını BSON Binary olarak döndürdüğünde gerçek baytlar
+  // .buffer içindedir; doğrudan new Uint8Array(Binary) 0 bayt verir. Her iki durumu da karşıla.
+  const bytes = Buffer.isBuffer(doc.data) ? doc.data : doc.data.buffer;
+  const body = new Uint8Array(bytes);
 
   return new NextResponse(body, {
     status: 200,
