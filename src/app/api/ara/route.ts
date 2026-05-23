@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Makale from "@/models/Makale";
+// Side-effect import: populate için modeller register olmalı (Vercel serverless)
+import "@/models/Kategori";
+import "@/models/Kullanici";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);

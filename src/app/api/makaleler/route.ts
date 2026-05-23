@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Makale from "@/models/Makale";
+// Side-effect import: populate("category"/"author") için modeller register olmalı
+// (Vercel serverless izole fonksiyonlarda zorunlu)
+import "@/models/Kategori";
+import "@/models/Kullanici";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { slugify, calculateReadingTime } from "@/lib/utils";
