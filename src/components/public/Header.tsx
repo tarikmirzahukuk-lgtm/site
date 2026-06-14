@@ -36,11 +36,14 @@ export default function Header({
           >
             T
           </span>
-          <span className="hidden md:flex flex-col leading-tight">
-            <span className="text-base font-semibold" style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}>
+          <span className="flex flex-col leading-tight min-w-0">
+            <span
+              className="text-sm md:text-base font-semibold truncate max-w-[58vw] md:max-w-none"
+              style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+            >
               {brand}
             </span>
-            <span className="text-[10px] mt-0.5 uppercase tracking-[0.22em]" style={{ color: "var(--color-muted)" }}>
+            <span className="hidden md:block text-[10px] mt-0.5 uppercase tracking-[0.22em]" style={{ color: "var(--color-muted)" }}>
               {tagline}
             </span>
           </span>
@@ -99,7 +102,11 @@ export default function Header({
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
                 aria-current={active ? "page" : undefined}
-                className="block text-sm plink"
+                className={`block text-sm plink ${
+                  active
+                    ? "border-l-2 border-[var(--color-gold)] pl-3"
+                    : ""
+                }`}
                 style={{
                   fontWeight: active ? 600 : 400,
                   color: active ? "var(--color-gold)" : "var(--color-ink)",

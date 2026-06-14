@@ -20,6 +20,7 @@ import { buildMetadata } from "@/lib/seo/metadata";
 import { sanitize } from "@/lib/sanitize";
 import { SITE_URL } from "@/lib/site-config";
 import Image from "next/image";
+import Link from "next/link";
 import { IMakale, IKullanici, IKategori } from "@/types";
 
 interface Props {
@@ -157,27 +158,61 @@ export default async function MakaleDetay({ params }: Props) {
             className="flex items-center justify-center gap-3 mt-7 text-sm flex-wrap"
             style={{ color: "var(--color-muted)" }}
           >
-            <div
-              className="w-9 h-9 flex items-center justify-center overflow-hidden relative flex-shrink-0"
-              style={{ border: "1px solid var(--color-gold)", background: "var(--color-panel-hi)" }}
-            >
-              {yazar?.avatar ? (
-                <Image
-                  src={yazar.avatar}
-                  alt={yazar.name}
-                  fill
-                  sizes="36px"
-                  className="object-cover"
-                />
-              ) : (
-                <span style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 500 }}>
-                  {yazar?.name?.charAt(0) ?? "?"}
+            {yazar?.slug ? (
+              <Link
+                href={`/yazar/${yazar.slug}`}
+                className="group inline-flex items-center gap-3"
+              >
+                <div
+                  className="w-9 h-9 flex items-center justify-center overflow-hidden relative flex-shrink-0"
+                  style={{ border: "1px solid var(--color-gold)", background: "var(--color-panel-hi)" }}
+                >
+                  {yazar.avatar ? (
+                    <Image
+                      src={yazar.avatar}
+                      alt={yazar.name}
+                      fill
+                      sizes="36px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 500 }}>
+                      {yazar.name?.charAt(0) ?? "?"}
+                    </span>
+                  )}
+                </div>
+                <span
+                  className="plink font-semibold group-hover:text-[var(--color-gold)] group-hover:after:scale-x-100"
+                  style={{ color: "var(--color-ink)" }}
+                >
+                  {yazar.name}
                 </span>
-              )}
-            </div>
-            <span className="font-semibold" style={{ color: "var(--color-ink)" }}>
-              {yazar?.name ?? "Anonim"}
-            </span>
+              </Link>
+            ) : (
+              <>
+                <div
+                  className="w-9 h-9 flex items-center justify-center overflow-hidden relative flex-shrink-0"
+                  style={{ border: "1px solid var(--color-gold)", background: "var(--color-panel-hi)" }}
+                >
+                  {yazar?.avatar ? (
+                    <Image
+                      src={yazar.avatar}
+                      alt={yazar.name}
+                      fill
+                      sizes="36px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 500 }}>
+                      {yazar?.name?.charAt(0) ?? "?"}
+                    </span>
+                  )}
+                </div>
+                <span className="font-semibold" style={{ color: "var(--color-ink)" }}>
+                  {yazar?.name ?? "Anonim"}
+                </span>
+              </>
+            )}
             <span style={{ color: "var(--color-muted-dim)" }}>·</span>
             <time dateTime={makaleObj.createdAt}>{formatDate(makaleObj.createdAt)}</time>
             <span style={{ color: "var(--color-muted-dim)" }}>·</span>
