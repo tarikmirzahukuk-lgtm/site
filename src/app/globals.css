@@ -55,6 +55,12 @@
     scroll-margin-top: 80px;
   }
 
+  /* TOC çapa düzeltmesi — makale içi h2/h3[id^="heading-"] sticky header altında gizlenmesin */
+  [id^="heading-"],
+  .prose :is(h2, h3)[id] {
+    scroll-margin-top: 96px;
+  }
+
   body {
     background: var(--color-bg);
     color: var(--color-body);
