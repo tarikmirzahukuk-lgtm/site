@@ -10,7 +10,10 @@ export default function MakaleKart({ makale }: { makale: IMakale }) {
 
   return (
     <Link href={`/makale/${makale.slug}`} className="group block no-underline">
-      <article className="pcard overflow-hidden h-full flex flex-col">
+      <article className="tablet-card relative overflow-hidden h-full flex flex-col">
+        <span className="roman-watermark" aria-hidden="true">
+          §
+        </span>
         {makale.coverImage ? (
           <div className="h-44 overflow-hidden relative" style={{ background: "var(--color-panel-hi)" }}>
             <Image
@@ -24,7 +27,7 @@ export default function MakaleKart({ makale }: { makale: IMakale }) {
         ) : (
           <div className="h-44" style={{ background: "var(--color-panel-hi)" }} />
         )}
-        <div className="p-6 flex-1 flex flex-col">
+        <div className="p-6 flex-1 flex flex-col relative z-10">
           {kategori && <p className="kicker mb-2">{kategori.name}</p>}
           <h3
             className="text-lg font-semibold leading-snug mb-2 transition-colors group-hover:text-[var(--color-gold)]"
