@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import MakaleKart from "@/components/public/MakaleKart";
+import BosDurum from "@/components/public/BosDurum";
 import { IMakale } from "@/types";
 
 export default function AraClient() {
@@ -60,14 +61,13 @@ export default function AraClient() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Başlık veya içerik ara..."
-            className="flex-1 px-4 py-3 text-sm focus:outline-none"
+            aria-label="Makale ara"
+            className="flex-1 px-4 py-3 text-sm"
             style={{
               background: "var(--color-panel)",
               border: "1px solid var(--rule-dim)",
               color: "var(--color-ink)",
             }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-gold)"; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = "var(--rule-dim)"; }}
             autoFocus
           />
           <button
@@ -79,8 +79,28 @@ export default function AraClient() {
           </button>
         </form>
 
+        {/* Yükleniyor — nabız satır göstergesi */}
+        {loading && (
+          <div className="mb-4" aria-hidden="true">
+            <div className="skeleton skeleton-line" style={{ width: "100%", height: 12 }} />
+            <div className="skeleton skeleton-line mt-2" style={{ width: "60%", height: 12 }} />
+          </div>
+        )}
+
+        {/* Erişilebilirlik — durum duyuruları */}
+        <div aria-live="polite" className="sr-only">
+          {loading
+            ? "Kelimeler taranıyor"
+            : error
+              ? error
+              : searched
+                ? `${query} için ${results.length} sonuç bulundu.`
+                : ""}
+        </div>
+
         {error && (
           <div
+            role="alert"
             className="mb-6 text-sm px-4 py-2"
             style={{
               background: "var(--color-panel)",
@@ -111,9 +131,12 @@ export default function AraClient() {
               </div>
             </>
           ) : (
-            <p className="text-center py-12" style={{ color: "var(--color-muted)" }}>
-              Aramanızla eşleşen makale bulunamadı.
-            </p>
+            <BosDurum
+              baslik="Eşleşen makale yok"
+              aciklama="Aramanızla eşleşen bir çalışma bulunamadı. Farklı bir kelime deneyin ya da arşivin tümüne göz atın."
+              ctaLabel="Makaleler arşivine göz at"
+              ctaHref="/makaleler"
+            />
           )}
         </div>
       )}
