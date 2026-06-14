@@ -21,20 +21,27 @@ const SOCIAL_LABELS: { key: "linkedin" | "twitter" | "orcid" | "website"; label:
 export default async function IletisimPage() {
   const c = await getSiteContent();
   return (
-    <div className="max-w-content mx-auto px-6 py-16">
-      <h1
-        className="display text-3xl md:text-4xl mb-4"
-        style={{ fontWeight: 600 }}
-      >
-        İletişim
-      </h1>
-      <p className="mb-10" style={{ color: "var(--color-muted)" }}>
-        Soru, öneri veya iş birliği teklifleri için aşağıdaki kanallardan
-        bana ulaşabilirsiniz.
-      </p>
+    <div className="max-w-content mx-auto px-6 py-16 md:py-20">
+      <header className="text-center mb-12 md:mb-16">
+        <p className="kicker mb-4">İletişim</p>
+        <h1
+          className="display-monument"
+          style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)" }}
+        >
+          Bana <span className="italic-gold">ulaşın</span>
+        </h1>
+        <div className="gold-rule-sm mx-auto mt-6" />
+        <p
+          className="mx-auto mt-6 max-w-xl text-base leading-relaxed"
+          style={{ color: "var(--color-muted)" }}
+        >
+          Soru, öneri veya iş birliği teklifleri için aşağıdaki kanallardan
+          bana ulaşabilirsiniz.
+        </p>
+      </header>
 
-      <div className="space-y-6">
-        <div className="pcard p-6">
+      <div className="max-w-2xl mx-auto space-y-5">
+        <div className="tablet-card p-6 md:p-7">
           <h3 className="kicker mb-2">E-posta</h3>
           <a
             href={`mailto:${c.contact.email}`}
@@ -46,7 +53,7 @@ export default async function IletisimPage() {
         </div>
 
         {c.contact.phone && (
-          <div className="pcard p-6">
+          <div className="tablet-card p-6 md:p-7">
             <h3 className="kicker mb-2">Telefon</h3>
             <a
               href={`tel:${c.contact.phoneRaw || c.contact.phone}`}
@@ -59,7 +66,7 @@ export default async function IletisimPage() {
         )}
 
         {(c.contact.address.line1 || c.contact.address.line2) && (
-          <div className="pcard p-6">
+          <div className="tablet-card p-6 md:p-7">
             <h3 className="kicker mb-2">Adres</h3>
             <p style={{ color: "var(--color-body)" }}>
               {c.contact.address.line1}
@@ -74,7 +81,7 @@ export default async function IletisimPage() {
         )}
 
         {SOCIAL_LABELS.filter((s) => c.socials?.[s.key]).map((s) => (
-          <div key={s.key} className="pcard p-6">
+          <div key={s.key} className="tablet-card p-6 md:p-7">
             <h3 className="kicker mb-2">{s.label}</h3>
             <a
               href={c.socials[s.key]}
