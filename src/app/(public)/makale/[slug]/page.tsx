@@ -137,51 +137,58 @@ export default async function MakaleDetay({ params }: Props) {
       <div className="max-w-content mx-auto px-6 pt-12">
         <Breadcrumb items={breadcrumbItems} />
 
-        {kategori && (
-          <p className="kategori-etiketi mb-4">{kategori.name}</p>
-        )}
-        <h1
-          className="text-3xl md:text-4xl font-semibold leading-tight"
-          style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
-        >
-          {makaleObj.title}
-        </h1>
-        <p className="text-lg mt-4 leading-relaxed" style={{ color: "var(--color-muted)" }}>
-          {makaleObj.excerpt}
-        </p>
-
-        {/* Meta */}
-        <div className="flex items-center gap-4 mt-6 pb-6 border-b" style={{ borderColor: "var(--rule-dim)" }}>
-          <div
-            className="w-10 h-10 flex items-center justify-center overflow-hidden relative flex-shrink-0"
-            style={{ border: "1px solid var(--color-gold)", background: "var(--color-panel-hi)" }}
+        <div className="text-center mt-8">
+          {kategori && <p className="kicker mb-5">{kategori.name}</p>}
+          <h1
+            className="display-monument"
+            style={{ fontSize: "clamp(2rem, 5vw, 3.4rem)" }}
           >
-            {yazar?.avatar ? (
-              <Image
-                src={yazar.avatar}
-                alt={yazar.name}
-                fill
-                sizes="40px"
-                className="object-cover"
-              />
-            ) : (
-              <span style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 500 }}>
-                {yazar?.name?.charAt(0) ?? "?"}
-              </span>
-            )}
+            {makaleObj.title}
+          </h1>
+          <p
+            className="text-lg mt-6 leading-relaxed max-w-2xl mx-auto"
+            style={{ color: "var(--color-muted)" }}
+          >
+            {makaleObj.excerpt}
+          </p>
+
+          {/* Meta satırı: yazar · tarih · okuma süresi */}
+          <div
+            className="flex items-center justify-center gap-3 mt-7 text-sm flex-wrap"
+            style={{ color: "var(--color-muted)" }}
+          >
+            <div
+              className="w-9 h-9 flex items-center justify-center overflow-hidden relative flex-shrink-0"
+              style={{ border: "1px solid var(--color-gold)", background: "var(--color-panel-hi)" }}
+            >
+              {yazar?.avatar ? (
+                <Image
+                  src={yazar.avatar}
+                  alt={yazar.name}
+                  fill
+                  sizes="36px"
+                  className="object-cover"
+                />
+              ) : (
+                <span style={{ fontFamily: "var(--font-display)", color: "var(--color-gold)", fontWeight: 500 }}>
+                  {yazar?.name?.charAt(0) ?? "?"}
+                </span>
+              )}
+            </div>
+            <span className="font-semibold" style={{ color: "var(--color-ink)" }}>
+              {yazar?.name ?? "Anonim"}
+            </span>
+            <span style={{ color: "var(--color-muted-dim)" }}>·</span>
+            <span>{formatDate(makaleObj.createdAt)}</span>
+            <span style={{ color: "var(--color-muted-dim)" }}>·</span>
+            <span>{makaleObj.readingTime} dk okuma</span>
           </div>
-          <div>
-            <p className="text-sm font-semibold" style={{ color: "var(--color-ink)" }}>{yazar?.name ?? "Anonim"}</p>
-            <p className="text-xs" style={{ color: "var(--color-muted)" }}>
-              {formatDate(makaleObj.createdAt)} · {makaleObj.readingTime} dk
-              okuma
-            </p>
-          </div>
-          <div className="ml-auto">
-            <PaylasimButonlari
-              title={makaleObj.title}
-              slug={makaleObj.slug}
-            />
+
+          <div className="gold-rule mx-auto mt-8" />
+
+          {/* Paylaşım */}
+          <div className="flex justify-center mt-6">
+            <PaylasimButonlari title={makaleObj.title} slug={makaleObj.slug} />
           </div>
         </div>
       </div>
@@ -205,9 +212,9 @@ export default async function MakaleDetay({ params }: Props) {
       {/* Content + TOC */}
       <div className="max-w-content-wide mx-auto px-6 flex gap-12">
         <div
-          className="prose prose-lg prose-invert max-w-content flex-1
+          className="dropcap prose prose-lg prose-invert max-w-content flex-1
             prose-headings:font-display prose-headings:font-semibold
-            prose-h2:text-2xl prose-h2:mt-10 prose-h2:mb-4
+            prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4
             prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
             prose-p:leading-[1.85]
             prose-blockquote:border-l-[var(--color-gold)] prose-blockquote:bg-[var(--color-panel)] prose-blockquote:py-3 prose-blockquote:not-italic
@@ -223,13 +230,10 @@ export default async function MakaleDetay({ params }: Props) {
 
       {/* FAQ Section */}
       {makaleObj.faqs && makaleObj.faqs.length > 0 && (
-        <section className="max-w-content mx-auto px-6 mt-12">
-          <h2
-            className="text-2xl font-semibold mb-6"
-            style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
-          >
-            Sıkça Sorulan Sorular
-          </h2>
+        <section className="max-w-content mx-auto px-6 mt-16">
+          <p className="kicker mb-3">Sıkça Sorulan Sorular</p>
+          <h2 className="display text-2xl mb-2">Merak Edilenler</h2>
+          <div className="gold-rule-sm mb-7" />
           <div className="space-y-4">
             {makaleObj.faqs.map((faq, idx) => (
               <details
