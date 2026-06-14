@@ -6,9 +6,24 @@ interface Props {
   children: React.ReactNode;
   delay?: number; // ms
   className?: string;
+  /**
+   * Stagger desteği: true verilirse, görünür olunca kapsayıcıya
+   * `reveal-stagger` sınıfı da eklenir. İç `.stagger-item` öğeleri
+   * `--i` (0,1,2…) inline değişkeniyle sıralı gecikmeyle belirir.
+   * Mevcut kullanımları bozmaz (varsayılan: false).
+   */
+  stagger?: boolean;
+  /** Kapsayıcı etiketi (varsayılan div) — semantik gerektiğinde. */
+  as?: "div" | "section";
 }
 
-export default function Reveal({ children, delay = 0, className = "" }: Props) {
+export default function Reveal({
+  children,
+  delay = 0,
+  className = "",
+  stagger = false,
+  as = "div",
+}: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
 
@@ -40,14 +55,16 @@ export default function Reveal({ children, delay = 0, className = "" }: Props) {
     return () => obs.disconnect();
   }, [delay]);
 
+  const Tag = as;
+
   return (
-    <div
-      ref={ref}
+    <Tag
+      ref={ref as React.Ref<HTMLDivElement & HTMLElement>}
       className={`${className} ${
         visible ? "reveal-visible" : "reveal-hidden"
-      }`}
+      } ${stagger ? "reveal-stagger" : ""}`.trim()}
     >
       {children}
-    </div>
+    </Tag>
   );
 }

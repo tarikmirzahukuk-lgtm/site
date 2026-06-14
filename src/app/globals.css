@@ -1,4 +1,30 @@
 /* Fonts loaded via next/font/google in layout.tsx (no render-blocking @import) */
+
+/* =============================================================================
+ * ANITSAL HAREKET KATMANI — paylaşılan primitifler (Aşama 1: FOUNDATION)
+ * Felsefe: çizilir / oyulur / kazınır — patlamaz / kaymaz.
+ * Yalnız transform/opacity/filter. prefers-reduced-motion: reduce → hepsi no-op,
+ * öğeler nihai görünür duruma düşer (opacity:1, transform:none, dashoffset:0).
+ *
+ * Çizim & hat:
+ *   .draw-on            SVG path çizimi (pathLength=1 tabanlı stroke-dashoffset 1→0)
+ *   .rule-draw          altın hat çizimi — scaleX 0→1, origin left
+ *   .rule-draw-center   altın hat çizimi — scaleX 0→1, origin center
+ *   .col-rise           sütun yükselişi — scaleY 0→1, origin bottom
+ * Başlık & metin:
+ *   .line-mask          overflow:hidden kapsayıcı (satır maskesi)
+ *   .line-rise          iç öğe translateY(110%)→0 (satır yükselişi, --i gecikme)
+ *   .accent-in          italik-altın vurgu (opacity+translateY+scale)
+ *   .engrave-in         Roma kazıma (blur+translateY+opacity, --i gecikme)
+ * Ambiyans & derinlik:
+ *   .kenburns           görsel nefesi — scale 1→1.05 (~10s)
+ *   .breathe            kemer nefesi — opacity salınımı (~7s infinite)
+ *   .tilt               pointer derinliği — perspective rotateX/Y (--mx/--my)
+ *   .paper-breathe      kağıt dokusu ambiyansı (body::before opacity salınımı)
+ * Stagger:
+ *   .stagger-item       .reveal-visible/.reveal-stagger atası altında sıralı belirir (--i)
+ * Bu sınıfları kullanan client yardımcıları: ScrollProgress.tsx, CountUp.tsx
+ * ============================================================================= */
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -92,6 +118,18 @@
     opacity: 0.035;
     mix-blend-mode: overlay;
     background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+
+  /* Kağıt dokusuna çok ince nefes — yalnız hareket isteyenlerde */
+  @media (prefers-reduced-motion: no-preference) {
+    body::before {
+      animation: paper-breathe 20s ease-in-out infinite;
+    }
+  }
+
+  @keyframes paper-breathe {
+    0%, 100% { opacity: 0.030; }
+    50%      { opacity: 0.045; }
   }
 
   /* Make sure content sits above the overlay */
@@ -644,6 +682,201 @@
     .skeleton {
       animation: none;
       background: var(--color-panel-hi);
+    }
+  }
+
+  /* ===========================================================================
+   * ANITSAL HAREKET PRİMİTİFLERİ
+   * Tetikleme deseni: bir `.reveal-visible` (Reveal kapsayıcısı) atası altında
+   * iken animasyonlar başlar. Görünür olmadan başlangıç (gizli/oyulmamış)
+   * durumda dururlar. Tüm primitifler reduced-motion'da no-op'a düşer.
+   * ========================================================================= */
+
+  /* --- Çizim: SVG path (imza jesti) --- */
+  /* SVG path'e pathLength="1" verilmelidir. */
+  .draw-on {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+  .reveal-visible .draw-on,
+  .reveal-visible.draw-on {
+    animation: draw-on 1.4s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 120ms);
+  }
+  @keyframes draw-on {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* --- Çizim: altın hat (scaleX) --- */
+  .rule-draw,
+  .rule-draw-center {
+    transform: scaleX(0);
+  }
+  .rule-draw { transform-origin: left center; }
+  .rule-draw-center { transform-origin: center center; }
+  .reveal-visible .rule-draw,
+  .reveal-visible.rule-draw,
+  .reveal-visible .rule-draw-center,
+  .reveal-visible.rule-draw-center {
+    animation: rule-draw 0.9s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  @keyframes rule-draw {
+    to { transform: scaleX(1); }
+  }
+
+  /* --- Sütun yükselişi (scaleY, alttan) --- */
+  .col-rise {
+    transform: scaleY(0);
+    transform-origin: bottom center;
+  }
+  .reveal-visible .col-rise,
+  .reveal-visible.col-rise {
+    animation: col-rise 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  @keyframes col-rise {
+    to { transform: scaleY(1); }
+  }
+
+  /* --- Başlık satır maskesi + yükselişi --- */
+  .line-mask {
+    overflow: hidden;
+    display: block;
+  }
+  .line-rise {
+    display: block;
+    transform: translateY(110%);
+  }
+  .reveal-visible .line-rise {
+    animation: line-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  @keyframes line-rise {
+    to { transform: translateY(0); }
+  }
+
+  /* --- İtalik-altın vurgu --- */
+  .accent-in {
+    opacity: 0;
+    transform: translateY(6px) scale(0.97);
+  }
+  .reveal-visible .accent-in,
+  .reveal-visible.accent-in {
+    animation: accent-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+  @keyframes accent-in {
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* --- Roma kazıma --- */
+  .engrave-in {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(2px);
+  }
+  .reveal-visible .engrave-in,
+  .reveal-visible.engrave-in {
+    animation: engrave-in 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+  @keyframes engrave-in {
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+  }
+
+  /* --- Ken Burns (görsel nefesi) --- */
+  .kenburns {
+    animation: kenburns 10s ease-out forwards;
+    will-change: transform;
+  }
+  @keyframes kenburns {
+    from { transform: scale(1); }
+    to   { transform: scale(1.05); }
+  }
+
+  /* --- Kemer nefesi (sonsuz opacity salınımı) --- */
+  .breathe {
+    animation: breathe 7s ease-in-out infinite;
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.5; }
+    50%      { opacity: 1; }
+  }
+
+  /* --- Pointer derinliği (tilt) --- */
+  /* JS, --mx/--my'yi derece olarak set eder (örn. -6deg..6deg). */
+  .tilt {
+    transform: perspective(700px) rotateX(var(--my, 0deg)) rotateY(var(--mx, 0deg));
+    transition: transform 0.18s ease-out;
+    transform-style: preserve-3d;
+  }
+
+  /* --- Stagger öğeleri --- */
+  /* Bir .reveal-visible / .reveal-stagger atası altında sıralı belirir. */
+  .stagger-item {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  .reveal-visible .stagger-item {
+    opacity: 1;
+    transform: none;
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transition-delay: calc(var(--i, 0) * 70ms);
+  }
+
+  /* --- Reduced-motion: tüm yeni hareket TAMAMEN susar --- */
+  @media (prefers-reduced-motion: reduce) {
+    .draw-on,
+    .reveal-visible .draw-on,
+    .reveal-visible.draw-on {
+      stroke-dasharray: none;
+      stroke-dashoffset: 0;
+      animation: none;
+    }
+    .rule-draw,
+    .rule-draw-center,
+    .col-rise,
+    .reveal-visible .rule-draw,
+    .reveal-visible.rule-draw,
+    .reveal-visible .rule-draw-center,
+    .reveal-visible.rule-draw-center,
+    .reveal-visible .col-rise,
+    .reveal-visible.col-rise {
+      transform: none;
+      animation: none;
+    }
+    .line-rise,
+    .reveal-visible .line-rise {
+      transform: none;
+      animation: none;
+    }
+    .accent-in,
+    .engrave-in,
+    .reveal-visible .accent-in,
+    .reveal-visible.accent-in,
+    .reveal-visible .engrave-in,
+    .reveal-visible.engrave-in {
+      opacity: 1;
+      transform: none;
+      filter: none;
+      animation: none;
+    }
+    .kenburns,
+    .breathe {
+      animation: none;
+      transform: none;
+      opacity: 1;
+    }
+    .tilt {
+      transform: none;
+      transition: none;
+    }
+    .stagger-item,
+    .reveal-visible .stagger-item {
+      opacity: 1;
+      transform: none;
+      transition: none;
     }
   }
 }
