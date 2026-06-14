@@ -2,6 +2,7 @@ import Image from "next/image";
 import type { ISiteContent } from "@/types";
 import { renderAccent } from "@/lib/render-accent";
 import { sanitize } from "@/lib/sanitize";
+import { toRoman } from "@/lib/utils";
 
 export default function About({
   data,
@@ -32,6 +33,11 @@ export default function About({
             <span className="absolute top-3.5 right-3.5 w-7 h-7" style={{ borderTop: "1px solid var(--color-gold)", borderRight: "1px solid var(--color-gold)" }} />
             <span className="absolute bottom-3.5 left-3.5 w-7 h-7" style={{ borderBottom: "1px solid var(--color-gold)", borderLeft: "1px solid var(--color-gold)" }} />
             <span className="absolute bottom-3.5 right-3.5 w-7 h-7" style={{ borderBottom: "1px solid var(--color-gold)", borderRight: "1px solid var(--color-gold)" }} />
+
+            {/* Roman watermark — decorative */}
+            <span className="roman-watermark" aria-hidden="true">
+              I
+            </span>
 
             {data.portraitImage ? (
               <Image
@@ -69,34 +75,43 @@ export default function About({
         {/* Text */}
         <div>
           {data.kicker && <div className="kicker mb-3.5">{data.kicker}</div>}
-          <h2 className="display m-0 leading-[1.1]" style={{ fontSize: "clamp(30px, 4.5vw, 46px)" }}>
+          <div className="gold-rule-sm mb-5" aria-hidden="true" />
+          <h2
+            className="display-monument m-0 leading-[1.1] text-left"
+            style={{ fontSize: "clamp(30px, 4.5vw, 46px)" }}
+          >
             {renderAccent(data.heading)}
           </h2>
           <div
-            className="prose prose-invert max-w-none mt-6 text-[15.5px] leading-[1.75]"
+            className="dropcap prose prose-invert max-w-none mt-6 text-[15.5px] leading-[1.75]"
             style={{ color: "var(--color-body)" }}
             dangerouslySetInnerHTML={{ __html: sanitize(data.body) }}
           />
           {data.stats.length > 0 && (
             <div
-              className="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4 pt-7 border-t"
+              className="mt-9 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-7 pt-7 border-t"
               style={{ borderColor: "var(--rule)" }}
             >
               {data.stats.map((s, i) => (
-                <div key={i}>
-                  <div
-                    className="italic"
-                    style={{
-                      fontFamily: "var(--font-display)",
-                      fontSize: 32,
-                      color: "var(--color-gold)",
-                      fontWeight: 500,
-                    }}
-                  >
-                    {s.value.replace("{yil}", String(yearsSince))}
-                  </div>
-                  <div className="text-[12.5px] mt-1" style={{ color: "var(--color-muted)" }}>
-                    {s.label}
+                <div key={i} className="flex items-baseline gap-3">
+                  <span className="roman-index shrink-0" aria-hidden="true">
+                    {toRoman(i + 1)}
+                  </span>
+                  <div>
+                    <div
+                      className="italic leading-none"
+                      style={{
+                        fontFamily: "var(--font-display)",
+                        fontSize: 32,
+                        color: "var(--color-gold)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      {s.value.replace("{yil}", String(yearsSince))}
+                    </div>
+                    <div className="text-[12.5px] mt-1.5" style={{ color: "var(--color-muted)" }}>
+                      {s.label}
+                    </div>
                   </div>
                 </div>
               ))}
