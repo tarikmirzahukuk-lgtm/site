@@ -1150,6 +1150,12 @@
       transition: none;
       will-change: auto;
     }
+    /* Cheap LOW: release GPU layers for animated classes that don't run
+       under reduced-motion — mirrors the .card-tilt treatment above. */
+    .kenburns,
+    .icon-nudge {
+      will-change: auto;
+    }
     .icon-nudge,
     .btn-primary,
     .cta-gold {

@@ -50,6 +50,12 @@ export default function CountUp({ value, duration = 1200, className = "" }: Prop
       return;
     }
 
+    // Fix 2a: if IntersectionObserver is unsupported, show final value immediately.
+    if (!("IntersectionObserver" in window)) {
+      setDisplay(value);
+      return;
+    }
+
     const el = ref.current;
     if (!el) {
       setDisplay(value);
@@ -59,6 +65,10 @@ export default function CountUp({ value, duration = 1200, className = "" }: Prop
     let started = false;
 
     const tween = () => {
+      // Fix 2b: set "0" only at the moment the tween actually starts (on
+      // intersection), not on mount — so if IO never fires the value stays
+      // at the final value rather than a stuck "0".
+      setDisplay(`${prefix}0${suffix}`);
       const start = performance.now();
       const step = (now: number) => {
         const t = Math.min(1, (now - start) / duration);
@@ -74,9 +84,6 @@ export default function CountUp({ value, duration = 1200, className = "" }: Prop
       };
       rafRef.current = window.requestAnimationFrame(step);
     };
-
-    // Başlangıç durumu: 0
-    setDisplay(`${prefix}0${suffix}`);
 
     const obs = new IntersectionObserver(
       (entries) => {
@@ -99,7 +106,13 @@ export default function CountUp({ value, duration = 1200, className = "" }: Prop
   }, [value, duration, match]);
 
   return (
-    <span ref={ref} className={className}>
+    // Fix 6: tabular-nums prevents the digit string from jittering/reflowing
+    // horizontally as the number changes during the count-up animation.
+    <span
+      ref={ref}
+      className={className}
+      style={{ fontVariantNumeric: "tabular-nums", fontFeatureSettings: "'tnum' 1", display: "inline-block" }}
+    >
       {display}
     </span>
   );

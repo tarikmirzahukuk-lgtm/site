@@ -80,14 +80,21 @@ export default async function MakaleDetay({ params }: Props) {
       ? (makaleObj.category as IKategori)
       : null;
 
-  // İçerikteki h2/h3'lere id ekle (TOC için)
+  // İçerikteki h2/h3'lere id ekle (TOC için).
+  // Fix 3: broaden regex to also match attributed headings (e.g. <h2 style="…">)
+  // so index increments for EVERY h2/h3 in document order — matching the count
+  // IcindekilerTablosu's DOMParser produces via querySelectorAll('h2,h3').
+  // Existing `id` attributes are replaced so there's no double-id if the editor
+  // emits one; index always advances to keep TOC alignment correct.
   let headingIndex = 0;
   const contentWithIds = makaleObj.content.replace(
-    /<(h[23])>/g,
-    (_match, tag) => {
+    /<(h[23])((?:\s[^>]*)?)>/g,
+    (_match, tag, attrs) => {
       const id = `heading-${headingIndex}`;
       headingIndex++;
-      return `<${tag} id="${id}">`;
+      // Strip any pre-existing id="…" so we don't duplicate it.
+      const cleanAttrs = attrs.replace(/\s+id="[^"]*"/g, "");
+      return `<${tag}${cleanAttrs} id="${id}">`;
     }
   );
 

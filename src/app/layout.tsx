@@ -51,6 +51,36 @@ export default function RootLayout({
 }) {
   return (
     <html lang={SITE_CONFIG.language} className={`${inter.variable} ${playfair.variable}`}>
+      <head>
+        {/* No-JS / no-IntersectionObserver fallback: force all initially-hidden
+            animation classes to their final visible state so content is never
+            permanently invisible when JS is disabled or unavailable. */}
+        <noscript>
+          <style>{`
+            .reveal-hidden,
+            .stagger-item,
+            .line-rise,
+            .accent-in,
+            .engrave-in,
+            .draw-on,
+            .col-rise,
+            .connector-draw,
+            .node-set,
+            .rule-draw,
+            .rule-draw-center,
+            .arch-keystone {
+              opacity: 1 !important;
+              transform: none !important;
+              filter: none !important;
+              stroke-dashoffset: 0 !important;
+              animation: none !important;
+            }
+            .line-mask {
+              overflow: visible !important;
+            }
+          `}</style>
+        </noscript>
+      </head>
       <body>
         <a href="#main-content" className="skip-link">
           İçeriğe atla

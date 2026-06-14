@@ -39,11 +39,20 @@ export default function Reveal({
       return;
     }
 
+    // Fix 1b: if IntersectionObserver is unsupported, reveal immediately.
+    if (!("IntersectionObserver" in window)) {
+      setVisible(true);
+      return;
+    }
+
+    let timerId: ReturnType<typeof setTimeout> | null = null;
+
     const obs = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
           if (e.isIntersecting) {
-            setTimeout(() => setVisible(true), delay);
+            // Fix 5: capture timer id so cleanup can cancel it on unmount.
+            timerId = setTimeout(() => setVisible(true), delay);
             obs.disconnect();
           }
         });
@@ -52,7 +61,11 @@ export default function Reveal({
     );
 
     obs.observe(el);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+      // Fix 5: clear pending timer to avoid setState on unmounted component.
+      if (timerId !== null) clearTimeout(timerId);
+    };
   }, [delay]);
 
   const Tag = as;
