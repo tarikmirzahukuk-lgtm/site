@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/public/icons/Icon";
@@ -51,16 +52,15 @@ export default function Header({
       <div className="masthead-row masthead max-w-7xl mx-auto px-5 md:px-10 flex items-center justify-between py-4 md:py-5">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-3 plink">
-          <span
-            className="monogram-seal w-9 h-9 md:w-[38px] md:h-[38px] flex items-center justify-center text-[18px] md:text-[22px] font-medium italic"
-            style={{
-              border: "1px solid var(--color-gold)",
-              color: "var(--color-gold)",
-              fontFamily: "var(--font-display)",
-            }}
-          >
-            T
-          </span>
+          <Image
+            src="/mirza-amblem.png"
+            alt={brand}
+            width={48}
+            height={48}
+            priority
+            unoptimized
+            className="monogram-seal w-10 h-10 md:w-[46px] md:h-[46px] object-contain shrink-0"
+          />
           <span className="flex flex-col leading-tight min-w-0">
             <span
               className="text-sm md:text-base font-semibold truncate max-w-[58vw] md:max-w-none"
