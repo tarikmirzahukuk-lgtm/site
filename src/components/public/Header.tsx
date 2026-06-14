@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import Icon from "@/components/public/icons/Icon";
 import type { INavLink } from "@/types";
 
@@ -15,10 +16,14 @@ export default function Header({
   tagline: string;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
   return (
     <header className="sticky top-0 z-30 backdrop-blur-md border-b" style={{ background: "rgba(11,15,20,0.94)", borderColor: "var(--rule-dim)" }}>
-      <div className="max-w-7xl mx-auto px-5 md:px-10 flex items-center justify-between py-4 md:py-5">
+      <div className="masthead max-w-7xl mx-auto px-5 md:px-10 flex items-center justify-between py-4 md:py-5">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-3 plink">
           <span
@@ -43,19 +48,24 @@ export default function Header({
 
         {/* Desktop nav */}
         <nav className="hidden md:flex gap-8">
-          {nav.map((link, i) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-[13.5px] tracking-[0.02em] plink"
-              style={{
-                fontWeight: i === 0 ? 600 : 400,
-                color: i === 0 ? "var(--color-gold)" : "var(--color-ink)",
-              }}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {nav.map((link) => {
+            const active = isActive(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                aria-current={active ? "page" : undefined}
+                className="text-[13.5px] tracking-[0.02em] plink relative pb-1"
+                style={{
+                  fontWeight: active ? 600 : 400,
+                  color: active ? "var(--color-gold)" : "var(--color-ink)",
+                  boxShadow: active ? "inset 0 -2px 0 0 var(--color-gold)" : "none",
+                }}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* CTA */}
@@ -81,16 +91,24 @@ export default function Header({
       {/* Mobile menu */}
       {mobileOpen && (
         <div className="menu-slide md:hidden border-t px-5 py-4 space-y-3" style={{ borderColor: "var(--rule-dim)", background: "var(--color-bg)" }}>
-          {nav.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
-              className="block text-sm plink"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {nav.map((link) => {
+            const active = isActive(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                aria-current={active ? "page" : undefined}
+                className="block text-sm plink"
+                style={{
+                  fontWeight: active ? 600 : 400,
+                  color: active ? "var(--color-gold)" : "var(--color-ink)",
+                }}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           <Link
             href="/iletisim"
             onClick={() => setMobileOpen(false)}
