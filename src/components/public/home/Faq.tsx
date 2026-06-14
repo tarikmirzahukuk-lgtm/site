@@ -58,16 +58,21 @@ export default function Faq({ data }: { data: ISiteContent["faq"] }) {
                     />
                   </span>
                 </button>
-                {isOpen && (
-                  <div
-                    id={`faq-panel-${i}`}
-                    role="region"
-                    className="text-[14.5px] leading-[1.75] max-w-[720px] pb-6 md:pb-7 pl-[calc(1.6em+0.875rem)]"
-                    style={{ color: "var(--color-body)" }}
-                  >
-                    {f.answer}
+                <div
+                  id={`faq-panel-${i}`}
+                  role="region"
+                  aria-hidden={!isOpen}
+                  className={`faq-panel ${isOpen ? "faq-panel-open" : ""}`}
+                >
+                  <div className="faq-panel-inner">
+                    <p
+                      className="text-[14.5px] leading-relaxed max-w-[720px] pb-6 md:pb-7 pl-[calc(1.6em+0.875rem)] m-0"
+                      style={{ color: "var(--color-body)" }}
+                    >
+                      {f.answer}
+                    </p>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}

@@ -351,6 +351,27 @@
     }
   }
 
+  /* FAQ accordion — yumuşak yükseklik geçişi (grid-rows 0fr→1fr) */
+  .faq-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.22s ease, opacity 0.22s ease;
+    opacity: 0;
+  }
+  .faq-panel > .faq-panel-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+  .faq-panel-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-panel {
+      transition: none;
+    }
+  }
+
   /* Fix 5 — scroll-triggered reveal */
   .reveal-hidden {
     opacity: 0;
