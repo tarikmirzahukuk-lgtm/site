@@ -15,7 +15,12 @@ type IconName =
   | "plus"
   | "minus"
   | "menu"
-  | "close";
+  | "close"
+  | "linkedin"
+  | "twitter"
+  | "website"
+  | "link"
+  | "check";
 
 interface IconProps {
   name: IconName;
@@ -95,6 +100,26 @@ export default function Icon({
     minus: <path d="M5 12h14" {...sp} />,
     menu: <path d="M3 6h18M3 12h18M3 18h18" {...sp} />,
     close: <path d="M6 6l12 12M6 18L18 6" {...sp} />,
+    linkedin: (
+      <>
+        <rect x="3" y="3" width="18" height="18" rx="1.5" {...sp} />
+        <path d="M7 10v7M7 7v.01M11 17v-4a2 2 0 014 0v4M11 10v7" {...sp} />
+      </>
+    ),
+    twitter: <path d="M4 4l7 9m0 0l7 7m-7-7L4 20m7-7l7-9" {...sp} />,
+    website: (
+      <>
+        <circle cx="12" cy="12" r="9" {...sp} />
+        <path d="M3 12h18M12 3c2.5 2.5 2.5 15 0 18M12 3c-2.5 2.5-2.5 15 0 18" {...sp} />
+      </>
+    ),
+    link: (
+      <>
+        <path d="M10 14a3.5 3.5 0 005 0l3-3a3.5 3.5 0 00-5-5l-1.5 1.5" {...sp} />
+        <path d="M14 10a3.5 3.5 0 00-5 0l-3 3a3.5 3.5 0 005 5l1.5-1.5" {...sp} />
+      </>
+    ),
+    check: <path d="M5 12l4 4 10-10" {...sp} />,
   };
 
   return (

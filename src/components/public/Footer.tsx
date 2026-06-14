@@ -7,12 +7,22 @@ export default function Footer({
   brand,
   description,
   contact,
+  socials,
 }: {
   nav: INavLink[];
   brand: string;
   description: string;
   contact: ISiteContent["contact"];
+  socials: ISiteContent["socials"];
 }) {
+  const socialLinks = (
+    [
+      { key: "linkedin", label: "LinkedIn", icon: "linkedin", href: socials.linkedin },
+      { key: "twitter", label: "Twitter", icon: "twitter", href: socials.twitter },
+      { key: "website", label: "Web sitesi", icon: "website", href: socials.website },
+      { key: "orcid", label: "ORCID", icon: null, href: socials.orcid },
+    ] as const
+  ).filter((s) => Boolean(s.href));
   return (
     <footer className="border-t" style={{ background: "#080a0e", borderColor: "var(--rule)" }}>
       <div className="max-w-7xl mx-auto px-5 md:px-10 py-12 md:py-[72px]">
@@ -43,21 +53,26 @@ export default function Footer({
             <p className="mt-5 text-[13.5px] max-w-sm leading-[1.7]" style={{ color: "var(--color-muted)" }}>
               {description}
             </p>
-            <div className="mt-5 flex gap-2.5">
-              {[
-                { t: "Lk", href: "#" },
-                { t: "In", href: "#" },
-                { t: "X", href: "#" },
-              ].map((s) => (
-                <a
-                  key={s.t}
-                  href={s.href}
-                  className="icon-btn"
-                >
-                  {s.t}
-                </a>
-              ))}
-            </div>
+            {socialLinks.length > 0 && (
+              <div className="mt-5 flex gap-2.5">
+                {socialLinks.map((s) => (
+                  <a
+                    key={s.key}
+                    href={s.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${s.label}'da görüntüle`}
+                    className="icon-btn"
+                  >
+                    {s.icon ? (
+                      <Icon name={s.icon} size={17} />
+                    ) : (
+                      <span aria-hidden="true">ID</span>
+                    )}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Menu */}
@@ -108,30 +123,15 @@ export default function Footer({
 
           {/* Legal */}
           <div>
-            <div className="kicker mb-3">Hukuki</div>
+            <div className="kicker mb-3">Sorumluluk Reddi</div>
             <div className="gold-rule-sm mb-[18px]" aria-hidden="true" />
-            <ul className="space-y-1.5 text-[13.5px]" style={{ color: "var(--color-muted)" }}>
-              <li>
-                <Link href="#" className="plink" style={{ color: "var(--color-muted)" }}>
-                  KVKK Aydınlatma
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="plink" style={{ color: "var(--color-muted)" }}>
-                  Gizlilik Politikası
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="plink" style={{ color: "var(--color-muted)" }}>
-                  Çerez Politikası
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="plink" style={{ color: "var(--color-muted)" }}>
-                  Sorumluluk Reddi
-                </Link>
-              </li>
-            </ul>
+            <p
+              className="text-[13.5px] leading-[1.8]"
+              style={{ color: "var(--color-muted-dim)" }}
+            >
+              Bu sitedeki içerikler akademik bilgilendirme amaçlıdır ve hukuki
+              tavsiye niteliği taşımaz.
+            </p>
           </div>
         </div>
 

@@ -26,6 +26,7 @@ export default async function PublicLayout({
         brand={c.seo.brand}
         description={c.seo.description}
         contact={c.contact}
+        socials={c.socials}
       />
     </>
   );
