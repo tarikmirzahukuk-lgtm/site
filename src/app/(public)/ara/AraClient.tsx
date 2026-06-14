@@ -1,8 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import MakaleKart from "@/components/public/MakaleKart";
 import BosDurum from "@/components/public/BosDurum";
+import AramaOnerileri from "@/components/public/AramaOnerileri";
+import Icon from "@/components/public/icons/Icon";
 import { IMakale } from "@/types";
 
 export default function AraClient() {
@@ -11,18 +13,18 @@ export default function AraClient() {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const runSearch = async (term: string) => {
     setError("");
-    if (query.trim().length < 2) {
+    if (term.trim().length < 2) {
       setError("En az 2 karakter girin");
       return;
     }
 
     setLoading(true);
     try {
-      const res = await fetch(`/api/ara?q=${encodeURIComponent(query)}`);
+      const res = await fetch(`/api/ara?q=${encodeURIComponent(term)}`);
       if (!res.ok) {
         setError("Arama başarısız oldu");
         setResults([]);
@@ -41,6 +43,23 @@ export default function AraClient() {
     }
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    runSearch(query);
+  };
+
+  const handleClear = () => {
+    setQuery("");
+    setSearched(false);
+    setError("");
+    inputRef.current?.focus();
+  };
+
+  const handleOneri = (kelime: string) => {
+    setQuery(kelime);
+    runSearch(kelime);
+  };
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-16 md:py-20">
       <header className="text-center mb-10">
@@ -56,20 +75,35 @@ export default function AraClient() {
 
       <div className="max-w-2xl mx-auto">
         <form onSubmit={handleSearch} className="flex gap-3 mb-4">
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Başlık veya içerik ara..."
-            aria-label="Makale ara"
-            className="flex-1 px-4 py-3 text-sm"
-            style={{
-              background: "var(--color-panel)",
-              border: "1px solid var(--rule-dim)",
-              color: "var(--color-ink)",
-            }}
-            autoFocus
-          />
+          <div className="relative flex-1">
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Başlık veya içerik ara..."
+              aria-label="Makale ara"
+              className="w-full px-4 py-3 text-sm"
+              style={{
+                background: "var(--color-panel)",
+                border: "1px solid var(--rule-dim)",
+                color: "var(--color-ink)",
+                paddingRight: query ? 48 : undefined,
+              }}
+              autoFocus
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={handleClear}
+                aria-label="Aramayı temizle"
+                className="ara-temizle absolute top-0 right-0 flex h-full w-11 items-center justify-center"
+                style={{ color: "var(--color-muted)" }}
+              >
+                <Icon name="close" size={18} />
+              </button>
+            )}
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -117,6 +151,8 @@ export default function AraClient() {
             &quot;{query}&quot; için {results.length} sonuç bulundu.
           </p>
         )}
+
+        {!searched && !loading && <AramaOnerileri onSec={handleOneri} />}
       </div>
 
       {searched && !error && (

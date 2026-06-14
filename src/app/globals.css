@@ -514,6 +514,24 @@
     }
   }
 
+  /* Arama temizle (×) butonu */
+  .ara-temizle {
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .ara-temizle:hover {
+    color: var(--color-gold);
+  }
+  .ara-temizle:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: -2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ara-temizle {
+      transition: none;
+    }
+  }
+
   .masthead {
     border-bottom: 1px solid var(--rule);
   }
