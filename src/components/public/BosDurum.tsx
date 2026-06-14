@@ -5,11 +5,13 @@ export default function BosDurum({
   aciklama,
   ctaLabel,
   ctaHref,
+  onCta,
 }: {
   baslik: string;
   aciklama?: string;
   ctaLabel?: string;
   ctaHref?: string;
+  onCta?: () => void;
 }) {
   return (
     <div
@@ -50,7 +52,18 @@ export default function BosDurum({
         </p>
       )}
 
-      {ctaLabel && ctaHref && (
+      {ctaLabel && onCta && (
+        <button
+          type="button"
+          onClick={onCta}
+          className="btn-ghost mt-7"
+          style={{ minHeight: 44 }}
+        >
+          {ctaLabel}
+        </button>
+      )}
+
+      {ctaLabel && ctaHref && !onCta && (
         <Link href={ctaHref} className="btn-ghost mt-7" style={{ minHeight: 44 }}>
           {ctaLabel}
         </Link>

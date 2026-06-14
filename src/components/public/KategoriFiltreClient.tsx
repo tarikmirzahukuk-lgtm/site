@@ -3,6 +3,7 @@
 import { useState } from "react";
 import MakaleKart from "@/components/public/MakaleKart";
 import KategoriFiltre from "@/components/public/KategoriFiltre";
+import BosDurum from "@/components/public/BosDurum";
 import { IMakale, IKategori } from "@/types";
 
 export default function KategoriFiltreClient({
@@ -23,10 +24,6 @@ export default function KategoriFiltreClient({
       })
     : makaleler;
 
-  const bosMesaj = aktifKategori
-    ? "Bu kategoride henüz makale bulunmuyor."
-    : "Henüz makale yayınlanmamış.";
-
   return (
     <>
       <div className="mb-8">
@@ -43,8 +40,18 @@ export default function KategoriFiltreClient({
             <MakaleKart key={makale._id} makale={makale} />
           ))}
         </div>
+      ) : aktifKategori ? (
+        <BosDurum
+          baslik="Bu kategoride makale yok"
+          aciklama="Başka bir kategori seçebilir veya tüm makaleleri görüntüleyebilirsiniz."
+          ctaLabel="Tümünü göster"
+          onCta={() => setAktifKategori("")}
+        />
       ) : (
-        <p className="text-gray-text text-sm text-center py-12">{bosMesaj}</p>
+        <BosDurum
+          baslik="Henüz makale yok"
+          aciklama="Yakında ilk makaleler yayımlanacak."
+        />
       )}
     </>
   );
