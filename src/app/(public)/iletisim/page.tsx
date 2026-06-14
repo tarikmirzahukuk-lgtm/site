@@ -30,7 +30,7 @@ export default async function IletisimPage() {
         >
           Bana <span className="italic-gold">ulaşın</span>
         </h1>
-        <div className="gold-rule-sm mx-auto mt-6" />
+        <div className="gold-rule-sm mx-auto mt-6" aria-hidden="true" />
         <p
           className="mx-auto mt-6 max-w-xl text-base leading-relaxed"
           style={{ color: "var(--color-muted)" }}

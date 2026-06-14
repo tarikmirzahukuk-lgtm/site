@@ -72,7 +72,7 @@ export default async function KategoriSayfasi({ params }: Props) {
         >
           {kategori.name}
         </h1>
-        <div className="gold-rule mx-auto mt-5" />
+        <div className="gold-rule mx-auto mt-5" aria-hidden="true" />
         {kategori.description && (
           <p
             className="mt-5 max-w-[560px] mx-auto"

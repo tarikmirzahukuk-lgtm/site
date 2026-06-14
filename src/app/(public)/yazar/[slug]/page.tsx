@@ -186,7 +186,7 @@ export default async function YazarSayfasi({ params }: Props) {
 
       {/* Articles */}
       <div className="mb-6">
-        <div className="gold-rule-sm mb-3" />
+        <div className="gold-rule-sm mb-3" aria-hidden="true" />
         <h2
           className="text-xl font-semibold"
           style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}

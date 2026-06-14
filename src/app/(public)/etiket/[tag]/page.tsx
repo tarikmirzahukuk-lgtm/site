@@ -71,7 +71,7 @@ export default async function EtiketSayfasi({ params }: Props) {
         >
           <span className="italic-gold">#</span>{tag}
         </h1>
-        <div className="gold-rule mx-auto mt-5" />
+        <div className="gold-rule mx-auto mt-5" aria-hidden="true" />
         <p className="mt-5" style={{ color: "var(--color-muted)" }}>
           {makaleler.length} makale
         </p>

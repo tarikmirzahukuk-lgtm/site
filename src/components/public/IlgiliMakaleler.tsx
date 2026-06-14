@@ -17,7 +17,7 @@ export default function IlgiliMakaleler({
       >
         Bunları da okumak ister misiniz?
       </h2>
-      <div className="gold-rule-sm mb-7" />
+      <div className="gold-rule-sm mb-7" aria-hidden="true" />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {makaleler.map((m) => (
           <MakaleKart key={m._id} makale={m} />

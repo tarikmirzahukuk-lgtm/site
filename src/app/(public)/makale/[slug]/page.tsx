@@ -184,7 +184,7 @@ export default async function MakaleDetay({ params }: Props) {
             <span>{makaleObj.readingTime} dk okuma</span>
           </div>
 
-          <div className="gold-rule mx-auto mt-8" />
+          <div className="gold-rule mx-auto mt-8" aria-hidden="true" />
 
           {/* Paylaşım */}
           <div className="flex justify-center mt-6">
@@ -233,7 +233,7 @@ export default async function MakaleDetay({ params }: Props) {
         <section className="max-w-content mx-auto px-6 mt-16">
           <p className="kicker mb-3">Sıkça Sorulan Sorular</p>
           <h2 className="display text-2xl mb-2">Merak Edilenler</h2>
-          <div className="gold-rule-sm mb-7" />
+          <div className="gold-rule-sm mb-7" aria-hidden="true" />
           <div className="space-y-4">
             {makaleObj.faqs.map((faq, idx) => (
               <details

@@ -36,7 +36,7 @@ export default function YazarKarti({ yazar }: { yazar: IKullanici }) {
       </div>
       <div className="flex-1">
         <p className="kicker mb-2">Yazar</p>
-        <div className="gold-rule-sm mb-3" />
+        <div className="gold-rule-sm mb-3" aria-hidden="true" />
         <h3
           className="text-lg font-semibold mb-2"
           style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}

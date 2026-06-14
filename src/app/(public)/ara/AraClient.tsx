@@ -50,7 +50,7 @@ export default function AraClient() {
         >
           Makale <span className="italic-gold">ara</span>
         </h1>
-        <div className="gold-rule-sm mx-auto mt-6" />
+        <div className="gold-rule-sm mx-auto mt-6" aria-hidden="true" />
       </header>
 
       <div className="max-w-2xl mx-auto">
@@ -103,7 +103,7 @@ export default function AraClient() {
         <div className="mt-8">
           {results.length > 0 ? (
             <>
-              <div className="gold-rule mx-auto mb-8" />
+              <div className="gold-rule mx-auto mb-8" aria-hidden="true" />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {results.map((makale) => (
                   <MakaleKart key={makale._id} makale={makale} />

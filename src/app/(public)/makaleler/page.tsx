@@ -52,7 +52,7 @@ export default async function MakalelerSayfasi() {
       >
         Tüm <span className="italic-gold">makaleler.</span>
       </h1>
-      <div className="gold-rule mx-auto mb-8" />
+      <div className="gold-rule mx-auto mb-8" aria-hidden="true" />
       <p
         className="max-w-[640px] mx-auto text-center text-base leading-[1.65] mb-10 md:mb-14"
         style={{ color: "var(--color-muted)" }}
