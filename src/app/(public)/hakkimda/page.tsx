@@ -35,12 +35,17 @@ export default async function HakkimdaPage() {
   return (
     <div className="max-w-content mx-auto px-6 py-16">
       <JsonLdScript data={personJsonLd(hakkimdaYazar)} />
-      <h1
-        className="display text-3xl md:text-4xl mb-8"
-        style={{ fontWeight: 600 }}
-      >
-        {c.hakkimda.title || "Hakkımda"}
-      </h1>
+
+      <header className="text-center mb-10 md:mb-12">
+        <p className="kicker mb-4">Hakkımda</p>
+        <h1
+          className="display-monument"
+          style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)" }}
+        >
+          {c.hakkimda.title || "Hakkımda"}
+        </h1>
+        <div className="gold-rule-sm mx-auto mt-6" aria-hidden="true" />
+      </header>
 
       <div className="flex flex-col md:flex-row gap-8 items-start">
         <div
