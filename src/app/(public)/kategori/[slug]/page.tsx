@@ -5,6 +5,7 @@ import "@/models/Kullanici";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import MakaleKart from "@/components/public/MakaleKart";
+import BosDurum from "@/components/public/BosDurum";
 import Breadcrumb from "@/components/public/Breadcrumb";
 import JsonLdScript from "@/components/public/JsonLdScript";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
@@ -90,9 +91,12 @@ export default async function KategoriSayfasi({ params }: Props) {
           ))}
         </div>
       ) : (
-        <p className="text-center py-12" style={{ color: "var(--color-muted)" }}>
-          Bu kategoride henüz makale bulunmuyor.
-        </p>
+        <BosDurum
+          baslik="Bu kategoride henüz makale yok"
+          aciklama="Bu başlık altında yakında çalışmalar yayımlanacak. Diğer makalelere göz atabilirsiniz."
+          ctaLabel="Tüm makalelere dön"
+          ctaHref="/makaleler"
+        />
       )}
     </div>
   );

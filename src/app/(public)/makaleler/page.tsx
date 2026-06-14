@@ -4,6 +4,7 @@ import Makale from "@/models/Makale";
 import Kategori from "@/models/Kategori";
 import "@/models/Kullanici";
 import KategoriFiltreClient from "@/components/public/KategoriFiltreClient";
+import BosDurum from "@/components/public/BosDurum";
 import { IMakale, IKategori } from "@/types";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { SITE_CONFIG } from "@/lib/site-config";
@@ -62,9 +63,12 @@ export default async function MakalelerSayfasi() {
       </p>
 
       {makaleler.length === 0 ? (
-        <p className="text-center py-16" style={{ color: "var(--color-muted)" }}>
-          Henüz makale yayınlanmamış.
-        </p>
+        <BosDurum
+          baslik="Henüz makale yayınlanmamış"
+          aciklama="Arşiv hazırlanıyor. Yeni çalışmalar yayımlandıkça burada görünecek."
+          ctaLabel="Ana sayfaya dön"
+          ctaHref="/"
+        />
       ) : (
         <KategoriFiltreClient kategoriler={kategoriler} makaleler={makaleler} />
       )}

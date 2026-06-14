@@ -4,6 +4,7 @@ import "@/models/Kullanici";
 import "@/models/Kategori";
 import type { Metadata } from "next";
 import MakaleKart from "@/components/public/MakaleKart";
+import BosDurum from "@/components/public/BosDurum";
 import Breadcrumb from "@/components/public/Breadcrumb";
 import JsonLdScript from "@/components/public/JsonLdScript";
 import { breadcrumbJsonLd } from "@/lib/seo/jsonld";
@@ -84,9 +85,12 @@ export default async function EtiketSayfasi({ params }: Props) {
           ))}
         </div>
       ) : (
-        <p className="text-center py-12" style={{ color: "var(--color-muted)" }}>
-          Bu etikete ait makale yok.
-        </p>
+        <BosDurum
+          baslik="Bu etikete ait makale yok"
+          aciklama="Bu etiketle eşleşen bir çalışma bulunamadı. Tüm makaleleri inceleyebilirsiniz."
+          ctaLabel="Tüm makalelere dön"
+          ctaHref="/makaleler"
+        />
       )}
     </div>
   );
