@@ -372,6 +372,44 @@
     }
   }
 
+  /* Makale içi SSS — ana sayfa akordeon diliyle hizalanmış <details> */
+  .article-faq > summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 44px;
+    transition: color 0.2s;
+  }
+  .article-faq > summary::-webkit-details-marker {
+    display: none;
+  }
+  .article-faq > summary::after {
+    content: "+";
+    flex-shrink: 0;
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    line-height: 1;
+    color: var(--color-gold);
+    transition: transform 0.2s;
+  }
+  .article-faq > summary:hover {
+    color: var(--color-gold);
+  }
+  .article-faq[open] > summary {
+    color: var(--color-gold);
+  }
+  .article-faq[open] > summary::after {
+    content: "−";
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .article-faq > summary,
+    .article-faq > summary::after {
+      transition: none;
+    }
+  }
+
   /* Fix 5 — scroll-triggered reveal */
   .reveal-hidden {
     opacity: 0;

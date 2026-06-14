@@ -4,7 +4,7 @@ import "@/models/Kullanici";
 import "@/models/Kategori";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { formatDate } from "@/lib/utils";
+import { formatDate, toRoman } from "@/lib/utils";
 import IcindekilerTablosu from "@/components/public/IcindekilerTablosu";
 import PaylasimButonlari from "@/components/public/PaylasimButonlari";
 import YazarKarti from "@/components/public/YazarKarti";
@@ -238,7 +238,7 @@ export default async function MakaleDetay({ params }: Props) {
             {makaleObj.faqs.map((faq, idx) => (
               <details
                 key={idx}
-                className="p-4"
+                className="article-faq p-4"
                 style={{
                   background: "var(--color-panel)",
                   border: "1px solid var(--rule-dim)",
@@ -248,7 +248,12 @@ export default async function MakaleDetay({ params }: Props) {
                   className="font-semibold cursor-pointer"
                   style={{ color: "var(--color-ink)" }}
                 >
-                  {faq.question}
+                  <span className="flex items-baseline gap-3.5">
+                    <span className="roman-index shrink-0" aria-hidden="true">
+                      {toRoman(idx + 1)}
+                    </span>
+                    <span>{faq.question}</span>
+                  </span>
                 </summary>
                 <div
                   className="mt-3 leading-relaxed"
