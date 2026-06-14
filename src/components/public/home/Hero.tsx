@@ -61,7 +61,7 @@ export default function Hero({ data }: { data: ISiteContent["hero"] }) {
         <div className="gold-rule-sm mx-auto mb-6 md:mb-8 hero-enter hero-enter-1" aria-hidden="true" />
         <h1
           className="display-monument m-0 hero-enter hero-enter-2"
-          style={{ fontSize: "clamp(44px, 7vw, 84px)" }}
+          style={{ fontSize: "clamp(40px, 5.6vw, 82px)", textWrap: "balance" }}
         >
           {renderAccent(data.heading)}
         </h1>
