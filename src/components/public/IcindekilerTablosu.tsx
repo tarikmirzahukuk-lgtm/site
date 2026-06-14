@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toRoman } from "@/lib/utils";
 
 interface TocItem {
@@ -12,6 +12,9 @@ interface TocItem {
 export default function IcindekilerTablosu({ content }: { content: string }) {
   const [items, setItems] = useState<TocItem[]>([]);
   const [activeId, setActiveId] = useState("");
+  const listRef = useRef<HTMLUListElement>(null);
+  const segRef = useRef<HTMLSpanElement>(null);
+  const liRefs = useRef<Record<string, HTMLLIElement | null>>({});
 
   useEffect(() => {
     const parser = new DOMParser();
@@ -51,12 +54,38 @@ export default function IcindekilerTablosu({ content }: { content: string }) {
     return () => observer.disconnect();
   }, [items]);
 
+  // Aktif <li>'nin offsetTop/height'ından kayan altın segmenti konumla.
+  // Yalnız transform/height yazar; reduce'da CSS geçişi kapalı (anında kayar).
+  useEffect(() => {
+    const seg = segRef.current;
+    const list = listRef.current;
+    if (!seg || !list) return;
+
+    const place = () => {
+      const li = activeId ? liRefs.current[activeId] : null;
+      if (!li) {
+        seg.classList.remove("toc-seg-active");
+        return;
+      }
+      seg.style.transform = `translateY(${li.offsetTop}px)`;
+      seg.style.height = `${li.offsetHeight}px`;
+      seg.classList.add("toc-seg-active");
+    };
+
+    place();
+    window.addEventListener("resize", place, { passive: true });
+    return () => window.removeEventListener("resize", place);
+  }, [activeId, items]);
+
   if (items.length === 0) return null;
 
   return (
     <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
       <p className="kicker mb-4">İçindekiler</p>
+      <div className="toc-rail">
+        <span ref={segRef} className="toc-seg" aria-hidden="true" />
       <ul
+        ref={listRef}
         className="space-y-3 pl-5"
         style={{ borderLeft: "1px solid var(--rule-dim)" }}
       >
@@ -65,6 +94,9 @@ export default function IcindekilerTablosu({ content }: { content: string }) {
           return (
             <li
               key={item.id}
+              ref={(el) => {
+                liRefs.current[item.id] = el;
+              }}
               className={`flex gap-3 items-baseline ${item.level === 3 ? "pl-3" : ""}`}
             >
               <span
@@ -89,6 +121,7 @@ export default function IcindekilerTablosu({ content }: { content: string }) {
           );
         })}
       </ul>
+      </div>
     </aside>
   );
 }

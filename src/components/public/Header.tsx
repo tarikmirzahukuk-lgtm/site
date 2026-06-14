@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import Icon from "@/components/public/icons/Icon";
+import ScrollProgress from "@/components/public/ScrollProgress";
 import type { INavLink } from "@/types";
 
 export default function Header({
@@ -16,18 +17,42 @@ export default function Header({
   tagline: string;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
+  // Makale okuma sayfasında header altı ilerleme hattı göster (uzun okuma için).
+  const isReading = /^\/makale\/[^/]+/.test(pathname);
+
+  // Scroll ile yumuşak yoğunlaşma — sayfa başına yerleştirilen sentinel görünmez
+  // olunca .header-scrolled açılır. Salt sınıf değişimi; scroll listener yok.
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel || typeof IntersectionObserver === "undefined") return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setScrolled(!entry.isIntersecting),
+      { rootMargin: "0px", threshold: 0 }
+    );
+    obs.observe(sentinel);
+    return () => obs.disconnect();
+  }, []);
+
   return (
-    <header className="sticky top-0 z-30 backdrop-blur-md border-b" style={{ background: "rgba(11,15,20,0.94)", borderColor: "var(--rule-dim)" }}>
-      <div className="masthead max-w-7xl mx-auto px-5 md:px-10 flex items-center justify-between py-4 md:py-5">
+    <>
+      {/* Yoğunlaşma sentinel'i — sayfanın en üstünde sıfır-yükseklikli işaret. */}
+      <div ref={sentinelRef} aria-hidden="true" style={{ position: "absolute", top: 0, height: 1, width: 1, pointerEvents: "none" }} />
+      <header
+        className={`header-densify sticky top-0 z-30 backdrop-blur-md border-b ${scrolled ? "header-scrolled" : ""}`}
+        style={{ background: "rgba(11,15,20,0.94)", borderColor: "var(--rule-dim)" }}
+      >
+      <div className="masthead-row masthead max-w-7xl mx-auto px-5 md:px-10 flex items-center justify-between py-4 md:py-5">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-3 plink">
           <span
-            className="w-9 h-9 md:w-[38px] md:h-[38px] flex items-center justify-center text-[18px] md:text-[22px] font-medium italic"
+            className="monogram-seal w-9 h-9 md:w-[38px] md:h-[38px] flex items-center justify-center text-[18px] md:text-[22px] font-medium italic"
             style={{
               border: "1px solid var(--color-gold)",
               color: "var(--color-gold)",
@@ -58,11 +83,10 @@ export default function Header({
                 key={link.href}
                 href={link.href}
                 aria-current={active ? "page" : undefined}
-                className="text-[13.5px] tracking-[0.02em] plink relative pb-1"
+                className={`text-[13.5px] tracking-[0.02em] plink relative pb-1 ${active ? "plink-active" : ""}`}
                 style={{
                   fontWeight: active ? 600 : 400,
                   color: active ? "var(--color-gold)" : "var(--color-ink)",
-                  boxShadow: active ? "inset 0 -2px 0 0 var(--color-gold)" : "none",
                 }}
               >
                 {link.label}
@@ -77,7 +101,9 @@ export default function Header({
             href="/iletisim"
             className="cta-gold hidden md:inline-flex"
           >
-            <Icon name="phone" size={16} color="#0a0d11" />
+            <span className="icon-nudge">
+              <Icon name="phone" size={16} color="#0a0d11" />
+            </span>
             İletişim
           </Link>
           <button
@@ -127,6 +153,10 @@ export default function Header({
           </Link>
         </div>
       )}
+
+      {/* Makale okuma sayfası — header altı altın ilerleme hattı (uzun okuma için) */}
+      {isReading && <ScrollProgress />}
     </header>
+    </>
   );
 }

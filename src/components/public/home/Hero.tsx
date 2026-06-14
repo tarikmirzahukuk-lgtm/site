@@ -113,7 +113,9 @@ export default function Hero({ data }: { data: ISiteContent["hero"] }) {
           <div className="mt-8 md:mt-11 flex flex-wrap justify-center gap-3.5 hero-enter hero-enter-4">
             <Link href={data.primaryCta.href} className="btn-primary">
               {data.primaryCta.label}
-              <Icon name="chevron" size={14} color="#0a0d11" />
+              <span className="icon-nudge">
+                <Icon name="chevron" size={14} color="#0a0d11" />
+              </span>
             </Link>
             <Link href={data.secondaryCta.href} className="btn-ghost">
               {data.secondaryCta.label}

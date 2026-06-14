@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { IMakale, IKategori } from "@/types";
+import MakaleKartTilt from "@/components/public/MakaleKartTilt";
 
 export default function MakaleKart({ makale }: { makale: IMakale }) {
   const kategori =
@@ -9,7 +10,8 @@ export default function MakaleKart({ makale }: { makale: IMakale }) {
       : null;
 
   return (
-    <Link href={`/makale/${makale.slug}`} className="group block no-underline">
+    <Link href={`/makale/${makale.slug}`} className="group block no-underline h-full">
+      <MakaleKartTilt className="h-full">
       <article className="tablet-card relative overflow-hidden h-full flex flex-col">
         <span className="roman-watermark" aria-hidden="true">
           §
@@ -21,7 +23,7 @@ export default function MakaleKart({ makale }: { makale: IMakale }) {
               alt={makale.title}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover group-hover:scale-105 transition-transform duration-300"
+              className="object-cover group-hover:scale-105 transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
           </div>
         ) : (
@@ -43,6 +45,7 @@ export default function MakaleKart({ makale }: { makale: IMakale }) {
           </p>
         </div>
       </article>
+      </MakaleKartTilt>
     </Link>
   );
 }

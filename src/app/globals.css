@@ -27,7 +27,14 @@
  *   .connector-draw     Process yatay konnektör — scaleX 0→1, origin left (--i)
  *   .node-set           Process Roma düğümü oturması — scale+opacity (--i, gecikmeli)
  *   .faq-morph          Faq artı/eksi salt-CSS morph ikonu (data-open ile)
- * Bu sınıfları kullanan client yardımcıları: ScrollProgress.tsx, CountUp.tsx
+ * Aşama 4 (site-geneli mikro-etkileşim):
+ *   .card-tilt          MakaleKart pointer eğimi (--rx/--ry derece, maks ~5deg)
+ *   .icon-nudge         buton ikonu hover'da ~3px sağa kayar (.btn-primary/.cta-gold içinde)
+ *   .header-densify / .header-scrolled  scroll ile yumuşak yoğunlaşma
+ *   .monogram-seal      T-monogram ilk-yük 'mühür' canlanması
+ *   .toc-rail / .toc-seg  İçindekiler kayan altın aktif segment (JS translateY+height)
+ * Bu sınıfları kullanan client yardımcıları: ScrollProgress.tsx, CountUp.tsx,
+ *   MakaleKartTilt.tsx (Aşama 4)
  * ============================================================================= */
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -306,6 +313,10 @@
   }
   .plink:hover::after,
   .plink:focus-visible::after {
+    transform: scaleX(1);
+  }
+  /* Kalıcı aktif alt-çizgi — nav 'morph' (scaleX 1) hover ile aynı dilde. */
+  .plink-active::after {
     transform: scaleX(1);
   }
   @media (prefers-reduced-motion: reduce) {
@@ -941,6 +952,97 @@
     to { opacity: 1; transform: scale(1); }
   }
 
+  /* ===========================================================================
+   * AŞAMA 4 — SİTE-GENELİ MİKRO-ETKİLEŞİM
+   * Hover/scroll/odak tetiklemeli küçük jestler. Hepsi yalnız transform/opacity
+   * kullanır; reduced-motion'da no-op'a düşer (en alttaki reduce bloğu).
+   *   .card-tilt        kart pointer eğimi (--rx/--ry derece) + hover yükselişi
+   *   .icon-nudge       buton ikonunun hover'da ~3px sağa kayması (parent: .group-btn)
+   *   .header-scrolled  scroll ile yumuşak yoğunlaşma (padding/blur/altın kenar)
+   *   .monogram-seal    T-monogram kutusunun ilk-yük 'mühür' canlanması
+   *   .toc-seg          İçindekiler sol dikey çizgide kayan altın aktif segment
+   * ========================================================================= */
+
+  /* --- MakaleKart: pointer eğimi (tilt) + hover derinliği ---
+     JS (.card-tilt sarmalayıcı) --rx/--ry'yi derece olarak yazar (maks ~5deg).
+     Touch/coarse pointer + reduce'da hiç bağlanmaz; o durumda transform:none. */
+  .card-tilt {
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  /* --- Birincil buton ikon kayması + altın 'ısınma' (saf CSS) ---
+     .icon-nudge bir .btn-primary / .cta-gold içindeki ikon/chevron sarmalayıcısına
+     eklenir; buton hover/odakta ~3px sağa kayar. */
+  .icon-nudge {
+    display: inline-flex;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .btn-primary:hover .icon-nudge,
+  .btn-primary:focus-visible .icon-nudge,
+  .cta-gold:hover .icon-nudge,
+  .cta-gold:focus-visible .icon-nudge {
+    transform: translateX(3px);
+  }
+  /* Çok hafif altın 'ısınma' — kademeli parlama (renk sıçraması zaten var). */
+  .btn-primary,
+  .cta-gold {
+    transition: background 0.28s ease, box-shadow 0.28s ease, transform 0.18s ease;
+  }
+
+  /* --- Header: scroll ile yumuşak yoğunlaşma --- */
+  .header-densify {
+    transition: padding 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      background 0.32s ease, box-shadow 0.32s ease, border-color 0.32s ease;
+  }
+  .header-densify.header-scrolled {
+    box-shadow: 0 1px 0 0 var(--rule), 0 14px 34px rgba(0, 0, 0, 0.32);
+    background: rgba(11, 15, 20, 0.98);
+  }
+  .header-densify.header-scrolled .masthead-row {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+  .masthead-row {
+    transition: padding 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* --- T-monogram 'mühür' canlanması (ilk yük) --- */
+  .monogram-seal {
+    animation: monogram-seal 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes monogram-seal {
+    0%   { opacity: 0; transform: scale(0.82) rotate(-4deg); }
+    60%  { opacity: 1; transform: scale(1.04) rotate(0.5deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+
+  /* --- İçindekiler: kayan altın aktif segment ---
+     Sol dikey çizgi üzerinde absolute bir altın segment; aktif <li>'nin
+     offsetTop/height'ından JS translateY + height set eder. */
+  .toc-rail {
+    position: relative;
+  }
+  .toc-seg {
+    position: absolute;
+    left: -1px;
+    top: 0;
+    width: 2px;
+    height: 0;
+    background: var(--color-gold);
+    transform: translateY(0);
+    opacity: 0;
+    transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .toc-seg-active {
+    opacity: 1;
+  }
+
   /* --- Faq: artı/eksi CSS morph ikonu (Icon yerine salt CSS pseudo) --- */
   /* İki çubuk: yatay sabit, dikey açıkken yatar (rotate 90→0 + opacity). */
   .faq-morph {
@@ -1041,6 +1143,37 @@
     /* Eksi durumu reduce'da da doğru kalsın (dikey çubuk açıkken gizli) */
     .faq-morph[data-open="true"]::after {
       opacity: 0;
+    }
+    /* Aşama 4 — site-geneli mikro-etkileşim: tümü no-op, nihai görünür durum */
+    .card-tilt {
+      transform: none;
+      transition: none;
+      will-change: auto;
+    }
+    .icon-nudge,
+    .btn-primary,
+    .cta-gold {
+      transition: none;
+    }
+    .btn-primary:hover .icon-nudge,
+    .btn-primary:focus-visible .icon-nudge,
+    .cta-gold:hover .icon-nudge,
+    .cta-gold:focus-visible .icon-nudge {
+      transform: none;
+    }
+    .header-densify,
+    .header-densify.header-scrolled,
+    .masthead-row,
+    .header-densify.header-scrolled .masthead-row {
+      transition: none;
+    }
+    .monogram-seal {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+    .toc-seg {
+      transition: none;
     }
   }
 }
