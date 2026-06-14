@@ -384,7 +384,7 @@
     pointer-events: none;
   }
 
-  .dropcap > p:first-of-type::first-letter {
+  .dropcap > p:first-child::first-letter {
     float: left;
     font-family: var(--font-display);
     font-size: 3.4em;
