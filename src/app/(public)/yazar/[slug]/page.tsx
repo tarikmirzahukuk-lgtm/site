@@ -125,8 +125,8 @@ export default async function YazarSayfasi({ params }: Props) {
         </div>
         <div className="flex-1">
           <h1
-            className="display text-3xl md:text-4xl mb-2"
-            style={{ fontWeight: 600 }}
+            className="display-monument text-left"
+            style={{ fontSize: "clamp(30px, 5vw, 48px)", marginBottom: "0.5rem" }}
           >
             {yazarObj.name}
           </h1>
@@ -185,12 +185,15 @@ export default async function YazarSayfasi({ params }: Props) {
       </div>
 
       {/* Articles */}
-      <h2
-        className="text-xl font-semibold mb-6"
-        style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
-      >
-        {yazarObj.name} tarafından yazılmış makaleler ({makaleler.length})
-      </h2>
+      <div className="mb-6">
+        <div className="gold-rule-sm mb-3" />
+        <h2
+          className="text-xl font-semibold"
+          style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
+        >
+          {yazarObj.name} tarafından yazılmış makaleler ({makaleler.length})
+        </h2>
+      </div>
 
       {makaleler.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

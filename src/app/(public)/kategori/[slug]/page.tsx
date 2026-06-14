@@ -64,13 +64,22 @@ export default async function KategoriSayfasi({ params }: Props) {
 
       <Breadcrumb items={breadcrumbItems} />
 
-      <div className="mb-10">
-        <p className="kicker mb-2">KATEGORİ</p>
-        <h1 className="display text-3xl md:text-4xl" style={{ fontWeight: 600 }}>
+      <div className="mb-10 text-center">
+        <p className="kicker mb-3">KATEGORİ</p>
+        <h1
+          className="display-monument"
+          style={{ fontSize: "clamp(30px, 5vw, 52px)" }}
+        >
           {kategori.name}
         </h1>
+        <div className="gold-rule mx-auto mt-5" />
         {kategori.description && (
-          <p className="mt-2" style={{ color: "var(--color-muted)" }}>{kategori.description}</p>
+          <p
+            className="mt-5 max-w-[560px] mx-auto"
+            style={{ color: "var(--color-muted)" }}
+          >
+            {kategori.description}
+          </p>
         )}
       </div>
 

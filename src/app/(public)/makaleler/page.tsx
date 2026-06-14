@@ -45,12 +45,16 @@ export default async function MakalelerSayfasi() {
 
   return (
     <section className="max-w-7xl mx-auto px-5 md:px-16 py-16 md:py-24">
-      <div className="kicker mb-3.5">Arşiv</div>
-      <h1 className="display m-0 mb-3" style={{ fontSize: "clamp(32px, 5vw, 56px)" }}>
+      <div className="kicker mb-3.5 text-center">Arşiv</div>
+      <h1
+        className="display-monument m-0 mb-5"
+        style={{ fontSize: "clamp(36px, 6vw, 64px)" }}
+      >
         Tüm <span className="italic-gold">makaleler.</span>
       </h1>
+      <div className="gold-rule mx-auto mb-8" />
       <p
-        className="max-w-[640px] text-base leading-[1.65] mb-10 md:mb-14"
+        className="max-w-[640px] mx-auto text-center text-base leading-[1.65] mb-10 md:mb-14"
         style={{ color: "var(--color-muted)" }}
       >
         {makaleler.length} yayımlanmış makale. Kategoriye göre filtreleyin veya
