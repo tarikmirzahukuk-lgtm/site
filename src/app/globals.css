@@ -653,6 +653,84 @@
     border-right: 1px solid rgba(212, 175, 55, 0.08);
   }
 
+  /* ===========================================================================
+   * HERO giriş koreografisi (Aşama 2)
+   * Hero ekranın üstündedir; scroll yerine mount'ta HeroMotion `.reveal-visible`
+   * ekler. Foundation primitifleri (.draw-on/.col-rise/.rule-draw-center/
+   * .line-rise/.accent-in/.stagger-item) o anda bir kez çalışır. Aşağıdakiler
+   * yalnız Hero'ya özel ek davranışlardır (SVG transform-box, kilit-taşı oturması,
+   * gecikmeli nefes, imleç-paralaks derinliği). reduce → hepsi no-op.
+   * ========================================================================= */
+
+  /* SVG primitifleri için transform referansı: scaleY/scaleX viewBox'a göre. */
+  .arch-motif .col-rise {
+    transform-box: view-box;
+  }
+
+  /* Kilit taşı (keystone) — kemer çizildikten sonra gecikmeli opacity oturması. */
+  .arch-keystone {
+    opacity: 0;
+  }
+  .reveal-visible .arch-keystone {
+    animation: keystone-set 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation-delay: 1.15s;
+  }
+  @keyframes keystone-set {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 0.22; transform: translateY(0); }
+  }
+  .arch-keystone {
+    transform-box: view-box;
+    transform-origin: 720px 73px;
+  }
+
+  /* Kemer nefesi — yalnız giriş tamamlandıktan sonra başlar (draw-on ~1.4s). */
+  .arch-motif.breathe {
+    animation: none;
+  }
+  .reveal-visible .arch-motif.breathe {
+    animation: hero-breathe 8s ease-in-out 1.8s infinite;
+  }
+  @keyframes hero-breathe {
+    0%, 100% { opacity: 0.82; }
+    50%      { opacity: 1; }
+  }
+
+  /* İmleç-paralaks derinliği — HeroMotion `--mx`/`--my` (-0.5..0.5) yazar.
+     Katmanlar minik translate ile derinlik hissi verir (maks ~6px). SVG <g>
+     için transform-box gerekir. Yalnız fine-pointer + no-reduce'da bağlanır. */
+  .arch-depth-far,
+  .arch-depth-near {
+    transform-box: view-box;
+    transform-origin: center center;
+    transition: transform 0.25s ease-out;
+  }
+  .arch-depth-far {
+    transform: translate(calc(var(--mx, 0) * 8px), calc(var(--my, 0) * 6px));
+  }
+  .arch-depth-near {
+    transform: translate(calc(var(--mx, 0) * -12px), calc(var(--my, 0) * -8px));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-visible .arch-keystone,
+    .arch-keystone {
+      opacity: 0.22;
+      transform: none;
+      animation: none;
+    }
+    .arch-motif.breathe,
+    .reveal-visible .arch-motif.breathe {
+      animation: none;
+      opacity: 1;
+    }
+    .arch-depth-far,
+    .arch-depth-near {
+      transform: none;
+      transition: none;
+    }
+  }
+
   /* ===== İskelet / yükleniyor yardımcıları ===== */
   @keyframes shimmer {
     0%   { background-position: -200% 0; }
