@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toRoman } from "@/lib/utils";
 
 interface TocItem {
   id: string;
@@ -54,28 +55,40 @@ export default function IcindekilerTablosu({ content }: { content: string }) {
 
   return (
     <aside className="hidden lg:block w-64 flex-shrink-0 sticky top-24 self-start">
-      <div className="pcard p-5">
-        <p className="kicker mb-3">İçindekiler</p>
-        <ul className="space-y-2">
-          {items.map((item) => (
-            <li key={item.id} className={item.level === 3 ? "pl-3" : ""}>
+      <p className="kicker mb-4">İçindekiler</p>
+      <ul
+        className="space-y-3 pl-5"
+        style={{ borderLeft: "1px solid var(--rule-dim)" }}
+      >
+        {items.map((item, idx) => {
+          const isActive = activeId === item.id;
+          return (
+            <li
+              key={item.id}
+              className={`flex gap-3 items-baseline ${item.level === 3 ? "pl-3" : ""}`}
+            >
+              <span
+                className="roman-index text-[0.7rem] flex-shrink-0 leading-snug"
+                aria-hidden="true"
+                style={{ opacity: isActive ? 1 : 0.5 }}
+              >
+                {toRoman(idx + 1)}
+              </span>
               <a
                 href={`#${item.id}`}
-                className="text-xs leading-snug transition-colors block"
+                className="text-xs leading-snug transition-colors block focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-gold)]"
+                aria-current={isActive ? "true" : undefined}
                 style={{
-                  color:
-                    activeId === item.id
-                      ? "var(--color-gold)"
-                      : "var(--color-muted)",
-                  fontWeight: activeId === item.id ? 600 : 400,
+                  color: isActive ? "var(--color-gold)" : "var(--color-muted)",
+                  fontWeight: isActive ? 600 : 400,
                 }}
               >
                 {item.text}
               </a>
             </li>
-          ))}
-        </ul>
-      </div>
+          );
+        })}
+      </ul>
     </aside>
   );
 }
