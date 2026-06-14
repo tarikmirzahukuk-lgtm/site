@@ -19,6 +19,7 @@ export default function Footer({
         <div className="grid grid-cols-1 md:grid-cols-[1.5fr_1fr_1fr_1fr] gap-9 md:gap-12">
           {/* Brand */}
           <div>
+            <div className="gold-rule-sm mb-5" aria-hidden="true" />
             <div className="flex items-center gap-3">
               <span
                 className="w-[38px] h-[38px] flex items-center justify-center text-[22px] font-medium italic"
@@ -61,7 +62,8 @@ export default function Footer({
 
           {/* Menu */}
           <div>
-            <div className="kicker mb-[18px]">Menü</div>
+            <div className="kicker mb-3">Menü</div>
+            <div className="gold-rule-sm mb-[18px]" aria-hidden="true" />
             <ul className="space-y-1.5 text-[13.5px]" style={{ color: "var(--color-ink)" }}>
               {nav.map((n) => (
                 <li key={n.href}>
@@ -80,7 +82,8 @@ export default function Footer({
 
           {/* Contact */}
           <div>
-            <div className="kicker mb-[18px]">İletişim</div>
+            <div className="kicker mb-3">İletişim</div>
+            <div className="gold-rule-sm mb-[18px]" aria-hidden="true" />
             <ul className="space-y-2.5 text-[13.5px] leading-[1.8]" style={{ color: "var(--color-body)" }}>
               <li className="flex gap-2.5">
                 <Icon name="pillar" size={16} color="var(--color-gold)" />
@@ -105,7 +108,8 @@ export default function Footer({
 
           {/* Legal */}
           <div>
-            <div className="kicker mb-[18px]">Hukuki</div>
+            <div className="kicker mb-3">Hukuki</div>
+            <div className="gold-rule-sm mb-[18px]" aria-hidden="true" />
             <ul className="space-y-1.5 text-[13.5px]" style={{ color: "var(--color-muted)" }}>
               <li>
                 <Link href="#" className="plink" style={{ color: "var(--color-muted)" }}>
@@ -131,12 +135,13 @@ export default function Footer({
           </div>
         </div>
 
+        <div className="gold-rule mx-auto mt-12" aria-hidden="true" />
         <div
-          className="mt-12 pt-6 border-t flex flex-col md:flex-row justify-between gap-3 text-[11.5px] tracking-[0.04em]"
-          style={{ borderColor: "var(--rule-dim)", color: "var(--color-muted-dim)" }}
+          className="mt-6 flex flex-col md:flex-row justify-between gap-3 text-[11.5px] tracking-[0.04em]"
+          style={{ color: "var(--color-muted-dim)" }}
         >
           <span>© {new Date().getFullYear()} {brand} · Tüm hakları saklıdır.</span>
-          <span>Akademik blog · Hukuki tavsiye değildir</span>
+          <span style={{ fontFamily: "var(--font-display)" }} className="italic">Akademik blog · Hukuki tavsiye değildir</span>
         </div>
       </div>
     </footer>
