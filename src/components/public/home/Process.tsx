@@ -1,5 +1,6 @@
 import type { ISiteContent } from "@/types";
 import { renderAccent } from "@/lib/render-accent";
+import { toRoman } from "@/lib/utils";
 
 export default function Process({ data }: { data: ISiteContent["process"] }) {
   return (
@@ -11,12 +12,16 @@ export default function Process({ data }: { data: ISiteContent["process"] }) {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-10 md:mb-16">
           {data.kicker && <div className="kicker mb-3.5">{data.kicker}</div>}
-          <h2 className="display m-0" style={{ fontSize: "clamp(30px, 4.5vw, 46px)" }}>
+          <h2
+            className="display-monument m-0 mx-auto"
+            style={{ fontSize: "clamp(30px, 4.5vw, 46px)" }}
+          >
             {renderAccent(data.heading)}
           </h2>
+          <div className="gold-rule-sm mx-auto mt-6" aria-hidden="true" />
           {data.intro && (
             <p
-              className="max-w-[540px] mx-auto mt-4 text-[15px] leading-[1.65]"
+              className="max-w-[540px] mx-auto mt-6 text-[15px] leading-[1.65]"
               style={{ color: "var(--color-muted)" }}
             >
               {data.intro}
@@ -41,17 +46,15 @@ export default function Process({ data }: { data: ISiteContent["process"] }) {
               style={i > 0 ? { borderColor: "var(--rule-dim)" } : {}}
             >
               <div
-                className="w-16 h-16 flex items-center justify-center relative z-10 italic flex-shrink-0 md:mb-5"
+                className="roman-index w-16 h-16 flex items-center justify-center relative z-10 italic flex-shrink-0 md:mb-5"
                 style={{
                   background: "var(--color-bg)",
                   border: "1px solid var(--color-gold)",
-                  color: "var(--color-gold)",
-                  fontFamily: "var(--font-display)",
                   fontSize: 24,
                   fontWeight: 500,
                 }}
               >
-                {s.number}
+                {toRoman(i + 1)}
               </div>
               <div>
                 <div
