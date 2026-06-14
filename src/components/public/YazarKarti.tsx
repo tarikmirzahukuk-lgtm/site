@@ -4,9 +4,7 @@ import { IKullanici } from "@/types";
 
 export default function YazarKarti({ yazar }: { yazar: IKullanici }) {
   return (
-    <div
-      className="pcard p-6 md:p-7 mt-10 flex gap-5 items-start"
-    >
+    <div className="tablet-card p-6 md:p-7 mt-10 flex gap-5 items-start">
       <div
         className="w-16 h-16 flex-shrink-0 flex items-center justify-center overflow-hidden relative"
         style={{
@@ -37,7 +35,8 @@ export default function YazarKarti({ yazar }: { yazar: IKullanici }) {
         )}
       </div>
       <div className="flex-1">
-        <p className="kicker mb-1">Yazar</p>
+        <p className="kicker mb-2">Yazar</p>
+        <div className="gold-rule-sm mb-3" />
         <h3
           className="text-lg font-semibold mb-2"
           style={{ fontFamily: "var(--font-display)", color: "var(--color-ink)" }}
@@ -52,7 +51,7 @@ export default function YazarKarti({ yazar }: { yazar: IKullanici }) {
         {yazar.slug && (
           <Link
             href={`/yazar/${yazar.slug}`}
-            className="inline-block mt-3 text-xs uppercase tracking-[0.14em] font-semibold transition-colors"
+            className="inline-block mt-3 text-xs uppercase tracking-[0.14em] font-semibold transition-colors hover:text-[var(--color-gold)]"
             style={{ color: "var(--color-gold)" }}
           >
             Yazarın diğer makaleleri →

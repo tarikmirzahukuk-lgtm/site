@@ -11,7 +11,7 @@ export default function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="text-xs mb-6 flex items-center gap-2 flex-wrap"
+      className="text-xs mb-6 flex items-center gap-2 flex-wrap tracking-[0.04em]"
       style={{ color: "var(--color-muted)" }}
     >
       {items.map((item, idx) => (
@@ -29,7 +29,9 @@ export default function Breadcrumb({ items }: { items: BreadcrumbItem[] }) {
             </span>
           )}
           {idx < items.length - 1 && (
-            <span style={{ color: "var(--color-muted-dim)" }}>/</span>
+            <span aria-hidden="true" style={{ color: "var(--color-gold)", opacity: 0.6 }}>
+              ›
+            </span>
           )}
         </span>
       ))}

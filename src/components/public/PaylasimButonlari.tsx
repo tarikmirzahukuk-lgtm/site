@@ -31,32 +31,46 @@ export default function PaylasimButonlari({
   };
 
   return (
-    <div className="flex gap-2">
-      <a
-        href={twitterUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Twitter'da paylaş"
-        className="icon-btn"
+    <div className="flex items-center gap-3">
+      <span
+        className="eyebrow hidden sm:inline"
+        style={{ color: "var(--color-muted)" }}
+        aria-hidden="true"
       >
-        X
-      </a>
-      <a
-        href={linkedinUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="LinkedIn'de paylaş"
-        className="icon-btn"
-      >
-        in
-      </a>
-      <button
-        onClick={handleCopy}
-        aria-label="Linki kopyala"
-        className="icon-btn"
-      >
-        {copied ? "✓" : "⎘"}
-      </button>
+        Paylaş
+      </span>
+      <span
+        className="hidden sm:block w-6 h-px"
+        style={{ background: "var(--color-gold)" }}
+        aria-hidden="true"
+      />
+      <div className="flex gap-2">
+        <a
+          href={twitterUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Twitter'da paylaş"
+          className="icon-btn"
+        >
+          X
+        </a>
+        <a
+          href={linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="LinkedIn'de paylaş"
+          className="icon-btn"
+        >
+          in
+        </a>
+        <button
+          onClick={handleCopy}
+          aria-label="Linki kopyala"
+          className="icon-btn"
+        >
+          {copied ? "✓" : "⎘"}
+        </button>
+      </div>
     </div>
   );
 }
