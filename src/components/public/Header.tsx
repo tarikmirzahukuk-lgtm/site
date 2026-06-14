@@ -53,13 +53,13 @@ export default function Header({
         {/* Brand */}
         <Link href="/" className="flex items-center gap-3 plink">
           <Image
-            src="/mirza-amblem.png"
+            src="/mirza-logo-header.png"
             alt={brand}
-            width={48}
-            height={48}
+            width={177}
+            height={200}
             priority
             unoptimized
-            className="monogram-seal w-10 h-10 md:w-[46px] md:h-[46px] object-contain shrink-0"
+            className="monogram-seal h-12 md:h-14 w-auto object-contain shrink-0"
           />
           <span className="flex flex-col leading-tight min-w-0">
             <span

@@ -93,11 +93,11 @@ export default function Hero({ data }: { data: ISiteContent["hero"] }) {
             inset: 0,
             zIndex: 0,
             pointerEvents: "none",
-            backgroundImage: "url('/mirza-amblem-bg.png')",
+            backgroundImage: "url('/mirza-logo-bg.png')",
             backgroundRepeat: "no-repeat",
             backgroundPosition: "center 30%",
-            backgroundSize: "min(600px, 76%)",
-            opacity: 0.08,
+            backgroundSize: "min(440px, 62%)",
+            opacity: 0.09,
           }}
         />
         <div className="relative z-10 max-w-4xl mx-auto text-center">
