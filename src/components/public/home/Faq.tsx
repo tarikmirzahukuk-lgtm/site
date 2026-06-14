@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Icon from "@/components/public/icons/Icon";
 import type { ISiteContent } from "@/types";
 import { renderAccent } from "@/lib/render-accent";
 import { toRoman } from "@/lib/utils";
@@ -14,11 +13,22 @@ export default function Faq({ data }: { data: ISiteContent["faq"] }) {
     <section id="sss" className="px-5 md:px-16 py-16 md:py-[110px]">
       <div className="max-w-[880px] mx-auto">
         <div className="text-center mb-9 md:mb-12">
-          {data.kicker && <div className="kicker mb-3.5">{data.kicker}</div>}
-          <h2 className="display-monument m-0" style={{ fontSize: "clamp(30px, 4.5vw, 46px)" }}>
+          {data.kicker && (
+            <div className="kicker mb-3.5 stagger-item" style={{ ["--i" as string]: 0 }}>
+              {data.kicker}
+            </div>
+          )}
+          <h2
+            className="display-monument m-0 stagger-item"
+            style={{ fontSize: "clamp(30px, 4.5vw, 46px)", ["--i" as string]: 0 }}
+          >
             {renderAccent(data.heading)}
           </h2>
-          <div className="gold-rule mx-auto mt-6" aria-hidden="true" />
+          <div
+            className="gold-rule mx-auto mt-6 rule-draw-center"
+            style={{ ["--i" as string]: 1 }}
+            aria-hidden="true"
+          />
         </div>
         <div
           className="flex flex-col border-t"
@@ -29,8 +39,8 @@ export default function Faq({ data }: { data: ISiteContent["faq"] }) {
             return (
               <div
                 key={i}
-                className="border-b"
-                style={{ borderColor: "var(--rule)" }}
+                className="border-b stagger-item"
+                style={{ borderColor: "var(--rule)", ["--i" as string]: i + 1 }}
               >
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
@@ -50,13 +60,11 @@ export default function Faq({ data }: { data: ISiteContent["faq"] }) {
                     </span>
                     <span>{f.question}</span>
                   </span>
-                  <span className={`shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}>
-                    <Icon
-                      name={isOpen ? "minus" : "plus"}
-                      size={18}
-                      color="var(--color-gold)"
-                    />
-                  </span>
+                  <span
+                    className="faq-morph"
+                    data-open={isOpen}
+                    aria-hidden="true"
+                  />
                 </button>
                 <div
                   id={`faq-panel-${i}`}
