@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Icon from "@/components/public/icons/Icon";
 import { SITE_URL } from "@/lib/site-config";
 
 export default function PaylasimButonlari({
@@ -52,7 +53,7 @@ export default function PaylasimButonlari({
           aria-label="Twitter'da paylaş"
           className="icon-btn"
         >
-          X
+          <Icon name="twitter" size={17} />
         </a>
         <a
           href={linkedinUrl}
@@ -61,16 +62,19 @@ export default function PaylasimButonlari({
           aria-label="LinkedIn'de paylaş"
           className="icon-btn"
         >
-          in
+          <Icon name="linkedin" size={17} />
         </a>
         <button
           onClick={handleCopy}
-          aria-label="Linki kopyala"
+          aria-label={copied ? "Bağlantı kopyalandı" : "Linki kopyala"}
           className="icon-btn"
         >
-          {copied ? "✓" : "⎘"}
+          <Icon name={copied ? "check" : "link"} size={17} />
         </button>
       </div>
+      <span className="sr-only" aria-live="polite">
+        {copied ? "Bağlantı kopyalandı" : ""}
+      </span>
     </div>
   );
 }
