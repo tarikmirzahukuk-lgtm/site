@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
 import MakaleKart from "@/components/public/MakaleKart";
+import BosDurum from "@/components/public/BosDurum";
 import Breadcrumb from "@/components/public/Breadcrumb";
 import JsonLdScript from "@/components/public/JsonLdScript";
 import { personJsonLd, breadcrumbJsonLd } from "@/lib/seo/jsonld";
@@ -66,8 +67,13 @@ export default async function YazarSayfasi({ params }: Props) {
   if (data === null) notFound();
   if (data === "error") {
     return (
-      <div className="max-w-5xl mx-auto px-6 py-12">
-        <p className="text-red-700 text-center">Yazar bilgileri yüklenemedi.</p>
+      <div className="max-w-content mx-auto px-6 py-20 md:py-28">
+        <BosDurum
+          baslik="Yazar bilgileri yüklenemedi"
+          aciklama="Bu yazarın profili şu anda görüntülenemiyor. Tüm makalelere göz atabilir ya da daha sonra tekrar deneyebilirsiniz."
+          ctaLabel="Tüm makalelere dön"
+          ctaHref="/makaleler"
+        />
       </div>
     );
   }

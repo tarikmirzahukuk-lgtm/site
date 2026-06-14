@@ -24,6 +24,10 @@ export default function KategoriFiltreClient({
       })
     : makaleler;
 
+  const aktifKategoriAdi = aktifKategori
+    ? kategoriler.find((k) => k._id === aktifKategori)?.name ?? ""
+    : "";
+
   return (
     <>
       <div className="mb-8">
@@ -32,6 +36,12 @@ export default function KategoriFiltreClient({
           aktif={aktifKategori}
           onChange={setAktifKategori}
         />
+      </div>
+
+      <div aria-live="polite" className="sr-only">
+        {aktifKategori
+          ? `${aktifKategoriAdi} kategorisinde ${filtrelenmis.length} makale`
+          : `Tüm makaleler — ${filtrelenmis.length} sonuç`}
       </div>
 
       {filtrelenmis.length > 0 ? (

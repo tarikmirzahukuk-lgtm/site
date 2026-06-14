@@ -20,6 +20,7 @@ export default function KategoriFiltre({ kategoriler, aktif, onChange }: Props) 
   }) => (
     <button
       onClick={onClick}
+      aria-pressed={active}
       className={`pill ${active ? "pill-active" : ""}`}
     >
       {label}

@@ -179,7 +179,7 @@ export default async function MakaleDetay({ params }: Props) {
               {yazar?.name ?? "Anonim"}
             </span>
             <span style={{ color: "var(--color-muted-dim)" }}>·</span>
-            <span>{formatDate(makaleObj.createdAt)}</span>
+            <time dateTime={makaleObj.createdAt}>{formatDate(makaleObj.createdAt)}</time>
             <span style={{ color: "var(--color-muted-dim)" }}>·</span>
             <span>{makaleObj.readingTime} dk okuma</span>
           </div>
