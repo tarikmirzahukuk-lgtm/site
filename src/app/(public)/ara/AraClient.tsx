@@ -41,69 +41,81 @@ export default function AraClient() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-12">
-      <h1
-        className="display text-2xl md:text-3xl mb-6"
-        style={{ fontWeight: 600 }}
-      >
-        Makale Ara
-      </h1>
-
-      <form onSubmit={handleSearch} className="flex gap-3 mb-4">
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Başlık veya içerik ara..."
-          className="flex-1 px-4 py-3 text-sm focus:outline-none"
-          style={{
-            background: "var(--color-panel)",
-            border: "1px solid var(--rule-dim)",
-            color: "var(--color-ink)",
-          }}
-          onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-gold)"; }}
-          onBlur={(e) => { e.currentTarget.style.borderColor = "var(--rule-dim)"; }}
-          autoFocus
-        />
-        <button
-          type="submit"
-          disabled={loading}
-          className="btn-primary px-6 disabled:opacity-50"
+    <div className="max-w-5xl mx-auto px-6 py-16 md:py-20">
+      <header className="text-center mb-10">
+        <p className="kicker mb-4">Arşiv</p>
+        <h1
+          className="display-monument"
+          style={{ fontSize: "clamp(2rem, 5vw, 3.25rem)" }}
         >
-          {loading ? "Aranıyor..." : "Ara"}
-        </button>
-      </form>
+          Makale <span className="italic-gold">ara</span>
+        </h1>
+        <div className="gold-rule-sm mx-auto mt-6" />
+      </header>
 
-      {error && (
-        <div
-          className="mb-6 text-sm px-4 py-2"
-          style={{
-            background: "var(--color-panel)",
-            border: "1px solid var(--rule-dim)",
-            color: "#f87171",
-          }}
-        >
-          {error}
-        </div>
-      )}
+      <div className="max-w-2xl mx-auto">
+        <form onSubmit={handleSearch} className="flex gap-3 mb-4">
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Başlık veya içerik ara..."
+            className="flex-1 px-4 py-3 text-sm focus:outline-none"
+            style={{
+              background: "var(--color-panel)",
+              border: "1px solid var(--rule-dim)",
+              color: "var(--color-ink)",
+            }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = "var(--color-gold)"; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = "var(--rule-dim)"; }}
+            autoFocus
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-primary px-6 disabled:opacity-50"
+          >
+            {loading ? "Aranıyor..." : "Ara"}
+          </button>
+        </form>
 
-      {searched && !error && (
-        <>
-          <p className="text-sm mb-6" style={{ color: "var(--color-muted)" }}>
+        {error && (
+          <div
+            className="mb-6 text-sm px-4 py-2"
+            style={{
+              background: "var(--color-panel)",
+              border: "1px solid var(--rule-dim)",
+              color: "#f87171",
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        {searched && !error && (
+          <p className="text-sm" style={{ color: "var(--color-muted)" }}>
             &quot;{query}&quot; için {results.length} sonuç bulundu.
           </p>
+        )}
+      </div>
+
+      {searched && !error && (
+        <div className="mt-8">
           {results.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {results.map((makale) => (
-                <MakaleKart key={makale._id} makale={makale} />
-              ))}
-            </div>
+            <>
+              <div className="gold-rule mx-auto mb-8" />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {results.map((makale) => (
+                  <MakaleKart key={makale._id} makale={makale} />
+                ))}
+              </div>
+            </>
           ) : (
             <p className="text-center py-12" style={{ color: "var(--color-muted)" }}>
               Aramanızla eşleşen makale bulunamadı.
             </p>
           )}
-        </>
+        </div>
       )}
     </div>
   );
