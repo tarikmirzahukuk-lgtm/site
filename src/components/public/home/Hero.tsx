@@ -85,6 +85,21 @@ export default function Hero({ data }: { data: ISiteContent["hero"] }) {
     <HeroMotion className="contents">
       <section className="relative overflow-hidden px-5 md:px-16 pt-16 pb-18 md:pt-[120px] md:pb-[110px]">
         <ArchMotif />
+        {/* Arka plan amblem filigranı (deneme) */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 0,
+            pointerEvents: "none",
+            backgroundImage: "url('/mirza-amblem-bg.png')",
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center 30%",
+            backgroundSize: "min(600px, 76%)",
+            opacity: 0.08,
+          }}
+        />
         <div className="relative z-10 max-w-4xl mx-auto text-center">
           <div className="kicker mb-5 md:mb-[22px] hero-enter hero-enter-1">
             {data.kicker}
