@@ -479,6 +479,41 @@
     border-top-color: #e8c452;
   }
 
+  /* İletişim kartı — tam tıklanabilir affordance + hover yanıtı */
+  .iletisim-karti {
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s,
+      border-top-color 0.2s;
+  }
+  .iletisim-karti:hover {
+    border-color: var(--color-gold);
+  }
+  .iletisim-karti-icon {
+    transition: transform 0.2s;
+  }
+  .iletisim-karti:hover .iletisim-karti-icon {
+    transform: translateY(-1px);
+  }
+  /* Stretched link — kartın tamamını tıklanabilir yapar */
+  .iletisim-karti-link::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .iletisim-karti-link:focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .iletisim-karti,
+    .iletisim-karti-icon {
+      transition: none;
+    }
+    .iletisim-karti:hover .iletisim-karti-icon {
+      transform: none;
+    }
+  }
+
   .masthead {
     border-bottom: 1px solid var(--rule);
   }

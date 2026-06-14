@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { getSiteContent } from "@/lib/get-site-content";
+import IletisimKarti from "@/components/public/IletisimKarti";
+import Icon, { type IconName } from "@/components/public/icons/Icon";
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildMetadata({
@@ -11,11 +13,15 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-const SOCIAL_LABELS: { key: "linkedin" | "twitter" | "orcid" | "website"; label: string }[] = [
-  { key: "linkedin", label: "LinkedIn" },
-  { key: "twitter", label: "Twitter / X" },
-  { key: "orcid", label: "ORCID" },
-  { key: "website", label: "Web Sitesi" },
+const SOCIAL_LABELS: {
+  key: "linkedin" | "twitter" | "orcid" | "website";
+  label: string;
+  icon: IconName;
+}[] = [
+  { key: "linkedin", label: "LinkedIn", icon: "linkedin" },
+  { key: "twitter", label: "Twitter / X", icon: "twitter" },
+  { key: "orcid", label: "ORCID", icon: "website" },
+  { key: "website", label: "Web Sitesi", icon: "website" },
 ];
 
 export default async function IletisimPage() {
@@ -41,58 +47,54 @@ export default async function IletisimPage() {
       </header>
 
       <div className="max-w-2xl mx-auto space-y-5">
-        <div className="tablet-card p-6 md:p-7">
-          <h3 className="kicker mb-2">E-posta</h3>
-          <a
-            href={`mailto:${c.contact.email}`}
-            className="transition-colors hover:underline"
-            style={{ color: "var(--color-gold)" }}
-          >
-            {c.contact.email}
-          </a>
-        </div>
+        <IletisimKarti
+          label="E-posta"
+          value={c.contact.email}
+          href={`mailto:${c.contact.email}`}
+          icon="mail"
+          copyValue={c.contact.email}
+        />
 
         {c.contact.phone && (
-          <div className="tablet-card p-6 md:p-7">
-            <h3 className="kicker mb-2">Telefon</h3>
-            <a
-              href={`tel:${c.contact.phoneRaw || c.contact.phone}`}
-              className="transition-colors hover:underline"
-              style={{ color: "var(--color-gold)" }}
-            >
-              {c.contact.phone}
-            </a>
-          </div>
+          <IletisimKarti
+            label="Telefon"
+            value={c.contact.phone}
+            href={`tel:${c.contact.phoneRaw || c.contact.phone}`}
+            icon="phone"
+          />
         )}
 
         {(c.contact.address.line1 || c.contact.address.line2) && (
           <div className="tablet-card p-6 md:p-7">
-            <h3 className="kicker mb-2">Adres</h3>
-            <p style={{ color: "var(--color-body)" }}>
-              {c.contact.address.line1}
-              {c.contact.address.line2 && (
-                <>
-                  <br />
-                  {c.contact.address.line2}
-                </>
-              )}
-            </p>
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 shrink-0" aria-hidden="true">
+                <Icon name="pin" size={18} color="var(--color-gold)" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <h3 className="kicker mb-2">Adres</h3>
+                <p style={{ color: "var(--color-body)" }}>
+                  {c.contact.address.line1}
+                  {c.contact.address.line2 && (
+                    <>
+                      <br />
+                      {c.contact.address.line2}
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
         {SOCIAL_LABELS.filter((s) => c.socials?.[s.key]).map((s) => (
-          <div key={s.key} className="tablet-card p-6 md:p-7">
-            <h3 className="kicker mb-2">{s.label}</h3>
-            <a
-              href={c.socials[s.key]}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:underline break-all"
-              style={{ color: "var(--color-gold)" }}
-            >
-              {c.socials[s.key]}
-            </a>
-          </div>
+          <IletisimKarti
+            key={s.key}
+            label={s.label}
+            value={c.socials[s.key]}
+            href={c.socials[s.key]}
+            icon={s.icon}
+            external
+          />
         ))}
       </div>
     </div>

@@ -10,6 +10,8 @@ type IconName =
   | "user"
   | "handcuff"
   | "phone"
+  | "mail"
+  | "pin"
   | "whatsapp"
   | "chevron"
   | "plus"
@@ -89,6 +91,18 @@ export default function Icon({
       </>
     ),
     phone: <path d="M5 4h4l2 5-3 2c1 3 3 5 6 6l2-3 5 2v4c0 1-1 2-2 2C9 22 2 15 2 6c0-1 1-2 3-2z" {...sp} />,
+    mail: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="1.5" {...sp} />
+        <path d="M3 7l9 6 9-6" {...sp} />
+      </>
+    ),
+    pin: (
+      <>
+        <path d="M12 21c4-4 7-7 7-11a7 7 0 10-14 0c0 4 3 7 7 11z" {...sp} />
+        <circle cx="12" cy="10" r="2.5" {...sp} />
+      </>
+    ),
     whatsapp: (
       <>
         <path d="M20 12a8 8 0 11-15-4 8 8 0 0114 0c0 1-.5 3-1 4l1 4-4-1c-1 .5-3 1-4 1" {...sp} />
