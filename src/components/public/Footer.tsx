@@ -100,16 +100,6 @@ export default function Footer({
             <div className="kicker mb-3">İletişim</div>
             <div className="gold-rule-sm mb-[18px]" aria-hidden="true" />
             <ul className="space-y-2.5 text-[13.5px] leading-[1.8]" style={{ color: "var(--color-body)" }}>
-              {(contact.address.line1 || contact.address.line2) && (
-                <li className="flex gap-2.5">
-                  <span className="w-4 shrink-0" aria-hidden="true" />
-                  <span>
-                    {contact.address.line1}
-                    {contact.address.line1 && contact.address.line2 && <br />}
-                    {contact.address.line2}
-                  </span>
-                </li>
-              )}
               <li className="flex gap-2.5">
                 <Icon name="phone" size={16} color="var(--color-gold)" />
                 {contact.phone}
