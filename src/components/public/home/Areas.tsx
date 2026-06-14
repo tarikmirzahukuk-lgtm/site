@@ -2,6 +2,7 @@ import Icon from "@/components/public/icons/Icon";
 import type { IconName } from "@/components/public/icons/Icon";
 import type { ISiteContent } from "@/types";
 import { renderAccent } from "@/lib/render-accent";
+import { toRoman } from "@/lib/utils";
 
 export default function Areas({ data }: { data: ISiteContent["areas"] }) {
   return (
@@ -24,7 +25,7 @@ export default function Areas({ data }: { data: ISiteContent["areas"] }) {
           {data.items.map((a, i) => (
             <article
               key={i}
-              className={`pcard p-6 md:p-[30px] flex flex-col min-h-[180px] md:min-h-[220px] ${
+              className={`tablet-card p-6 md:p-[30px] flex flex-col min-h-[180px] md:min-h-[220px] ${
                 i === 6 ? "md:col-start-2" : ""
               }`}
             >
@@ -35,12 +36,7 @@ export default function Areas({ data }: { data: ISiteContent["areas"] }) {
                 >
                   <Icon name={a.icon as IconName} size={20} color="var(--color-gold)" />
                 </div>
-                <span
-                  className="text-[11px] uppercase tracking-[0.2em] font-medium"
-                  style={{ color: "var(--color-muted-dim)" }}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </span>
+                <span className="roman-index">{toRoman(i + 1)}</span>
               </div>
               <div
                 className="text-[22px] font-semibold mb-2"
